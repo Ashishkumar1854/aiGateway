@@ -1,0 +1,13 @@
+{
+  "name": "@aigw/utils",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared utility functions for AiGateway",
+  "main": "./index.js",
+  "scripts": {
+    "build": "echo 'utils: no build needed'",
+    "lint": "eslint .",
+    "clean": "echo 'utils: nothing to clean'"
+  }
+}
+

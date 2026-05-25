@@ -1,0 +1,17 @@
+{
+  "name": "@aigw/ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared Shadcn/UI components for AiGateway",
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "echo 'ui: no build needed'",
+    "lint": "eslint src/",
+    "clean": "echo 'ui: nothing to clean'"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}
+
