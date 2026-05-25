@@ -1,59 +1,28 @@
-"""
-AiGateway — AI Workers Service
-Python 3.11 + FastAPI
-
-Internal-only service. Never exposed to the public internet.
-Backend calls this via Docker internal network: http://ai-workers:8000
-
-Phase 0: Scaffold only
-Phase 10+: Full agent implementation
-"""
-
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-import uvicorn
-import os
+from datetime import datetime
 
 app = FastAPI(
     title="AiGateway AI Workers",
-    description="Internal AI agent orchestration service",
-    version="1.0.0",
-    # Disable docs in production
-    docs_url="/docs" if os.getenv("ENV", "development") == "development" else None,
-    redoc_url=None,
+    description="Internal AI agent service",
+    version="0.1.0"
 )
 
-
 @app.get("/health")
-async def health_check():
-    """Health check endpoint — used by Docker and backend."""
-    return JSONResponse(
-        content={
-            "status": "ok",
-            "service": "aigw-ai-workers",
-            "version": "1.0.0",
-            "env": os.getenv("ENV", "development"),
-        }
-    )
-
-
-@app.get("/agents")
-async def list_agents():
-    """List available AI agents. Full implementation Phase 10."""
+def health_check():
     return {
-        "agents": [
-            {"name": "lead_research", "status": "not_implemented", "phase": 10},
-            {"name": "email_outreach", "status": "not_implemented", "phase": 11},
-            {"name": "linkedin", "status": "not_implemented", "phase": 11},
-            {"name": "meeting", "status": "not_implemented", "phase": 12},
-        ]
+        "status": "ok",
+        "service": "aigw-ai-workers",
+        "timestamp": datetime.utcnow().isoformat()
     }
 
-
-if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 8000)),
-        reload=os.getenv("ENV", "development") == "development",
-    )
+@app.get("/")
+def root():
+    return {
+        "message": "AiGateway AI Workers — Phase 1",
+        "agents": [
+            "lead_research",
+            "email_outreach",
+            "linkedin",
+            "meeting"
+        ]
+    }

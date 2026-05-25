@@ -1,27 +1,7 @@
-# AiGateway — AI Workers Dependencies
-# Python 3.11+
-
-# Web framework
 fastapi==0.111.0
-uvicorn[standard]==0.30.1
-
-# HTTP client (calls backend API)
+uvicorn==0.29.0
 httpx==0.27.0
-
-# Browser automation (lead scraping — Phase 10)
-playwright==1.44.0
-
-# AI (Claude API — Phase 10+)
 anthropic==0.28.0
-
-# Data validation
-pydantic==2.7.4
-
-# Environment variables
 python-dotenv==1.0.1
-
-# Queue client (connects to Redis/BullMQ via HTTP)
-redis==5.0.6
-
-# Async utilities
-asyncio-throttle==1.0.2
+pydantic==2.7.0
+redis==5.0.4

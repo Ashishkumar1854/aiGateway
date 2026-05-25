@@ -92,25 +92,25 @@ PHASE 16: Monitoring
 ---
 
 ### PHASE 1 — Docker Local Environment
-**Status:** 🔴 Not Started  
-**Started:** —  
-**Completed:** —
+**Status:** ✅ Complete
+**Started:** 2026-05-25
+**Completed:** 2026-05-25
 
 **Checklist:**
-- [ ] docker-compose.yml with all services
-- [ ] nginx.conf with local routing
-- [ ] Postgres volume + health check
-- [ ] Redis volume + health check
-- [ ] Backend Dockerfile (Node)
-- [ ] Frontend Dockerfiles (Next.js)
-- [ ] ai-workers Dockerfile (Python)
-- [ ] n8n container configured
-- [ ] `docker-compose up` → all services healthy
+- [x] docker-compose.yml with all services
+- [x] nginx.conf with local routing
+- [x] Postgres volume + health check
+- [x] Redis volume + health check
+- [x] Backend Dockerfile (Node)
+- [x] Frontend Dockerfiles (Next.js)
+- [x] ai-workers Dockerfile (Python)
+- [x] n8n container configured
+- [x] `docker-compose up` → all services healthy
 
-**Test:** `curl localhost:5000/health` → `{"status":"ok"}`
+**Test:** `curl localhost:5001/health` → `{"status":"ok"}`
 
 **Notes:**
-—
+- Used port 5001 for backend host mapping to avoid macOS AirPlay Receiver port 5000 conflict. Internal Docker port remains 5000.
 
 ---
 
@@ -520,7 +520,8 @@ ADMIN_DASHBOARD_URL=http://localhost:3002
 
 | Date | Milestone |
 |------|-----------|
-| — | — |
+| 2026-05-25 | Phase 0 — Project Audit & Structure Lock Completed |
+| 2026-05-25 | Phase 1 — Docker Local Environment Completed |
 
 ---
 
