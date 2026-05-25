@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─────────────────────────────────────────────────────────────────
-// ENUMS — Phase 2 will expand these
-// ─────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
 
 enum Role {
   ADMIN
@@ -22,14 +19,13 @@ enum Role {
 }
 
 enum LeadStatus {
-  NEW
-  CONTACTED
+  COLD
+  WARM
   QUALIFIED
   PROPOSAL
   NEGOTIATION
   WON
   LOST
-  UNQUALIFIED
 }
 
 enum SubscriptionPlan {
@@ -40,7 +36,6 @@ enum SubscriptionPlan {
 
 enum SubscriptionStatus {
   ACTIVE
-  PAST_DUE
   CANCELLED
   EXPIRED
   TRIAL
@@ -50,8 +45,10 @@ enum AgentType {
   LEAD_RESEARCH
   EMAIL_OUTREACH
   LINKEDIN
+  INSTAGRAM
   MEETING
   ORCHESTRATOR
+  SUPPORT
 }
 
 enum TaskStatus {
@@ -59,24 +56,467 @@ enum TaskStatus {
   AWAITING_APPROVAL
   APPROVED
   REJECTED
-  IN_PROGRESS
+  RUNNING
   COMPLETED
   FAILED
-  RETRYING
 }
 
-// ─────────────────────────────────────────────────────────────────
-// SCAFFOLD MODELS — Full schema in Phase 2
-// ─────────────────────────────────────────────────────────────────
+enum ServiceType {
+  REELS_AUTOMATION
+  EMAIL_AUTOMATION
+  LEAD_GENERATION
+  WHATSAPP_AUTOMATION
+  LINKEDIN_OUTREACH
+  CUSTOM
+}
+
+enum WorkflowStatus {
+  ACTIVE
+  INACTIVE
+  RUNNING
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ─────────────────────────────────────────
+// USERS & AUTH
+// ─────────────────────────────────────────
 
 model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(CLIENT)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  client        Client?
+  refreshTokens RefreshToken[]
+  assignedLeads Lead[]         @relation("AssignedTo")
+  createdLeads  Lead[]         @relation("CreatedBy")
+  meetings      Meeting[]      @relation("MeetingCreator")
+  notes         Note[]
+  tasks         Task[]
+
+  @@index([email])
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model RefreshToken {
   id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  role      Role     @default(CLIENT)
-  isActive  Boolean  @default(true)
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────
+// CLIENTS
+// ─────────────────────────────────────────
+
+model Client {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  companyName String
+  industry    String?
+  website     String?
+  phone       String?
+  address     String?
+  logoUrl     String?
+  status      String    @default("active")
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  user              User               @relation(fields: [userId], references: [id])
+  serviceAssignments ServiceAssignment[]
+  subscriptions     Subscription[]
+  leads             Lead[]
+  workflows         Workflow[]
+  payments          Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("clients")
+}
+
+// ─────────────────────────────────────────
+// SERVICES & SUBSCRIPTIONS
+// ─────────────────────────────────────────
+
+model Service {
+  id          String      @id @default(uuid())
+  name        String
+  type        ServiceType
+  description String?
+  features    String[]
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  assignments ServiceAssignment[]
+
+  @@index([type])
+  @@map("services")
+}
+
+model ServiceAssignment {
+  id         String    @id @default(uuid())
+  clientId   String
+  serviceId  String
+  assignedAt DateTime  @default(now())
+  expiresAt  DateTime?
+  isActive   Boolean   @default(true)
+  config     Json?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  client  Client  @relation(fields: [clientId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
+
+  @@unique([clientId, serviceId])
+  @@index([clientId])
+  @@index([serviceId])
+  @@map("service_assignments")
+}
+
+model Subscription {
+  id         String             @id @default(uuid())
+  clientId   String
+  plan       SubscriptionPlan
+  status     SubscriptionStatus @default(ACTIVE)
+  startsAt   DateTime           @default(now())
+  expiresAt  DateTime?
+  cancelledAt DateTime?
+  razorpaySubscriptionId String? @unique
+  razorpayPlanId         String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  client   Client    @relation(fields: [clientId], references: [id])
+  payments Payment[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("subscriptions")
+}
+
+// ─────────────────────────────────────────
+// CRM
+// ─────────────────────────────────────────
+
+model Lead {
+  id          String     @id @default(uuid())
+  clientId    String?
+  companyName String
+  contactName String?
+  email       String?
+  phone       String?
+  website     String?
+  industry    String?
+  location    String?
+  status      LeadStatus @default(COLD)
+  score       Int        @default(0)
+  source      String     @default("manual")
+  notes       String?
+  assignedToId String?
+  createdById  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  client        Client?        @relation(fields: [clientId], references: [id])
+  assignedTo    User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdBy     User?          @relation("CreatedBy", fields: [createdById], references: [id])
+  conversations Conversation[]
+  meetings      Meeting[]
+  leadNotes     Note[]
+  tasks         Task[]
+  agentTasks    AgentTask[]
+  agentMemory   AgentMemory[]
+  outreachLogs  OutreachLog[]
+
+  @@index([status])
+  @@index([score])
+  @@index([clientId])
+  @@index([assignedToId])
+  @@index([deletedAt])
+  @@map("leads")
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  leadId    String
+  channel   String   // email, whatsapp, linkedin, instagram, phone
+  direction String   // inbound, outbound
+  content   String
+  sentAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id])
+
+  @@index([leadId])
+  @@index([channel])
+  @@map("conversations")
+}
+
+model Meeting {
+  id          String        @id @default(uuid())
+  leadId      String
+  createdById String?
+  title       String
+  description String?
+  scheduledAt DateTime
+  duration    Int           @default(30) // minutes
+  status      MeetingStatus @default(SCHEDULED)
+  meetingUrl  String?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  lead      Lead  @relation(fields: [leadId], references: [id])
+  createdBy User? @relation("MeetingCreator", fields: [createdById], references: [id])
+
+  @@index([leadId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("meetings")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  leadId    String
+  authorId  String?
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("users")
+  lead   Lead  @relation(fields: [leadId], references: [id])
+  author User? @relation(fields: [authorId], references: [id])
+
+  @@index([leadId])
+  @@map("notes")
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  leadId      String?
+  assignedToId String?
+  title       String
+  description String?
+  dueAt       DateTime?
+  completedAt DateTime?
+  isCompleted Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  lead       Lead? @relation(fields: [leadId], references: [id])
+  assignedTo User? @relation(fields: [assignedToId], references: [id])
+
+  @@index([leadId])
+  @@index([assignedToId])
+  @@index([isCompleted])
+  @@map("tasks")
+}
+
+// ─────────────────────────────────────────
+// AI AGENTS
+// ─────────────────────────────────────────
+
+model AgentTask {
+  id          String     @id @default(uuid())
+  agentType   AgentType
+  status      TaskStatus @default(PENDING)
+  input       Json
+  output      Json?
+  error       String?
+  leadId      String?
+  approvedById String?
+  rejectedById String?
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  retryCount  Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  lead     Lead?      @relation(fields: [leadId], references: [id])
+  logs     AgentLog[]
+
+  @@index([agentType])
+  @@index([status])
+  @@index([leadId])
+  @@index([createdAt])
+  @@map("agent_tasks")
+}
+
+model AgentLog {
+  id          String   @id @default(uuid())
+  agentTaskId String
+  level       String   @default("info") // info, warn, error
+  message     String
+  data        Json?
+  createdAt   DateTime @default(now())
+
+  agentTask AgentTask @relation(fields: [agentTaskId], references: [id], onDelete: Cascade)
+
+  @@index([agentTaskId])
+  @@index([level])
+  @@map("agent_logs")
+}
+
+model AgentMemory {
+  id        String   @id @default(uuid())
+  leadId    String
+  agentType AgentType
+  key       String
+  value     Json
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lead Lead @relation(fields: [leadId], references: [id])
+
+  @@unique([leadId, agentType, key])
+  @@index([leadId])
+  @@index([agentType])
+  @@map("agent_memory")
+}
+
+model OutreachLog {
+  id        String   @id @default(uuid())
+  leadId    String
+  agentType AgentType
+  channel   String   // email, linkedin, instagram
+  subject   String?
+  content   String
+  status    String   @default("draft") // draft, approved, sent, failed
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lead Lead @relation(fields: [leadId], references: [id])
+
+  @@index([leadId])
+  @@index([channel])
+  @@index([status])
+  @@map("outreach_logs")
+}
+
+// ─────────────────────────────────────────
+// WORKFLOWS (n8n bridge)
+// ─────────────────────────────────────────
+
+model Workflow {
+  id          String         @id @default(uuid())
+  clientId    String?
+  name        String
+  description String?
+  n8nWorkflowId String?
+  status      WorkflowStatus @default(INACTIVE)
+  config      Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  client Client? @relation(fields: [clientId], references: [id])
+  logs   WorkflowLog[]
+
+  @@index([clientId])
+  @@index([status])
+  @@map("workflows")
+}
+
+model WorkflowLog {
+  id         String   @id @default(uuid())
+  workflowId String
+  status     String   // success, failed, running
+  input      Json?
+  output     Json?
+  error      String?
+  duration   Int?     // milliseconds
+  triggeredAt DateTime @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id])
+
+  @@index([workflowId])
+  @@index([status])
+  @@index([triggeredAt])
+  @@map("workflow_logs")
+}
+
+// ─────────────────────────────────────────
+// PAYMENTS
+// ─────────────────────────────────────────
+
+model Payment {
+  id               String        @id @default(uuid())
+  clientId         String
+  subscriptionId   String?
+  amount           Float
+  currency         String        @default("INR")
+  status           PaymentStatus @default(PENDING)
+  razorpayOrderId  String?       @unique
+  razorpayPaymentId String?      @unique
+  description      String?
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  client       Client        @relation(fields: [clientId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([clientId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────
+// ANALYTICS
+// ─────────────────────────────────────────
+
+model AnalyticsEvent {
+  id         String   @id @default(uuid())
+  clientId   String?
+  event      String
+  properties Json?
+  userId     String?
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  @@index([clientId])
+  @@index([event])
+  @@index([createdAt])
+  @@map("analytics_events")
 }
