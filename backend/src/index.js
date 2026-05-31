@@ -30,6 +30,30 @@ app.get('/health', (req, res) => {
   })
 })
 
+// Public contact form endpoint — no auth required
+app.post('/api/v1/public/contact', async (req, res) => {
+  try {
+    const prisma = require('./lib/prisma')
+    const { name, email, phone, company, industry, message } = req.body
+    const lead = await prisma.lead.create({
+      data: {
+        companyName: company || 'Unknown',
+        contactName: name,
+        email,
+        phone,
+        industry,
+        source: 'website_contact',
+        notes: message,
+        status: 'COLD',
+        score: 10,
+      }
+    })
+    return res.status(201).json({ success: true, data: lead })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { message: 'Failed to submit' } })
+  }
+})
+
 // Routes
 app.use('/api/v1/auth',          require('./api/v1/auth/auth.routes'))
 app.use('/api/v1/users',         require('./api/v1/users/users.routes'))
