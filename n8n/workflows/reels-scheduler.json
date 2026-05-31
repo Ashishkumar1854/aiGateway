@@ -1,0 +1,33 @@
+{
+  "name": "Reels Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 9 * * *" }] }
+      },
+      "id": "cron-reels",
+      "name": "Daily 9AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Daily reels scheduling check\nconst today = new Date().toISOString().split('T')[0];\nconsole.log('Reels scheduler running for:', today);\nreturn [{ json: { scheduled: true, date: today, message: 'Reels scheduler placeholder — Phase 10 will add AI content generation' } }];"
+      },
+      "id": "check-reels",
+      "name": "Check Scheduled Reels",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "Daily 9AM Trigger": {
+      "main": [[{ "node": "Check Scheduled Reels", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "reels" }]
+}

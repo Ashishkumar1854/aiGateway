@@ -1,0 +1,50 @@
+{
+  "name": "Lead Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-node",
+      "name": "Webhook — Lead Created",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.first().json.lead;\nconst score = lead.score || 0;\nlet priority = 'low';\nif (score >= 80) priority = 'high';\nelse if (score >= 60) priority = 'medium';\n\nreturn [{\n  json: {\n    ...lead,\n    priority,\n    processed: true,\n    processedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "code-node",
+      "name": "Score & Prioritize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ received: true, leadId: $json.id, priority: $json.priority }) }}"
+      },
+      "id": "respond-node",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook — Lead Created": {
+      "main": [[{ "node": "Score & Prioritize Lead", "type": "main", "index": 0 }]]
+    },
+    "Score & Prioritize Lead": {
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "leads" }]
+}

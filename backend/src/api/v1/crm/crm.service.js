@@ -44,7 +44,13 @@ const getLeadById = async (id) => {
 }
 
 const createLead = async (data) => {
-  return prisma.lead.create({ data })
+  const lead = await prisma.lead.create({ data })
+  
+  // Trigger n8n lead intake workflow (non-blocking)
+  const n8nService = require('../../../services/n8n.service')
+  n8nService.triggerLeadIntake(lead).catch(console.warn)
+  
+  return lead
 }
 
 const updateLead = async (id, data) => {

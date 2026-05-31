@@ -281,7 +281,7 @@ PHASE 16: Monitoring
 
 ---
 
-### PHASE 7 — Billing
+### PHASE 8 — Billing
 **Status:** 🔴 Not Started  
 **Started:** —  
 **Completed:** —
@@ -299,10 +299,10 @@ PHASE 16: Monitoring
 
 ---
 
-### PHASE 8 — n8n Automation
-**Status:** 🔴 Not Started  
-**Started:** —  
-**Completed:** —
+### PHASE 7 — n8n Automation
+**Status:** ✅ Complete  
+**Started:** 2026-05-31  
+**Completed:** 2026-05-31
 
 **Workflows:**
 - [ ] lead-intake.json
