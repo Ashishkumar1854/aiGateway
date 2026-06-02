@@ -2,67 +2,96 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { KanbanColumn } from '@/components/crm/KanbanColumn'
+import { LeadForm } from '@/components/crm/LeadForm'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { PageHeader } from '@/components/shared/PageHeader'
-
-const STATUS_COLORS = {
-  COLD: 'bg-slate-100 border-slate-200',
-  WARM: 'bg-orange-50 border-orange-200',
-  QUALIFIED: 'bg-blue-50 border-blue-200',
-  PROPOSAL: 'bg-purple-50 border-purple-200',
-  NEGOTIATION: 'bg-yellow-50 border-yellow-200',
-  WON: 'bg-green-50 border-green-200',
-  LOST: 'bg-red-50 border-red-200',
-}
-
-const scoreColor = (score) => {
-  if (score >= 80) return 'text-green-600 bg-green-50'
-  if (score >= 60) return 'text-yellow-600 bg-yellow-50'
-  return 'text-slate-500 bg-slate-100'
-}
 
 export default function CRMPage() {
   const [pipeline, setPipeline] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
 
-  useEffect(() => {
-    api.get('/api/v1/crm/pipeline')
-      .then((res) => setPipeline(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+  const load = async () => {
+    try {
+      const res = await api.get('/api/v1/crm/pipeline')
+      setPipeline(res.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  if (loading) return <LoadingSpinner />
+  useEffect(() => { load() }, [])
+
+  const handleLeadClick = (lead) => {
+    window.location.href = `/crm/leads/${lead.id}`
+  }
+
+  const totalLeads = pipeline.reduce((sum, col) => sum + col.count, 0)
+  const wonLeads = pipeline.find(c => c.status === 'WON')?.count || 0
+  const qualifiedLeads = pipeline.find(c => c.status === 'QUALIFIED')?.count || 0
 
   return (
     <div className="p-6">
-      <PageHeader title="CRM Pipeline" subtitle="Lead management kanban board" />
-      <div className="flex gap-3 overflow-x-auto pb-4">
-        {pipeline.map((col) => (
-          <div key={col.status} className="flex-shrink-0 w-64">
-            <div className={`rounded-xl border p-3 ${STATUS_COLORS[col.status] || 'bg-white border-slate-200'}`}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wide text-slate-600">{col.status}</h3>
-                <span className="text-xs font-semibold text-slate-400">{col.count}</span>
-              </div>
-              <div className="space-y-2">
-                {col.leads.length === 0 ? (
-                  <p className="text-center text-xs text-slate-300 py-4">No leads</p>
-                ) : col.leads.map((lead) => (
-                  <a key={lead.id} href={`/crm/leads/${lead.id}`} className="block rounded-lg bg-white border border-slate-200 p-3 hover:border-slate-400 transition-colors shadow-sm">
-                    <p className="text-sm font-medium text-slate-900 truncate">{lead.companyName}</p>
-                    {lead.contactName && <p className="text-xs text-slate-400 mt-0.5">{lead.contactName}</p>}
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-xs text-slate-400">{lead.industry || 'Unknown'}</span>
-                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${scoreColor(lead.score)}`}>{lead.score}</span>
-                    </div>
-                  </a>
-                ))}
-              </div>
+      <PageHeader
+        title="CRM Pipeline"
+        subtitle={`${totalLeads} total leads`}
+        action={
+          <button
+            onClick={() => setShowForm(true)}
+            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+          >
+            + Add Lead
+          </button>
+        }
+      />
+
+      {/* Quick stats */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {[
+          { label: 'Total Leads', value: totalLeads, icon: '🎯' },
+          { label: 'Qualified', value: qualifiedLeads, icon: '✅' },
+          { label: 'Won', value: wonLeads, icon: '🎉' },
+        ].map(stat => (
+          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white px-4 py-3 flex items-center gap-3">
+            <span className="text-2xl">{stat.icon}</span>
+            <div>
+              <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+              <p className="text-xs text-slate-400">{stat.label}</p>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Kanban board */}
+      {loading ? <LoadingSpinner /> : (
+        <div className="flex gap-3 overflow-x-auto pb-4">
+          {pipeline.map((col) => (
+            <KanbanColumn
+              key={col.status}
+              status={col.status}
+              count={col.count}
+              leads={col.leads}
+              onLeadClick={handleLeadClick}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Add Lead Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl mx-4">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Add New Lead</h2>
+            <LeadForm
+              onSuccess={() => { setShowForm(false); load() }}
+              onCancel={() => setShowForm(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

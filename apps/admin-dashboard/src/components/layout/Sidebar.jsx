@@ -9,7 +9,10 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/clients', label: 'Clients', icon: '🏢' },
   { href: '/crm', label: 'CRM Pipeline', icon: '🎯' },
+  { href: '/crm/leads', label: 'All Leads', icon: '📋' },
+  { href: '/crm/meetings', label: 'Meetings', icon: '📅' },
   { href: '/agents', label: 'AI Agents', icon: '🤖' },
+  { href: '/agents/tasks', label: 'Agent Tasks', icon: '⏳' },
   { href: '/subscriptions', label: 'Subscriptions', icon: '💳' },
 ]
 
