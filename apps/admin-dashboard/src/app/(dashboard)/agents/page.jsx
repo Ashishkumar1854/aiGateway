@@ -9,6 +9,10 @@ import { PageHeader } from '@/components/shared/PageHeader'
 export default function AgentsPage() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showTrigger, setShowTrigger] = useState(false)
+  const [triggerForm, setTriggerForm] = useState({ industry: 'fitness', location: 'Mumbai', count: 5, use_mock: true })
+  const [triggerLoading, setTriggerLoading] = useState(false)
+  const [triggerResult, setTriggerResult] = useState(null)
 
   useEffect(() => {
     api.get('/api/v1/agents/stats')
@@ -16,6 +20,20 @@ export default function AgentsPage() {
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
+
+  const handleRunAgent = async (e) => {
+    e.preventDefault()
+    setTriggerLoading(true)
+    setTriggerResult(null)
+    try {
+      const res = await api.post('/api/v1/internal/lead-research', triggerForm)
+      setTriggerResult(res.data)
+    } catch (err) {
+      setTriggerResult({ error: err.message })
+    } finally {
+      setTriggerLoading(false)
+    }
+  }
 
   if (loading) return <LoadingSpinner />
 
@@ -61,9 +79,67 @@ export default function AgentsPage() {
               <span>📋</span> View agent logs
               <span className="ml-auto">→</span>
             </a>
+            <button onClick={() => setShowTrigger(true)}
+              className="flex items-center gap-3 rounded-lg p-3 border border-indigo-200 bg-indigo-50 text-sm font-medium text-indigo-800 hover:bg-indigo-100 transition-colors w-full text-left">
+              <span>🔍</span> Run Lead Research Agent
+              <span className="ml-auto">→</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {showTrigger && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl mx-4">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">🔍 Run Lead Research Agent</h2>
+            <form onSubmit={handleRunAgent} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Industry</label>
+                <input value={triggerForm.industry}
+                  onChange={e => setTriggerForm({...triggerForm, industry: e.target.value})}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Location</label>
+                <input value={triggerForm.location}
+                  onChange={e => setTriggerForm({...triggerForm, location: e.target.value})}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Number of leads</label>
+                <input type="number" min={1} max={20} value={triggerForm.count}
+                  onChange={e => setTriggerForm({...triggerForm, count: parseInt(e.target.value)})}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900" />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="useMock" checked={triggerForm.use_mock}
+                  onChange={e => setTriggerForm({...triggerForm, use_mock: e.target.checked})} />
+                <label htmlFor="useMock" className="text-sm text-slate-600">
+                  Use mock data (no internet required)
+                </label>
+              </div>
+              {triggerResult && (
+                <div className={`rounded-lg p-3 text-sm ${triggerResult.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                  {triggerResult.error || triggerResult.message}
+                  {triggerResult.tasks_created > 0 && (
+                    <p className="mt-1 font-medium">✅ {triggerResult.tasks_created} tasks created — check Agent Tasks tab</p>
+                  )}
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => { setShowTrigger(false); setTriggerResult(null) }}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
+                  Close
+                </button>
+                <button type="submit" disabled={triggerLoading}
+                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
+                  {triggerLoading ? '🔍 Searching...' : 'Run Agent'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

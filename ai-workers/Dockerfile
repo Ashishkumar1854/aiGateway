@@ -1,17 +1,20 @@
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
-# Install system deps
 RUN apt-get update && apt-get install -y \
     curl \
+    wget \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first (layer caching)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source
+# Install Playwright browsers (for scraping)
+RUN playwright install chromium
+RUN playwright install-deps chromium
+
 COPY . .
 
 EXPOSE 8000

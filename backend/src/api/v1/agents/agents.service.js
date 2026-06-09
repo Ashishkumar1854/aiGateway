@@ -25,10 +25,46 @@ const createTask = async (data) => {
 }
 
 const approveTask = async (id, userId) => {
-  return prisma.agentTask.update({
+  // 1. Update task status
+  const task = await prisma.agentTask.update({
     where: { id },
     data: { status: 'APPROVED', approvedById: userId, approvedAt: new Date() }
   })
+
+  // 2. Call ai-workers to execute the task (non-blocking)
+  const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+  const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+
+  fetch(`${AI_WORKERS_URL}/agents/tasks/${id}/execute`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-ai-workers-secret': AI_WORKERS_SECRET,
+    },
+    body: JSON.stringify({
+      task_id: id,
+      agent_type: task.agentType,
+      input_data: task.input,
+    }),
+  })
+  .then(async (res) => {
+    const data = await res.json()
+    console.log(`✅ Task ${id} executed:`, data)
+    // Update task status to COMPLETED
+    await prisma.agentTask.update({
+      where: { id },
+      data: { status: 'COMPLETED', completedAt: new Date(), output: data }
+    })
+  })
+  .catch(async (err) => {
+    console.error(`❌ Task ${id} execution failed:`, err.message)
+    await prisma.agentTask.update({
+      where: { id },
+      data: { status: 'FAILED', error: err.message }
+    })
+  })
+
+  return task
 }
 
 const rejectTask = async (id, userId, reason) => {
