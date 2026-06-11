@@ -110,6 +110,14 @@ async def execute_approved_task(
             lead_data = request.input_data.get("lead", {})
             result = await approve_and_create_lead(task_id, lead_data)
             return {"success": True, "data": result}
+        elif request.agent_type == "EMAIL_OUTREACH":
+            from agents.email_outreach.agent import execute_approved_outreach
+            result = await execute_approved_outreach(task_id, request.input_data)
+            return {"success": True, "data": result}
+        elif request.agent_type == "LINKEDIN":
+            from agents.linkedin.agent import execute_approved_linkedin
+            result = await execute_approved_linkedin(task_id, request.input_data)
+            return {"success": True, "data": result}
         else:
             return {"success": False, "data": {"message": f"Agent {request.agent_type} not yet implemented"}}
     except Exception as e:
@@ -117,15 +125,63 @@ async def execute_approved_task(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ─── Placeholder endpoints for future agents ──────────────
+# ─── Email Outreach Agent ─────────────────────────────────
+
+class EmailOutreachRequest(BaseModel):
+    lead_id: str
+
 
 @app.post("/agents/email-outreach/run")
-async def run_email_outreach(x_ai_workers_secret: str = Header(None)):
+async def run_email_outreach(
+    request: EmailOutreachRequest,
+    x_ai_workers_secret: str = Header(None),
+):
+    """
+    Trigger Email Outreach Agent.
+    Generates a personalized draft, creates an AgentTask (AWAITING_APPROVAL).
+    """
     verify_secret(x_ai_workers_secret)
-    return {"success": False, "message": "Email Outreach Agent — Phase 11"}
 
+    try:
+        from agents.email_outreach.agent import run_email_outreach as start_outreach
+        result = await start_outreach(request.lead_id)
+        return {"success": True, "data": result}
+    except Exception as e:
+        print(f"Email outreach error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ─── LinkedIn Outreach Agent ──────────────────────────────
+
+class LinkedInOutreachRequest(BaseModel):
+    lead_id: str
+
+
+@app.post("/agents/linkedin-outreach/run")
+async def run_linkedin_outreach(
+    request: LinkedInOutreachRequest,
+    x_ai_workers_secret: str = Header(None),
+):
+    """
+    Trigger LinkedIn Outreach Agent.
+    Generates a personalized connection request + message draft, creates an AgentTask (AWAITING_APPROVAL).
+    """
+    verify_secret(x_ai_workers_secret)
+
+    try:
+        from agents.linkedin.agent import run_linkedin_outreach as start_linkedin
+        result = await start_linkedin(request.lead_id)
+        return {"success": True, "data": result}
+    except Exception as e:
+        print(f"LinkedIn outreach error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ─── Placeholder endpoints for future agents ──────────────
 
 @app.post("/agents/meeting/run")
 async def run_meeting_agent(x_ai_workers_secret: str = Header(None)):
     verify_secret(x_ai_workers_secret)
     return {"success": False, "message": "Meeting Agent — Phase 12"}
+
+

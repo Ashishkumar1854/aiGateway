@@ -74,3 +74,19 @@ async def health_check() -> bool:
             return res.status_code == 200
     except Exception:
         return False
+
+
+async def add_conversation(conversation_data: dict) -> dict:
+    """
+    Log a conversation back to the backend CRM.
+    """
+    async with httpx.AsyncClient() as client:
+        res = await client.post(
+            f"{BACKEND_URL}/api/v1/crm/conversations",
+            json=conversation_data,
+            headers=get_headers(),
+            timeout=30,
+        )
+        res.raise_for_status()
+        return res.json()
+

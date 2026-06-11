@@ -21,6 +21,10 @@ export default function LeadDetailPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [showConvForm, setShowConvForm] = useState(false)
   const [showMeetingForm, setShowMeetingForm] = useState(false)
+  const [outreachLoading, setOutreachLoading] = useState(false)
+  const [outreachError, setOutreachError] = useState(null)
+  const [linkedinLoading, setLinkedinLoading] = useState(false)
+  const [linkedinError, setLinkedinError] = useState(null)
 
   const load = async () => {
     try {
@@ -47,10 +51,43 @@ export default function LeadDetailPage() {
     }
   }
 
+  const handleGenerateEmail = async () => {
+    setOutreachLoading(true)
+    setOutreachError(null)
+    try {
+      await api.post('/api/v1/internal/email-outreach', { lead_id: id })
+      await load()
+    } catch (err) {
+      setOutreachError(err.message || 'Failed to generate email outreach draft')
+    } finally {
+      setOutreachLoading(false)
+    }
+  }
+
+  const handleGenerateLinkedin = async () => {
+    setLinkedinLoading(true)
+    setLinkedinError(null)
+    try {
+      await api.post('/api/v1/internal/linkedin-outreach', { lead_id: id })
+      await load()
+    } catch (err) {
+      setLinkedinError(err.message || 'Failed to generate LinkedIn outreach draft')
+    } finally {
+      setLinkedinLoading(false)
+    }
+  }
+
   if (loading) return <LoadingSpinner />
   if (!lead) return <div className="p-6 text-slate-500">Lead not found.</div>
 
   const SCORE_COLOR = lead.score >= 80 ? 'text-green-600' : lead.score >= 60 ? 'text-yellow-600' : 'text-slate-400'
+
+  const latestOutreachTask = lead.agentTasks?.find(t => t.agentType === 'EMAIL_OUTREACH')
+  const isPendingOrRunning = latestOutreachTask?.status === 'APPROVED' || latestOutreachTask?.status === 'RUNNING'
+
+  const latestLinkedinTask = lead.agentTasks?.find(t => t.agentType === 'LINKEDIN')
+  const isLinkedinPendingOrRunning = latestLinkedinTask?.status === 'APPROVED' || latestLinkedinTask?.status === 'RUNNING'
+
 
   return (
     <div className="p-6 max-w-5xl">
@@ -89,6 +126,143 @@ export default function LeadDetailPage() {
           />
         </div>
       </div>
+
+      {/* AI Outreach Block */}
+      <div className="rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/50 to-white p-5 mb-4 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="rounded-lg bg-indigo-50 p-2.5 text-indigo-600 text-2xl flex-shrink-0">
+            🤖
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-slate-900 flex items-center gap-2 mb-4">
+              AI Outreach Agent Workforce
+              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Phase 11</span>
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              {/* Email Outreach Block */}
+              <div className="border-r border-slate-100 pr-0 md:pr-6">
+                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 mb-2">
+                  <span>📧</span> Email Outreach
+                </h4>
+                
+                {outreachLoading ? (
+                  <p className="text-xs text-indigo-600 flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Drafting personalized email...
+                  </p>
+                ) : isPendingOrRunning ? (
+                  <p className="text-xs text-indigo-700 font-medium flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Sending email to SendGrid...
+                  </p>
+                ) : latestOutreachTask?.status === 'AWAITING_APPROVAL' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-amber-700 font-medium flex items-center gap-1">
+                      <span>⏳</span> Email draft pending approval
+                    </p>
+                    <p className="text-xs text-slate-500 italic truncate max-w-full">
+                      Subject: "{latestOutreachTask.input?.subject}"
+                    </p>
+                    <a href="/agents/tasks" className="inline-block rounded-lg bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 transition-colors shadow-sm">
+                      Review & Approve →
+                    </a>
+                  </div>
+                ) : latestOutreachTask?.status === 'COMPLETED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-green-700 font-medium flex items-center gap-1">
+                      <span>✅</span> Outreach email sent successfully!
+                    </p>
+                    <button onClick={handleGenerateEmail} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                      Draft New Email
+                    </button>
+                  </div>
+                ) : latestOutreachTask?.status === 'FAILED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-red-700 font-medium">
+                      ❌ Failed: {latestOutreachTask.error || 'Unknown error'}
+                    </p>
+                    <button onClick={handleGenerateEmail} className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700 transition-colors">
+                      Retry Draft
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-slate-500">
+                      Draft a personalized email sequence using lead details, company website and notes.
+                    </p>
+                    {outreachError && (
+                      <p className="text-xs text-red-600 font-medium">⚠️ {outreachError}</p>
+                    )}
+                    <button onClick={handleGenerateEmail} className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1.5">
+                      Generate Email Draft
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* LinkedIn Outreach Block */}
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 mb-2">
+                  <span>💼</span> LinkedIn Connection (Drafts Only)
+                </h4>
+                
+                {linkedinLoading ? (
+                  <p className="text-xs text-indigo-600 flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Drafting LinkedIn message...
+                  </p>
+                ) : isLinkedinPendingOrRunning ? (
+                  <p className="text-xs text-indigo-700 font-medium flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Logging connection draft...
+                  </p>
+                ) : latestLinkedinTask?.status === 'AWAITING_APPROVAL' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-amber-700 font-medium flex items-center gap-1">
+                      <span>⏳</span> LinkedIn draft pending approval
+                    </p>
+                    <p className="text-xs text-slate-500 italic truncate max-w-full">
+                      Note: "{latestLinkedinTask.input?.connectionNote}"
+                    </p>
+                    <a href="/agents/tasks" className="inline-block rounded-lg bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 transition-colors shadow-sm">
+                      Review & Approve →
+                    </a>
+                  </div>
+                ) : latestLinkedinTask?.status === 'COMPLETED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-green-700 font-medium flex items-center gap-1">
+                      <span>✅</span> LinkedIn draft approved & logged!
+                    </p>
+                    <button onClick={handleGenerateLinkedin} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                      Draft New Message
+                    </button>
+                  </div>
+                ) : latestLinkedinTask?.status === 'FAILED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-red-700 font-medium">
+                      ❌ Failed: {latestLinkedinTask.error || 'Unknown error'}
+                    </p>
+                    <button onClick={handleGenerateLinkedin} className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700 transition-colors">
+                      Retry Draft
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-slate-500">
+                      Draft a personalized connection request (under 300 characters) & initial follow-up pitch.
+                    </p>
+                    {linkedinError && (
+                      <p className="text-xs text-red-600 font-medium">⚠️ {linkedinError}</p>
+                    )}
+                    <button onClick={handleGenerateLinkedin} className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1.5">
+                      Generate LinkedIn Draft
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
 
       {/* Tabs */}
       <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1 w-fit">

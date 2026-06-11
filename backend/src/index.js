@@ -64,8 +64,11 @@ app.use('/api/v1/crm',           require('./api/v1/crm/crm.routes'))
 app.use('/api/v1/agents',        require('./api/v1/agents/agents.routes'))
 app.use('/api/v1/workflows',     require('./api/v1/workflows/workflows.routes'))
 app.use('/api/v1/webhooks',      require('./api/v1/webhooks/webhooks.routes'))
+// Internal routes
+const { authenticate } = require('./middleware/auth.middleware')
+
 // Internal: trigger lead research agent
-app.post('/api/v1/internal/lead-research', async (req, res) => {
+app.post('/api/v1/internal/lead-research', authenticate, async (req, res) => {
   try {
     const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
     const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
@@ -84,6 +87,50 @@ app.post('/api/v1/internal/lead-research', async (req, res) => {
     return res.status(500).json({ success: false, error: err.message })
   }
 })
+
+// Internal: trigger email outreach agent
+app.post('/api/v1/internal/email-outreach', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+    
+    const response = await fetch(`${AI_WORKERS_URL}/agents/email-outreach/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-ai-workers-secret': AI_WORKERS_SECRET,
+      },
+      body: JSON.stringify(req.body),
+    })
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+// Internal: trigger linkedin outreach agent
+app.post('/api/v1/internal/linkedin-outreach', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+    
+    const response = await fetch(`${AI_WORKERS_URL}/agents/linkedin-outreach/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-ai-workers-secret': AI_WORKERS_SECRET,
+      },
+      body: JSON.stringify(req.body),
+    })
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+
 
 // 404 handler
 app.use((req, res) => {

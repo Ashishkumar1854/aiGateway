@@ -247,6 +247,9 @@ services:
       BACKEND_URL: http://backend:5000
       AI_WORKERS_SECRET: dev-ai-secret
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+      FROM_EMAIL: ${FROM_EMAIL:-hello@aigateway.com}
     volumes:
       - ./ai-workers:/app
     # NO ports exposed — internal only
