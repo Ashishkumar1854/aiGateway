@@ -25,6 +25,8 @@ export default function LeadDetailPage() {
   const [outreachError, setOutreachError] = useState(null)
   const [linkedinLoading, setLinkedinLoading] = useState(false)
   const [linkedinError, setLinkedinError] = useState(null)
+  const [meetingLoading, setMeetingLoading] = useState(false)
+  const [meetingResult, setMeetingResult] = useState(null)
 
   const load = async () => {
     try {
@@ -77,6 +79,34 @@ export default function LeadDetailPage() {
     }
   }
 
+  const handleMeetingAgent = async () => {
+    setMeetingLoading(true)
+    setMeetingResult(null)
+    try {
+      const res = await api.post('/api/v1/internal/meeting-agent', {
+        lead_id: id,
+        lead_data: {
+          id: lead.id,
+          companyName: lead.companyName,
+          contactName: lead.contactName,
+          email: lead.email,
+          phone: lead.phone,
+          industry: lead.industry,
+          location: lead.location,
+          notes: lead.notes,
+          score: lead.score,
+          status: lead.status,
+        },
+      })
+      setMeetingResult(res.data)
+      await load()
+    } catch (err) {
+      setMeetingResult({ error: err.message })
+    } finally {
+      setMeetingLoading(false)
+    }
+  }
+
   if (loading) return <LoadingSpinner />
   if (!lead) return <div className="p-6 text-slate-500">Lead not found.</div>
 
@@ -87,6 +117,9 @@ export default function LeadDetailPage() {
 
   const latestLinkedinTask = lead.agentTasks?.find(t => t.agentType === 'LINKEDIN')
   const isLinkedinPendingOrRunning = latestLinkedinTask?.status === 'APPROVED' || latestLinkedinTask?.status === 'RUNNING'
+
+  const latestMeetingTask = lead.agentTasks?.find(t => t.agentType === 'MEETING')
+  const isMeetingPendingOrRunning = latestMeetingTask?.status === 'APPROVED' || latestMeetingTask?.status === 'RUNNING'
 
 
   return (
@@ -135,11 +168,11 @@ export default function LeadDetailPage() {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2 mb-4">
-              AI Outreach Agent Workforce
-              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Phase 11</span>
+              AI Outreach & Meeting Agent Workforce
+              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Phase 11 + 12</span>
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
               {/* Email Outreach Block */}
               <div className="border-r border-slate-100 pr-0 md:pr-6">
                 <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 mb-2">
@@ -200,7 +233,7 @@ export default function LeadDetailPage() {
               </div>
 
               {/* LinkedIn Outreach Block */}
-              <div>
+              <div className="border-r border-slate-100 pr-0 md:pr-6">
                 <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 mb-2">
                   <span>💼</span> LinkedIn Connection (Drafts Only)
                 </h4>
@@ -254,6 +287,76 @@ export default function LeadDetailPage() {
                     <button onClick={handleGenerateLinkedin} className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1.5">
                       Generate LinkedIn Draft
                     </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Meeting Agent Block */}
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5 mb-2">
+                  <span>📅</span> Meeting Booking
+                </h4>
+                
+                {meetingLoading ? (
+                  <p className="text-xs text-indigo-600 flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Analyzing conversations & slots...
+                  </p>
+                ) : isMeetingPendingOrRunning ? (
+                  <p className="text-xs text-indigo-700 font-medium flex items-center gap-1.5 mt-1">
+                    <span className="animate-spin">⏳</span> Booking meeting in CRM...
+                  </p>
+                ) : latestMeetingTask?.status === 'AWAITING_APPROVAL' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-amber-700 font-medium flex items-center gap-1">
+                      <span>⏳</span> Proposal pending approval
+                    </p>
+                    <p className="text-xs text-slate-500 italic truncate max-w-full">
+                      Title: "{latestMeetingTask.input?.meeting_title}"
+                    </p>
+                    <a href="/agents/tasks" className="inline-block rounded-lg bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 transition-colors shadow-sm">
+                      Review & Approve →
+                    </a>
+                  </div>
+                ) : latestMeetingTask?.status === 'COMPLETED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-green-700 font-medium flex items-center gap-1">
+                      <span>✅</span> Meeting booked successfully!
+                    </p>
+                    <button onClick={handleMeetingAgent} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                      Book Another
+                    </button>
+                  </div>
+                ) : latestMeetingTask?.status === 'FAILED' ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-red-700 font-medium">
+                      ❌ Failed: {latestMeetingTask.error || 'Unknown error'}
+                    </p>
+                    <button onClick={handleMeetingAgent} className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700 transition-colors">
+                      Retry Booking
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-slate-500">
+                      Analyze conversations using Gemini, generate slots, and draft meeting invite.
+                    </p>
+                    <button onClick={handleMeetingAgent} className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors shadow-sm flex items-center gap-1.5">
+                      Book Meeting
+                    </button>
+                  </div>
+                )}
+                
+                {meetingResult && (
+                  <div className={`mt-2 rounded-lg p-3 text-xs ${meetingResult.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                    {meetingResult.error || meetingResult.message}
+                    {meetingResult.task_id && (
+                      <>
+                        <span className="ml-1">Interest: <strong>{meetingResult.analysis?.interest_level}</strong></span>
+                        <a href="/agents/tasks" className="ml-2 underline font-medium">
+                          Review in Agent Tasks →
+                        </a>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

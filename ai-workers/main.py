@@ -118,6 +118,10 @@ async def execute_approved_task(
             from agents.linkedin.agent import execute_approved_linkedin
             result = await execute_approved_linkedin(task_id, request.input_data)
             return {"success": True, "data": result}
+        elif request.agent_type == "MEETING":
+            from agents.meeting.agent import execute_approved_meeting
+            result = await execute_approved_meeting(task_id, request.input_data)
+            return {"success": True, "data": result}
         else:
             return {"success": False, "data": {"message": f"Agent {request.agent_type} not yet implemented"}}
     except Exception as e:
@@ -177,11 +181,35 @@ async def run_linkedin_outreach(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ─── Placeholder endpoints for future agents ──────────────
+# ─── Meeting Agent ────────────────────────────────────────
+
+class MeetingAgentRequest(BaseModel):
+    lead_id: str
+    lead_data: dict
+    conversations: Optional[list] = []
+
 
 @app.post("/agents/meeting/run")
-async def run_meeting_agent(x_ai_workers_secret: str = Header(None)):
+async def run_meeting_agent(
+    request: MeetingAgentRequest,
+    x_ai_workers_secret: str = Header(None),
+):
+    """
+    Trigger Meeting Agent for a specific lead.
+    Analyzes interest, generates slots, creates AgentTask (AWAITING_APPROVAL).
+    """
     verify_secret(x_ai_workers_secret)
-    return {"success": False, "message": "Meeting Agent — Phase 12"}
+
+    try:
+        from agents.meeting.agent import run_meeting_agent as run_meeting
+        result = await run_meeting(
+            lead_id=request.lead_id,
+            lead_data=request.lead_data,
+            conversations=request.conversations,
+        )
+        return {"success": True, "data": result}
+    except Exception as e:
+        print(f"Meeting agent error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 

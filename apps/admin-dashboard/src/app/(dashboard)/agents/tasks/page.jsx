@@ -76,6 +76,33 @@ export default function AgentTasksPage() {
                   </div>
                   {task.lead && <p className="text-sm text-slate-500">Lead: <strong>{task.lead.companyName}</strong></p>}
                   <p className="text-xs text-slate-400 mt-1">{new Date(task.createdAt).toLocaleString()}</p>
+                  
+                  {task.agentType === 'MEETING' && task.input?.analysis && (
+                    <div className="mt-2 p-2 rounded bg-slate-50 border border-slate-100 max-w-xl">
+                      <p className="text-xs font-medium text-slate-600">
+                        Interest: <span className={`font-bold ${
+                          task.input.analysis.interest_level === 'HIGH' ? 'text-green-600' :
+                          task.input.analysis.interest_level === 'MEDIUM' ? 'text-yellow-600' :
+                          'text-slate-400'
+                        }`}>{task.input.analysis.interest_level}</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">{task.input.analysis.summary}</p>
+                      {task.input.proposed_slots?.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-xs font-medium text-slate-500">Proposed slots:</p>
+                          {task.input.proposed_slots.map((slot, i) => (
+                            <p key={i} className="text-xs text-slate-400">• {slot.label}</p>
+                          ))}
+                        </div>
+                      )}
+                      {task.input.invite_message && (
+                        <details className="mt-2">
+                          <summary className="text-xs text-slate-400 cursor-pointer">View invite message</summary>
+                          <p className="text-xs text-slate-600 mt-1 whitespace-pre-wrap">{task.input.invite_message}</p>
+                        </details>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {task.status === 'AWAITING_APPROVAL' && (
                   <div className="flex gap-2 flex-shrink-0">

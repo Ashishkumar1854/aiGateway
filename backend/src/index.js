@@ -130,7 +130,48 @@ app.post('/api/v1/internal/linkedin-outreach', authenticate, async (req, res) =>
   }
 })
 
+// Internal: trigger meeting agent for a specific lead
+app.post('/api/v1/internal/meeting-agent', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
 
+    // Fetch lead conversations from DB to send to agent
+    const prisma = require('./lib/prisma')
+    const leadId = req.body.lead_id || req.body.leadId
+
+    let conversations = []
+    if (leadId) {
+      const lead = await prisma.lead.findFirst({
+        where: { id: leadId },
+        include: {
+          conversations: {
+            orderBy: { sentAt: 'desc' },
+            take: 10,
+          }
+        }
+      })
+      conversations = lead?.conversations || []
+    }
+
+    const response = await fetch(`${AI_WORKERS_URL}/agents/meeting/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-ai-workers-secret': AI_WORKERS_SECRET,
+      },
+      body: JSON.stringify({
+        lead_id: leadId,
+        lead_data: req.body.lead_data,
+        conversations,
+      }),
+    })
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
 
 // 404 handler
 app.use((req, res) => {
