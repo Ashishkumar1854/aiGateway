@@ -27,6 +27,9 @@ export default function LeadDetailPage() {
   const [linkedinError, setLinkedinError] = useState(null)
   const [meetingLoading, setMeetingLoading] = useState(false)
   const [meetingResult, setMeetingResult] = useState(null)
+  const [orchLoading, setOrchLoading] = useState(false)
+  const [orchResult, setOrchResult] = useState(null)
+  const [orchStatus, setOrchStatus] = useState(null)
 
   const load = async () => {
     try {
@@ -40,6 +43,14 @@ export default function LeadDetailPage() {
   }
 
   useEffect(() => { if (id) load() }, [id])
+
+  useEffect(() => {
+    if (id) {
+      api.get(`/api/v1/internal/orchestrator/status/${id}`)
+        .then(res => setOrchStatus(res.data?.data || null))
+        .catch(() => {})
+    }
+  }, [id])
 
   const handleStageChange = async (newStatus) => {
     setStageLoading(true)
@@ -107,6 +118,35 @@ export default function LeadDetailPage() {
     }
   }
 
+  const handleRunOrchestrator = async () => {
+    setOrchLoading(true)
+    setOrchResult(null)
+    try {
+      const res = await api.post('/api/v1/internal/orchestrator/run', {
+        lead_id: id,
+        lead_data: {
+          companyName: lead.companyName,
+          contactName: lead.contactName,
+          email: lead.email,
+          industry: lead.industry,
+          location: lead.location,
+          status: lead.status,
+          score: lead.score,
+        }
+      })
+      setOrchResult(res.data?.data || res.data)
+      
+      // Refresh status
+      await load()
+      const statusRes = await api.get(`/api/v1/internal/orchestrator/status/${id}`)
+      setOrchStatus(statusRes.data?.data || null)
+    } catch (err) {
+      setOrchResult({ error: err.message })
+    } finally {
+      setOrchLoading(false)
+    }
+  }
+
   if (loading) return <LoadingSpinner />
   if (!lead) return <div className="p-6 text-slate-500">Lead not found.</div>
 
@@ -169,8 +209,63 @@ export default function LeadDetailPage() {
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2 mb-4">
               AI Outreach & Meeting Agent Workforce
-              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Phase 11 + 12</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">Phase 11 + 12 + 13</span>
             </h3>
+
+            {/* AI Orchestrator Card */}
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 mb-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="text-sm font-semibold text-indigo-900 flex items-center gap-1.5">
+                    <span>🎯</span> AI Orchestrator
+                  </p>
+                  <p className="text-xs text-indigo-600">Automatically decides the best next action for this lead based on current stage, score, and conversations.</p>
+                </div>
+                <button
+                  onClick={handleRunOrchestrator}
+                  disabled={orchLoading}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm"
+                >
+                  {orchLoading ? '🤖 Analyzing...' : '⚡ Run AI Workflow'}
+                </button>
+              </div>
+
+              {/* Current status */}
+              {orchStatus && (
+                <div className="mt-3 pt-3 border-t border-indigo-100 text-xs text-indigo-700 space-y-1">
+                  <p>
+                    Stage: <strong className="uppercase">{orchStatus.stage}</strong> | 
+                    Score: <strong>{orchStatus.score || 0}</strong> | 
+                    Conversations: <strong>{orchStatus.conversations || 0}</strong> | 
+                    Meetings: <strong>{orchStatus.meetings || 0}</strong>
+                  </p>
+                  {orchStatus.next_action && (
+                    <p className="text-indigo-800">
+                      Next Recommended: <strong className="text-indigo-900 uppercase font-bold">{orchStatus.next_action.action}</strong> — <span className="italic">{orchStatus.next_action.reason}</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Result after running */}
+              {orchResult && (
+                <div className={`mt-3 rounded-lg p-2.5 text-xs ${orchResult.error ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-white text-indigo-800 border border-indigo-200'}`}>
+                  {orchResult.error ? orchResult.error : (
+                    <>
+                      <p className="font-semibold text-indigo-950 flex items-center gap-1">
+                        <span>✅</span> {orchResult.action_taken}
+                      </p>
+                      <p className="text-indigo-600 mt-0.5">{orchResult.decision?.reason}</p>
+                      {orchResult.decision?.action !== 'WAIT' && orchResult.decision?.action !== 'COMPLETE' && (
+                        <a href="/agents/tasks" className="mt-1.5 inline-block font-semibold text-indigo-700 hover:text-indigo-900 underline">
+                          Review in Agent Tasks →
+                        </a>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
               {/* Email Outreach Block */}

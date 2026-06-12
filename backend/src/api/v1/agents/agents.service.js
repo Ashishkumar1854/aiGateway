@@ -6,6 +6,8 @@ const getTasks = async (query) => {
   const where = {}
   if (query.status) where.status = query.status
   if (query.agentType) where.agentType = query.agentType
+  if (query.leadId) where.leadId = query.leadId
+  if (query.lead_id) where.leadId = query.lead_id
 
   const [data, total] = await Promise.all([
     prisma.agentTask.findMany({

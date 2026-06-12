@@ -213,3 +213,93 @@ async def run_meeting_agent(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ─── Multi-Agent Orchestrator ─────────────────────────────
+
+class OrchestratorRequest(BaseModel):
+    lead_id: str
+    lead_data: Optional[dict] = None
+
+
+class BulkOrchestrationRequest(BaseModel):
+    industry: str
+    location: str
+    count: Optional[int] = 3
+
+
+@app.post("/orchestrator/run")
+async def run_orchestrator(
+    request: OrchestratorRequest,
+    x_ai_workers_secret: str = Header(None),
+):
+    """
+    Run orchestrator for a single lead.
+    Analyzes lead state and triggers the right next agent.
+    Human approval required at every step.
+    """
+    verify_secret(x_ai_workers_secret)
+
+    try:
+        from orchestrator.workflow import run_orchestrator as _run
+        result = await _run(
+            lead_id=request.lead_id,
+            lead_data=request.lead_data or {},
+        )
+        return {"success": True, "data": result}
+    except Exception as e:
+        print(f"Orchestrator error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/orchestrator/bulk")
+async def run_bulk_orchestration(
+    request: BulkOrchestrationRequest,
+    x_ai_workers_secret: str = Header(None),
+):
+    """
+    Run bulk orchestration — research multiple leads at once.
+    """
+    verify_secret(x_ai_workers_secret)
+
+    try:
+        from orchestrator.workflow import run_bulk_orchestration as _bulk
+        result = await _bulk(
+            industry=request.industry,
+            location=request.location,
+            count=request.count,
+        )
+        return {"success": True, "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/orchestrator/status/{lead_id}")
+async def get_orchestrator_status(
+    lead_id: str,
+    x_ai_workers_secret: str = Header(None),
+):
+    """Get current workflow status for a lead."""
+    verify_secret(x_ai_workers_secret)
+
+    try:
+        from orchestrator.workflow import get_lead_state, get_pending_tasks_for_lead, decide_next_action
+        lead = await get_lead_state(lead_id)
+        pending = await get_pending_tasks_for_lead(lead_id)
+        decision = decide_next_action(lead, pending)
+
+        return {
+            "success": True,
+            "data": {
+                "lead_id": lead_id,
+                "company": lead.get("companyName"),
+                "stage": lead.get("status"),
+                "score": lead.get("score"),
+                "conversations": len(lead.get("conversations", [])),
+                "meetings": len(lead.get("meetings", [])),
+                "pending_tasks": len(pending),
+                "next_action": decision,
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+

@@ -173,6 +173,67 @@ app.post('/api/v1/internal/meeting-agent', authenticate, async (req, res) => {
   }
 })
 
+// Internal: run orchestrator for a single lead
+app.post('/api/v1/internal/orchestrator/run', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+
+    const response = await fetch(`${AI_WORKERS_URL}/orchestrator/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-ai-workers-secret': AI_WORKERS_SECRET,
+      },
+      body: JSON.stringify(req.body),
+    })
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+// Internal: bulk orchestration
+app.post('/api/v1/internal/orchestrator/bulk', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+
+    const response = await fetch(`${AI_WORKERS_URL}/orchestrator/bulk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-ai-workers-secret': AI_WORKERS_SECRET,
+      },
+      body: JSON.stringify(req.body),
+    })
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+// Internal: orchestrator status for a lead
+app.get('/api/v1/internal/orchestrator/status/:leadId', authenticate, async (req, res) => {
+  try {
+    const AI_WORKERS_URL = process.env.AI_WORKERS_URL || 'http://ai-workers:8000'
+    const AI_WORKERS_SECRET = process.env.AI_WORKERS_SECRET || 'dev-ai-secret'
+
+    const response = await fetch(
+      `${AI_WORKERS_URL}/orchestrator/status/${req.params.leadId}`,
+      {
+        headers: { 'x-ai-workers-secret': AI_WORKERS_SECRET },
+      }
+    )
+    const data = await response.json()
+    return res.json(data)
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: `Route ${req.path} not found` } })
