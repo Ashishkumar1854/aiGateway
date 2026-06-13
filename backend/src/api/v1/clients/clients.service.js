@@ -17,7 +17,7 @@ const getAll = async (query) => {
       where, skip, take: limit,
       include: {
         user: { select: { id: true, name: true, email: true } },
-        subscriptions: { where: { status: 'ACTIVE' }, take: 1 }
+        subscriptions: { orderBy: { createdAt: 'desc' }, take: 1 }
       },
       orderBy: { createdAt: 'desc' }
     }),

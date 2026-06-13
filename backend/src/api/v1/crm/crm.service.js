@@ -5,6 +5,7 @@ const getLeads = async (query) => {
   const { page, limit, skip } = getPagination(query)
   const where = { deletedAt: null }
   if (query.status) where.status = query.status
+  if (query.source) where.source = query.source
   if (query.search) {
     where.OR = [
       { companyName: { contains: query.search, mode: 'insensitive' } },

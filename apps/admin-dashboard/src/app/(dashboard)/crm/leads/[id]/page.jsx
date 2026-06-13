@@ -13,6 +13,15 @@ const CHANNEL_ICON = {
   instagram: '📸', phone: '📞', meeting: '📅',
 }
 
+function parseNotes(notesStr) {
+  try {
+    if (!notesStr) return null
+    return JSON.parse(notesStr)
+  } catch (e) {
+    return null
+  }
+}
+
 export default function LeadDetailPage() {
   const { id } = useParams()
   const [lead, setLead] = useState(null)
@@ -168,6 +177,37 @@ export default function LeadDetailPage() {
       <a href="/crm" className="text-sm text-slate-400 hover:text-slate-600 flex items-center gap-1 mb-4">
         ← Back to Pipeline
       </a>
+
+      {/* Warning Banners based on lead source */}
+      {lead.source === 'website_contact' && (
+        <div className="rounded-xl border border-green-200 bg-green-50 p-4 mb-4 text-xs font-semibold text-green-800 flex items-center gap-2 shadow-sm">
+          <span>🌐</span> This user signed up on your website. Do not use cold AI agent templates.
+        </div>
+      )}
+      {lead.source === 'other_services' && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-4 text-xs font-semibold text-blue-800 flex items-center gap-2 shadow-sm">
+          <span>💼</span> Custom request. Avoid cold automation schedules.
+        </div>
+      )}
+
+      {/* ── Service Interest Banner — extracted from notes ── */}
+      {(() => {
+        const match = lead.notes?.match(/\[Service Interest:\s*([^\]]+)\]/)
+        const svc = match?.[1]?.trim()
+        if (!svc) return null
+        return (
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 mb-4 flex items-center gap-3 shadow-sm">
+            <span className="text-2xl">🎯</span>
+            <div className="flex-1">
+              <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide">Interested Service</p>
+              <p className="text-sm font-extrabold text-indigo-900 mt-0.5">{svc}</p>
+            </div>
+            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-600 border border-indigo-200 whitespace-nowrap">
+              From Website Form
+            </span>
+          </div>
+        )
+      })()}
 
       {/* Header */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 mb-4">
@@ -485,11 +525,56 @@ export default function LeadDetailPage() {
         {/* Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
-            {lead.notes && (
-              <div>
-                <p className="text-xs font-medium text-slate-400 mb-1">NOTES</p>
-                <p className="text-sm text-slate-600">{lead.notes}</p>
-              </div>
+            {lead.source === 'other_services' ? (
+              (() => {
+                const parsed = parseNotes(lead.notes)
+                if (parsed) {
+                  return (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
+                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-205 pb-2">
+                        📋 Custom Project Specifications
+                      </h3>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Project Name</p>
+                        <p className="text-sm font-extrabold text-slate-900">{parsed.projectName}</p>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Estimated Budget</p>
+                          <p className="text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded px-2.5 py-1 w-fit">
+                            {parsed.budget}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Source Queue</p>
+                          <p className="text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded px-2.5 py-1 w-fit">
+                            💼 Other Services Portal
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Requirements Description</p>
+                        <p className="text-sm text-slate-755 whitespace-pre-wrap bg-white rounded-lg p-3 border border-slate-200 leading-relaxed">
+                          {parsed.requirements}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                }
+                return (
+                  <div>
+                    <p className="text-xs font-medium text-slate-400 mb-1">REQUIREMENTS</p>
+                    <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3 whitespace-pre-wrap">{lead.notes}</p>
+                  </div>
+                )
+              })()
+            ) : (
+              lead.notes && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-1">NOTES</p>
+                  <p className="text-sm text-slate-600">{lead.notes}</p>
+                </div>
+              )
             )}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>

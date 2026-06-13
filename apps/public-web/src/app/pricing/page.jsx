@@ -8,35 +8,47 @@ export const metadata = {
 
 export default function PricingPage() {
   return (
-    <>
-      <section className="bg-gradient-to-br from-indigo-50 to-white py-16">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="text-4xl font-bold text-slate-900">Pricing</h1>
-          <p className="mt-4 text-lg text-slate-500">
-            Start with one service. Scale as your business grows. No lock-in.
+    <div className="bg-slate-950 text-slate-100 min-h-screen">
+      {/* Header */}
+      <section className="relative overflow-hidden pt-20 pb-16 sm:pb-20 border-b border-slate-900">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 relative z-10">
+          <h1 className="text-3xl font-extrabold text-white sm:text-5xl">Pricing & Plans</h1>
+          <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
+            Flexible pricing built to match your operations. Deploy dedicated AI workers at a fraction of standard hiring costs.
           </p>
         </div>
       </section>
+
       <PricingSection />
-      <section className="py-12 bg-slate-50">
+
+      {/* FAQs */}
+      <section className="py-20 bg-slate-950 border-t border-slate-900">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">Frequently Asked Questions</h2>
+          <div className="text-center mb-12">
+            <span className="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
+              FAQ
+            </span>
+            <h2 className="text-2xl font-extrabold text-white mt-4 sm:text-3xl">Frequently Asked Questions</h2>
+          </div>
+          
           <div className="space-y-4">
             {[
-              { q: 'Can I start with just one service?', a: 'Yes. The Starter plan lets you activate 2 services. You can start with just Lead Generation and add more later.' },
-              { q: 'Is there a contract or lock-in?', a: 'No. All plans are monthly and you can cancel anytime with no penalties.' },
-              { q: 'Do AI agents work without human oversight?', a: 'No — all AI actions require human approval before execution. You stay in full control.' },
-              { q: 'How quickly can I get started?', a: 'Once you sign up, your account is set up within 24 hours and your first automation runs within 48 hours.' },
+              { q: 'Can I start with just one service?', a: 'Yes. The Starter plan allows you to activate up to 2 services concurrently. You can start with Lead Research and WhatsApp follow-ups, then scale up as your volume grows.' },
+              { q: 'Is there a contract lock-in or cancellation penalty?', a: 'No, all plans are billed monthly. You can cancel your subscription or modify active service configurations at any time without extra fees.' },
+              { q: 'Do AI agents perform actions autonomously?', a: 'No. To maintain complete brand safety, every outreach pitch, booking invite, or scrap task generates an approval request in your task queue. They never act without human verification.' },
+              { q: 'How fast can I get my virtual employee running?', a: 'Setting up client API endpoints takes 24 hours. Your first automation runs and populates leads in the CRM database within 48 hours.' },
             ].map((item) => (
-              <div key={item.q} className="rounded-xl border border-slate-200 bg-white p-5">
-                <h3 className="text-sm font-semibold text-slate-900">{item.q}</h3>
-                <p className="mt-2 text-sm text-slate-500">{item.a}</p>
+              <div key={item.q} className="rounded-2xl border border-slate-800 bg-slate-900/30 p-5 hover:border-slate-700/60 transition-all duration-200">
+                <h3 className="text-xs sm:text-sm font-bold text-white">{item.q}</h3>
+                <p className="mt-2 text-xs text-slate-400 leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
+
       <CTASection />
-    </>
+    </div>
   )
 }

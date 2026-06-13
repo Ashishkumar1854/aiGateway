@@ -23,6 +23,13 @@ const SCORE_COLOR = (score) => {
   return 'text-slate-400'
 }
 
+const SOURCE_BADGES = {
+  website_contact: { label: '🌐 Website Form', className: 'bg-green-50 text-green-700 border border-green-200' },
+  other_services: { label: '💼 Custom Request', className: 'bg-blue-50 text-blue-700 border border-blue-200' },
+  lead_research_agent: { label: '🤖 AI Scraper', className: 'bg-orange-50 text-orange-700 border border-orange-200' },
+  manual: { label: '✍️ Manual', className: 'bg-slate-50 text-slate-700 border border-slate-200' },
+}
+
 export default function LeadsListPage() {
   const [leads, setLeads] = useState([])
   const [meta, setMeta] = useState({ total: 0, page: 1, totalPages: 1 })
@@ -110,7 +117,16 @@ export default function LeadsListPage() {
                       </span>
                     </td>
                     <td className={`px-4 py-3 ${SCORE_COLOR(lead.score)}`}>{lead.score}</td>
-                    <td className="px-4 py-3 text-xs text-slate-400">{lead.source}</td>
+                    <td className="px-4 py-3 text-xs">
+                      {(() => {
+                        const badge = SOURCE_BADGES[lead.source] || { label: lead.source, className: 'bg-slate-100 text-slate-600 border border-slate-200' }
+                        return (
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
+                            {badge.label}
+                          </span>
+                        )
+                      })()}
+                    </td>
                     <td className="px-4 py-3">
                       <a href={`/crm/leads/${lead.id}`}
                         className="text-xs font-medium text-slate-900 hover:underline">

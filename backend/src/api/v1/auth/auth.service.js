@@ -27,7 +27,10 @@ const signup = async ({ name, email, password, role = 'CLIENT' }) => {
 }
 
 const login = async ({ email, password }) => {
-  const user = await prisma.user.findUnique({ where: { email, deletedAt: null } })
+  const user = await prisma.user.findUnique({
+    where: { email, deletedAt: null },
+    include: { client: true }
+  })
   if (!user) throw { statusCode: 401, code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
 
   const valid = await bcrypt.compare(password, user.passwordHash)
@@ -70,7 +73,15 @@ const logout = async (token) => {
 const getMe = async (userId) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, email: true, role: true, lastLoginAt: true, createdAt: true }
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      lastLoginAt: true,
+      createdAt: true,
+      client: true
+    }
   })
   if (!user) throw { statusCode: 404, code: 'NOT_FOUND', message: 'User not found' }
   return user

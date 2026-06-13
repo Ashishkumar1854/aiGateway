@@ -9,9 +9,24 @@ const industries = [
   'Technology', 'Retail', 'Finance', 'Other'
 ]
 
-export function ContactForm() {
+const ALL_SERVICES = [
+  'Lead Generation Bot',
+  'Email Agent Pitches',
+  'Reels Automation Bot',
+  'WhatsApp Flow Automation',
+  'Personal Branding / Custom Project',
+  'Other / Not Sure Yet',
+]
+
+export function ContactForm({ preSelectedService = '' }) {
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', company: '', industry: '', message: ''
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    industry: '',
+    serviceInterest: preSelectedService || '',
+    message: '',
   })
   const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [error, setError] = useState('')
@@ -27,7 +42,7 @@ export function ContactForm() {
     try {
       await submitContactForm(form)
       setStatus('success')
-      setForm({ name: '', email: '', phone: '', company: '', industry: '', message: '' })
+      setForm({ name: '', email: '', phone: '', company: '', industry: '', serviceInterest: '', message: '' })
     } catch (err) {
       setStatus('error')
       setError('Something went wrong. Please try again or email us directly.')
@@ -36,13 +51,22 @@ export function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
+      <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-8 text-center">
         <span className="text-5xl">🎉</span>
-        <h3 className="mt-4 text-xl font-bold text-slate-900">Message received!</h3>
-        <p className="mt-2 text-slate-500">We'll get back to you within 24 hours.</p>
+        <h3 className="mt-4 text-lg font-bold text-white">Request received!</h3>
+        {form.serviceInterest || preSelectedService ? (
+          <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+            Your request to deploy <strong className="text-indigo-400">{preSelectedService || form.serviceInterest}</strong> has been logged.
+            We will get back to you within <strong className="text-white">24 hours</strong> to schedule setup.
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+            We will review your inquiry and get back to you within 24 hours.
+          </p>
+        )}
         <button
           onClick={() => setStatus('idle')}
-          className="mt-4 text-sm text-indigo-600 hover:underline"
+          className="mt-4 text-xs text-indigo-400 hover:text-indigo-300 font-semibold hover:underline"
         >
           Send another message
         </button>
@@ -50,17 +74,55 @@ export function ContactForm() {
     )
   }
 
+  const INPUT_STYLE = "w-full rounded-xl bg-slate-950/60 border border-slate-800 px-4 py-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder-slate-500"
+  const LABEL_STYLE = "block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5"
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-xs text-red-400">
           {error}
         </div>
       )}
 
+      {/* ── Service Interest (pre-filled or selectable) ── */}
+      <div>
+        <label className={LABEL_STYLE}>Service Interested In *</label>
+        {preSelectedService ? (
+          // Pre-filled badge when coming from "Deploy service" button
+          <div className="flex items-center gap-2.5 rounded-xl px-4 py-3"
+            style={{ background: 'rgba(79,70,229,0.1)', border: '1px solid rgba(99,102,241,0.3)' }}>
+            <span className="text-base">🎯</span>
+            <span className="text-xs font-bold text-indigo-300">{preSelectedService}</span>
+            <span className="ml-auto text-[9px] font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(79,70,229,0.2)', color: '#818cf8' }}>
+              Pre-selected
+            </span>
+            {/* Hidden input so form value is submitted */}
+            <input type="hidden" name="serviceInterest" value={preSelectedService} />
+          </div>
+        ) : (
+          // Dropdown if user came from generic /contact
+          <select
+            name="serviceInterest"
+            value={form.serviceInterest}
+            onChange={handleChange}
+            required
+            className={`${INPUT_STYLE} appearance-none cursor-pointer`}
+            style={{ colorScheme: 'dark' }}
+          >
+            <option value="">Select a service</option>
+            {ALL_SERVICES.map((s) => (
+              <option key={s} value={s} className="bg-slate-900 text-slate-100">{s}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* ── Name & Email ── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
+          <label className={LABEL_STYLE}>Full Name *</label>
           <input
             type="text"
             name="name"
@@ -68,11 +130,11 @@ export function ContactForm() {
             onChange={handleChange}
             required
             placeholder="Rahul Sharma"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={INPUT_STYLE}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+          <label className={LABEL_STYLE}>Email Address *</label>
           <input
             type="email"
             name="email"
@@ -80,74 +142,82 @@ export function ContactForm() {
             onChange={handleChange}
             required
             placeholder="rahul@company.com"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={INPUT_STYLE}
           />
         </div>
       </div>
 
+      {/* ── Phone & Company ── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+          <label className={LABEL_STYLE}>Phone Number</label>
           <input
             type="tel"
             name="phone"
             value={form.phone}
             onChange={handleChange}
             placeholder="+91 98765 43210"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={INPUT_STYLE}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Company Name *</label>
+          <label className={LABEL_STYLE}>Company Name *</label>
           <input
             type="text"
             name="company"
             value={form.company}
             onChange={handleChange}
             required
-            placeholder="Your Company"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Sharma Fitness Studio"
+            className={INPUT_STYLE}
           />
         </div>
       </div>
 
+      {/* ── Industry ── */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Industry</label>
+        <label className={LABEL_STYLE}>Industry</label>
         <select
           name="industry"
           value={form.industry}
           onChange={handleChange}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className={`${INPUT_STYLE} appearance-none cursor-pointer`}
+          style={{ colorScheme: 'dark' }}
         >
-          <option value="">Select industry</option>
+          <option value="" className="bg-slate-900 text-slate-500">Select Industry</option>
           {industries.map((i) => (
-            <option key={i} value={i}>{i}</option>
+            <option key={i} value={i} className="bg-slate-900 text-slate-100">{i}</option>
           ))}
         </select>
       </div>
 
+      {/* ── Message ── */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Message</label>
+        <label className={LABEL_STYLE}>Message</label>
         <textarea
           name="message"
           value={form.message}
           onChange={handleChange}
-          rows={4}
-          placeholder="Tell us about your business and what you want to automate..."
-          className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+          rows={3}
+          placeholder="Tell us about your business goals and what workflows you would like to automate..."
+          className={`${INPUT_STYLE} resize-none`}
         />
       </div>
 
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 py-3 text-xs font-bold text-white transition-all shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 disabled:opacity-50"
       >
-        {status === 'loading' ? 'Sending...' : 'Send Message →'}
+        {status === 'loading'
+          ? 'Submitting...'
+          : preSelectedService
+            ? `Deploy ${preSelectedService} →`
+            : 'Submit Inquiry →'}
       </button>
 
-      <p className="text-center text-xs text-slate-400">
-        We reply within 24 hours. No spam, ever.
+      <p className="text-center text-[10px] text-slate-500 leading-relaxed">
+        By submitting you agree to receive follow-up notes. We respect your privacy.
       </p>
     </form>
   )

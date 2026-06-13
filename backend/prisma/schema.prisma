@@ -162,6 +162,7 @@ model Client {
   leads             Lead[]
   workflows         Workflow[]
   payments          Payment[]
+  onboardingRequests OnboardingRequest[]
 
   @@index([userId])
   @@index([status])
@@ -519,4 +520,67 @@ model AnalyticsEvent {
   @@index([event])
   @@index([createdAt])
   @@map("analytics_events")
+}
+
+// ─────────────────────────────────────────
+// CLIENT ONBOARDING (Phase 14)
+// Public website form submissions — Trial & Book requests
+// SEPARATE from CRM leads and AI Worker flows
+// ─────────────────────────────────────────
+
+enum OnboardingStatus {
+  PENDING     // form submitted, not yet reviewed
+  ACTIVATED   // admin activated — client account created
+  EXPIRED     // trial period ended
+  CONVERTED   // trial → paid subscription
+  REJECTED    // admin rejected
+}
+
+enum OnboardingType {
+  TRIAL  // 3-day free trial
+  BOOK   // paid service booking
+}
+
+model OnboardingRequest {
+  id          String            @id @default(uuid())
+
+  // Client contact info (from public form)
+  name        String
+  email       String
+  phone       String?
+  companyName String
+  industry    String?
+  message     String?
+
+  // Service info
+  serviceType  ServiceType      // enum: LEAD_GENERATION, EMAIL_AUTOMATION, etc.
+  serviceName  String           // human label: "Lead Generation Bot"
+  requestType  OnboardingType   @default(TRIAL)
+
+  // Service-specific requirements (JSON per service type)
+  requirements Json?
+
+  // Status lifecycle
+  status       OnboardingStatus @default(PENDING)
+
+  // Activation timestamps
+  activatedAt  DateTime?
+  expiresAt    DateTime?        // 3 days from activation for TRIAL, null for BOOK
+
+  // Links to created accounts (set on activation)
+  clientId     String?
+  userId       String?
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  client       Client?          @relation(fields: [clientId], references: [id])
+
+  @@index([email])
+  @@index([status])
+  @@index([serviceType])
+  @@index([requestType])
+  @@index([createdAt])
+  @@map("onboarding_requests")
 }

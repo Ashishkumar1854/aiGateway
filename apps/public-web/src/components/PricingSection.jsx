@@ -5,13 +5,13 @@ const plans = [
     name: 'Starter',
     price: '₹9,999',
     period: '/month',
-    desc: 'Perfect for small businesses just getting started',
+    desc: 'Perfect for small teams just getting started with AI',
     features: [
-      '2 active services',
-      '500 leads/month',
-      'Email automation',
-      'Basic analytics',
-      'Email support',
+      '2 active AI employees',
+      '500 enriched leads/month',
+      'Email outreach automation',
+      'Basic analytics dashboard',
+      'Standard email support',
     ],
     cta: 'Get Started',
     highlight: false,
@@ -20,30 +20,30 @@ const plans = [
     name: 'Pro',
     price: '₹24,999',
     period: '/month',
-    desc: 'For growing businesses that want more automation',
+    desc: 'For growing businesses seeking full lead pipelines',
     features: [
-      '5 active services',
-      '2,000 leads/month',
-      'All automations',
-      'Advanced analytics',
-      'Priority support',
-      'Custom workflows',
+      '5 active AI employees',
+      '2,000 enriched leads/month',
+      'All outreach bots enabled',
+      'Advanced analytics & reports',
+      'Priority slack support',
+      'Custom python configs',
     ],
-    cta: 'Start Pro',
+    cta: 'Start Pro Free Trial',
     highlight: true,
   },
   {
     name: 'Enterprise',
     price: 'Custom',
     period: '',
-    desc: 'For large teams with complex requirements',
+    desc: 'For large operations requiring customized python bots',
     features: [
-      'Unlimited services',
-      'Unlimited leads',
-      'Dedicated AI team',
-      'Custom integrations',
-      'Dedicated manager',
-      'SLA guarantee',
+      'Unlimited AI employees',
+      'Unlimited lead enrichment',
+      'Custom python scraper scripts',
+      'Dedicated orchestrator node',
+      'SLA performance guarantee',
+      '1-on-1 account manager',
     ],
     cta: 'Contact Sales',
     highlight: false,
@@ -52,50 +52,62 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section className="py-20 bg-white">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900">Simple, transparent pricing</h2>
-          <p className="mt-3 text-slate-500">No hidden fees. Cancel anytime.</p>
+    <section className="py-24 bg-slate-950 border-b border-slate-900 relative">
+      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 relative z-10">
+        <div className="text-center mb-16">
+          <span className="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
+            Plans
+          </span>
+          <h2 className="text-3xl font-extrabold text-white mt-4 sm:text-5xl">Transparent, simple pricing</h2>
+          <p className="mt-3 text-slate-400 max-w-md mx-auto text-sm leading-relaxed">
+            Select the pricing plan that fits your business scale. Upgrade or downgrade anytime.
+          </p>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 items-stretch">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-2xl border p-6 ${
+              className={`rounded-2xl border flex flex-col justify-between p-6 transition-all duration-300 relative ${
                 plan.highlight
-                  ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg scale-105'
-                  : 'border-slate-200 bg-white'
+                  ? 'border-indigo-500 bg-gradient-to-b from-indigo-950 to-slate-900 text-white shadow-2xl scale-105 z-10'
+                  : 'border-slate-800 bg-slate-900/30 text-slate-100 hover:border-slate-700/60'
               }`}
             >
-              <h3 className={`text-lg font-bold ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>
-                {plan.name}
-              </h3>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className={`text-3xl font-bold ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.price}
+              {plan.highlight && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 px-3 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-md">
+                  Most Popular
                 </span>
-                <span className={`text-sm ${plan.highlight ? 'text-indigo-200' : 'text-slate-400'}`}>
-                  {plan.period}
-                </span>
+              )}
+              
+              <div>
+                <h3 className={`text-base font-bold ${plan.highlight ? 'text-indigo-400' : 'text-white'}`}>
+                  {plan.name}
+                </h3>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-white">{plan.price}</span>
+                  <span className="text-xs text-slate-500">{plan.period}</span>
+                </div>
+                <p className="mt-3 text-xs text-slate-400 leading-relaxed">{plan.desc}</p>
+                
+                <ul className="mt-6 space-y-3">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2.5 text-xs text-slate-300">
+                      <span className="text-indigo-400 font-bold">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className={`mt-2 text-sm ${plan.highlight ? 'text-indigo-200' : 'text-slate-500'}`}>
-                {plan.desc}
-              </p>
-              <ul className="mt-5 space-y-2.5">
-                {plan.features.map((f) => (
-                  <li key={f} className={`flex items-center gap-2 text-sm ${plan.highlight ? 'text-indigo-100' : 'text-slate-600'}`}>
-                    <span className={plan.highlight ? 'text-indigo-300' : 'text-green-500'}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
+
               <Link
                 href="/contact"
-                className={`mt-6 block rounded-xl py-2.5 text-center text-sm font-semibold transition-colors ${
+                className={`mt-8 block rounded-xl py-3 text-center text-xs font-bold transition-all shadow-md ${
                   plan.highlight
-                    ? 'bg-white text-indigo-600 hover:bg-indigo-50'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20 hover:shadow-indigo-600/30'
+                    : 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/50'
                 }`}
               >
                 {plan.cta}

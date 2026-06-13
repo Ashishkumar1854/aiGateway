@@ -5,11 +5,12 @@ export function LeadCard({ lead, onClick }) {
     return 'text-slate-500 bg-slate-50 border-slate-200'
   }
 
-  const SOURCE_ICON = {
-    lead_research_agent: '🤖',
-    website_contact: '🌐',
-    manual: '✏️',
-    referral: '🤝',
+  const SOURCE_LABEL = {
+    lead_research_agent: '🤖 AI Scraper',
+    website_contact: '🌐 Website Form',
+    other_services: '💼 Custom Request',
+    manual: '✍️ Manual',
+    referral: '🤝 Referral',
   }
 
   return (
@@ -30,8 +31,8 @@ export function LeadCard({ lead, onClick }) {
 
       <div className="mt-2 flex items-center justify-between">
         <span className="text-xs text-slate-400">{lead.industry || '—'}</span>
-        <span className="text-sm" title={lead.source}>
-          {SOURCE_ICON[lead.source] || '📋'}
+        <span className="text-[10px] font-medium text-slate-500 bg-slate-50 border border-slate-100 rounded px-1.5 py-0.5" title={lead.source}>
+          {SOURCE_LABEL[lead.source] || '📋 General'}
         </span>
       </div>
 

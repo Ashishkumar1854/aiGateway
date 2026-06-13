@@ -34,16 +34,16 @@ app.get('/health', (req, res) => {
 app.post('/api/v1/public/contact', async (req, res) => {
   try {
     const prisma = require('./lib/prisma')
-    const { name, email, phone, company, industry, message } = req.body
+    const { name, email, phone, company, industry, message, companyName, contactName, notes } = req.body
     const lead = await prisma.lead.create({
       data: {
-        companyName: company || 'Unknown',
-        contactName: name,
+        companyName: company || companyName || 'Unknown',
+        contactName: name || contactName,
         email,
         phone,
         industry,
         source: 'website_contact',
-        notes: message,
+        notes: message || notes,
         status: 'COLD',
         score: 10,
       }
@@ -53,6 +53,46 @@ app.post('/api/v1/public/contact', async (req, res) => {
     return res.status(500).json({ success: false, error: { message: 'Failed to submit' } })
   }
 })
+
+// Bespoke freelancer/IT project request endpoint — no auth required
+app.post('/api/v1/public/other-services', async (req, res) => {
+  try {
+    const prisma = require('./lib/prisma')
+    const { companyName, contactName, email, phone, projectName, requirements, budget } = req.body
+    
+    const notesJSON = JSON.stringify({
+      projectName: projectName || 'Bespoke Automation Project',
+      requirements: requirements || '',
+      budget: budget || 'Not Specified'
+    })
+
+    const lead = await prisma.lead.create({
+      data: {
+        companyName: companyName || 'Unknown',
+        contactName: contactName || 'Unknown',
+        email,
+        phone,
+        source: 'other_services',
+        notes: notesJSON,
+        status: 'COLD',
+        score: 25,
+      }
+    })
+    
+    const n8nService = require('./services/n8n.service')
+    if (n8nService && typeof n8nService.triggerLeadIntake === 'function') {
+      n8nService.triggerLeadIntake(lead).catch(console.warn)
+    }
+
+    return res.status(201).json({ success: true, data: lead })
+  } catch (err) {
+    console.error("Failed to submit custom request:", err)
+    return res.status(500).json({ success: false, error: { message: 'Failed to submit custom request' } })
+  }
+})
+
+// Public onboarding form — no auth (Phase 14A)
+app.post('/api/v1/public/onboarding', require('./api/v1/onboarding/onboarding.service').submitOnboarding)
 
 // Routes
 app.use('/api/v1/auth',          require('./api/v1/auth/auth.routes'))
@@ -64,6 +104,8 @@ app.use('/api/v1/crm',           require('./api/v1/crm/crm.routes'))
 app.use('/api/v1/agents',        require('./api/v1/agents/agents.routes'))
 app.use('/api/v1/workflows',     require('./api/v1/workflows/workflows.routes'))
 app.use('/api/v1/webhooks',      require('./api/v1/webhooks/webhooks.routes'))
+app.use('/api/v1/bot',           require('./api/v1/bot/bot.routes'))
+app.use('/api/v1/onboarding',    require('./api/v1/onboarding/onboarding.routes'))
 // Internal routes
 const { authenticate } = require('./middleware/auth.middleware')
 
