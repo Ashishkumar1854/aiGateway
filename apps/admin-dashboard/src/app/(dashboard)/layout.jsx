@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { isAuthenticated } from '@/lib/auth'
 import { Sidebar } from '@/components/layout/Sidebar'
 
 export default function DashboardLayout({ children }) {
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -14,9 +15,11 @@ export default function DashboardLayout({ children }) {
     }
   }, [router])
 
+  const showSidebar = pathname !== '/dashboard'
+
   return (
     <div className="flex h-screen bg-slate-50">
-      <Sidebar />
+      {showSidebar && <Sidebar />}
       <main className="flex-1 overflow-auto">
         {children}
       </main>
