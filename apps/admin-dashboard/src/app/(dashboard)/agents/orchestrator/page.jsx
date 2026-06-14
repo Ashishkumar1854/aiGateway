@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { PageHeader } from '@/components/shared/PageHeader'
+import Link from 'next/link'
 
 export default function OrchestratorPage() {
   const [loading, setLoading] = useState(false)
@@ -16,7 +17,7 @@ export default function OrchestratorPage() {
   useEffect(() => {
     Promise.all([
       api.get('/api/v1/agents/stats'),
-      api.get('/api/v1/crm/leads?limit=10'),
+      api.get('/api/v1/crm/leads?source=lead_research_agent&limit=10'),
     ])
       .then(([statsRes, leadsRes]) => {
         setStats(statsRes.data)
@@ -134,7 +135,14 @@ export default function OrchestratorPage() {
               <tbody>
                 {recentLeads.map(lead => (
                   <tr key={lead.id} className="border-b border-slate-50 hover:bg-slate-50">
-                    <td className="px-3 py-2 font-medium text-slate-800">{lead.companyName}</td>
+                    <td className="px-3 py-2 font-medium text-slate-850">
+                      <Link 
+                        href={`/agents/leads/${lead.id}`} 
+                        className="font-bold text-indigo-650 hover:text-indigo-800 hover:underline transition-colors"
+                      >
+                        {lead.companyName}
+                      </Link>
+                    </td>
                     <td className="px-3 py-2 text-slate-500">{lead.contactName}</td>
                     <td className="px-3 py-2">
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">{lead.status}</span>

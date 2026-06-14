@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { PageHeader } from '@/components/shared/PageHeader'
+import Link from 'next/link'
 
 export default function AgentTasksPage() {
   const [tasks, setTasks] = useState([])
@@ -74,7 +75,17 @@ export default function AgentTasksPage() {
                     <span className="text-sm font-semibold text-slate-900">{task.agentType.replace('_', ' ')}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[task.status] || 'bg-slate-100 text-slate-500'}`}>{task.status.replace('_', ' ')}</span>
                   </div>
-                  {task.lead && <p className="text-sm text-slate-500">Lead: <strong>{task.lead.companyName}</strong></p>}
+                  {task.lead && (
+                    <p className="text-sm text-slate-500">
+                      Lead:{' '}
+                      <Link 
+                        href={`/agents/leads/${task.leadId}`} 
+                        className="font-bold text-indigo-650 hover:text-indigo-800 hover:underline transition-colors"
+                      >
+                        {task.lead.companyName}
+                      </Link>
+                    </p>
+                  )}
                   <p className="text-xs text-slate-400 mt-1">{new Date(task.createdAt).toLocaleString()}</p>
                   
                   {task.agentType === 'MEETING' && task.input?.analysis && (

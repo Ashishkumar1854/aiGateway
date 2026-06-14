@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { PageHeader } from '@/components/shared/PageHeader'
+import Link from 'next/link'
 
 export default function ResearchAgentPage() {
   const [tasks, setTasks] = useState([])
@@ -96,7 +97,16 @@ export default function ResearchAgentPage() {
             {tasks.map(task => (
               <div key={task.id} className="rounded-xl border border-slate-200 bg-white p-4 flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 truncate">{task.lead?.companyName || 'Research Task'}</p>
+                  {task.leadId ? (
+                    <Link 
+                      href={`/agents/leads/${task.leadId}`} 
+                      className="text-sm font-bold text-indigo-650 hover:text-indigo-800 hover:underline truncate block w-fit"
+                    >
+                      {task.lead?.companyName || 'Research Task'}
+                    </Link>
+                  ) : (
+                    <p className="text-sm font-semibold text-slate-900 truncate">{task.lead?.companyName || 'Research Task'}</p>
+                  )}
                   <p className="text-xs text-slate-400 mt-0.5">{new Date(task.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${

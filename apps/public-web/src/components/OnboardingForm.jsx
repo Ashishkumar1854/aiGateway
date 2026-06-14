@@ -36,7 +36,7 @@ const industries = [
   'Technology', 'Retail', 'Finance', 'Other',
 ]
 
-const STEP_LABELS = ['Your Details', 'Service Requirements']
+const STEP_LABELS = ['Your Details', 'Service Setup']
 
 export function OnboardingForm({ serviceName, requestType }) {
   const router = useRouter()
@@ -98,7 +98,7 @@ export function OnboardingForm({ serviceName, requestType }) {
   // ── SUCCESS STATE ──────────────────────────────────────────────────────────
   if (status === 'success' && submittedData) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
         {/* Hero success */}
         <div className="text-center py-4">
           <div className="text-5xl mb-4">
@@ -111,31 +111,31 @@ export function OnboardingForm({ serviceName, requestType }) {
         </div>
 
         {/* Service badge */}
-        <div className={`rounded-xl border p-4 flex items-center gap-3 ${
+        <div className={`rounded-xl border p-4 flex items-center gap-3.5 ${
           isTrial
             ? 'border-emerald-500/20 bg-emerald-500/5'
             : 'border-indigo-500/20 bg-indigo-500/5'
         }`}>
           <div className="text-2xl">{isTrial ? '🎁' : '📋'}</div>
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">
               {isTrial ? '3-Day Free Trial' : 'Book Request'}
             </p>
             <p className="text-sm font-bold text-white mt-0.5">{serviceName}</p>
           </div>
-          <span className={`ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full ${
+          <span className={`ml-auto text-[9px] font-bold px-2.5 py-1 rounded-full ${
             isTrial
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
               : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
           }`}>
-            PENDING ACTIVATION
+            PENDING
           </span>
         </div>
 
         {/* What happens next */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">What Happens Next</p>
-          <ol className="space-y-2">
+        <div className="rounded-xl border border-[#1e1e2e] bg-[#111118]/50 p-5">
+          <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-3.5">What Happens Next</p>
+          <ol className="space-y-3">
             {(isTrial ? [
               'Our team reviews your service requirements',
               'We configure your AI agent for your niche',
@@ -148,8 +148,8 @@ export function OnboardingForm({ serviceName, requestType }) {
               `Service activated within 48 hours — credentials to ${details.email}`,
               'Full dashboard access to track all activity',
             ]).map((step, i) => (
-              <li key={i} className="flex items-start gap-3 text-xs text-slate-300">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 text-[10px] font-bold flex items-center justify-center mt-0.5">
+              <li key={i} className="flex items-start gap-3.5 text-xs text-slate-300 font-light">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-650/20 border border-indigo-500/30 text-indigo-400 text-[10px] font-bold flex items-center justify-center mt-0.5 select-none">
                   {i + 1}
                 </span>
                 {step}
@@ -174,32 +174,32 @@ export function OnboardingForm({ serviceName, requestType }) {
   }
 
   // ── STYLES ─────────────────────────────────────────────────────────────────
-  const INPUT = "w-full rounded-xl bg-slate-950/60 border border-slate-800 px-4 py-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder-slate-500"
-  const LABEL = "block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5"
+  const INPUT = "w-full rounded-xl bg-[#08080f] border border-[#1e1e2e] px-4 py-3.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder-slate-650 focus:bg-[#08080f]/90"
+  const LABEL = "block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2"
 
   // ── STEP INDICATOR ─────────────────────────────────────────────────────────
   const StepIndicator = () => hasRequirements ? (
-    <div className="flex items-center gap-2 mb-6">
+    <div className="flex items-center gap-2 mb-8 select-none">
       {STEP_LABELS.map((label, i) => {
         const stepNum = i + 1
         const active = step === stepNum
         const done = step > stepNum
         return (
-          <div key={label} className="flex items-center gap-2 flex-1">
-            <div className="flex items-center gap-1.5">
+          <div key={label} className="flex items-center gap-2.5 flex-1">
+            <div className="flex items-center gap-2">
               <div className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center border transition-all ${
                 done ? 'bg-emerald-500 border-emerald-500 text-white' :
-                active ? 'bg-indigo-600 border-indigo-500 text-white' :
-                'bg-transparent border-slate-700 text-slate-500'
+                active ? 'bg-indigo-650 border-indigo-500 text-white' :
+                'bg-transparent border-[#1e1e2e] text-slate-500'
               }`}>
                 {done ? '✓' : stepNum}
               </div>
-              <span className={`text-[10px] font-semibold ${active ? 'text-white' : done ? 'text-emerald-400' : 'text-slate-500'}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-white' : done ? 'text-emerald-400' : 'text-slate-500'}`}>
                 {label}
               </span>
             </div>
             {i < STEP_LABELS.length - 1 && (
-              <div className={`flex-1 h-px mx-1 ${done ? 'bg-emerald-500/40' : 'bg-slate-800'}`} />
+              <div className={`flex-1 h-px mx-1.5 ${done ? 'bg-emerald-500/30' : 'bg-[#1e1e2e]'}`} />
             )}
           </div>
         )
@@ -210,7 +210,7 @@ export function OnboardingForm({ serviceName, requestType }) {
   // ── STEP 1: DETAILS ───────────────────────────────────────────────────────
   if (step === 1) {
     return (
-      <form onSubmit={goNext} className="space-y-4">
+      <form onSubmit={goNext} className="space-y-4 animate-in fade-in duration-200">
         <StepIndicator />
 
         {error && (
@@ -219,7 +219,7 @@ export function OnboardingForm({ serviceName, requestType }) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
           <div>
             <label className={LABEL}>Full Name *</label>
             <input type="text" name="name" value={details.name} onChange={handleDetailsChange}
@@ -232,7 +232,7 @@ export function OnboardingForm({ serviceName, requestType }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
           <div>
             <label className={LABEL}>Phone Number</label>
             <input type="tel" name="phone" value={details.phone} onChange={handleDetailsChange}
@@ -249,9 +249,9 @@ export function OnboardingForm({ serviceName, requestType }) {
           <label className={LABEL}>Industry</label>
           <select name="industry" value={details.industry} onChange={handleDetailsChange}
             className={`${INPUT} appearance-none cursor-pointer`} style={{ colorScheme: 'dark' }}>
-            <option value="">Select Industry</option>
+            <option value="" className="bg-[#08080f] text-slate-500">Select Industry</option>
             {industries.map(i => (
-              <option key={i} value={i} className="bg-slate-900 text-slate-100">{i}</option>
+              <option key={i} value={i} className="bg-[#111118] text-slate-100">{i}</option>
             ))}
           </select>
         </div>
@@ -264,7 +264,7 @@ export function OnboardingForm({ serviceName, requestType }) {
         </div>
 
         <button type="submit"
-          className={`w-full rounded-xl py-3 text-xs font-bold text-white transition-all shadow-lg ${
+          className={`w-full rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg hover:-translate-y-0.5 ${
             isTrial
               ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
               : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'
@@ -274,7 +274,7 @@ export function OnboardingForm({ serviceName, requestType }) {
           )}
         </button>
 
-        <p className="text-center text-[10px] text-slate-500">
+        <p className="text-center text-[10px] text-slate-500 font-light">
           By submitting you agree to receive follow-up notes. We respect your privacy.
         </p>
       </form>
@@ -283,17 +283,16 @@ export function OnboardingForm({ serviceName, requestType }) {
 
   // ── STEP 2: SERVICE REQUIREMENTS ─────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in duration-200">
       <StepIndicator />
 
-      <div className={`rounded-xl border p-3 mb-4 ${
+      <div className={`rounded-xl border p-3.5 mb-4 ${
         isTrial ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-indigo-500/20 bg-indigo-500/5'
       }`}>
-        <p className="text-[11px] text-slate-400">
-          <span className={`font-bold ${isTrial ? 'text-emerald-400' : 'text-indigo-400'}`}>
+        <p className="text-[11px] text-slate-400 leading-relaxed font-light">
+          Configure <strong className={`font-bold ${isTrial ? 'text-emerald-400' : 'text-indigo-400'}`}>
             {serviceName}
-          </span>
-          {' '}— Tell us how to configure your AI agent.
+          </strong> Setup Parameters:
         </p>
       </div>
 
@@ -321,9 +320,9 @@ export function OnboardingForm({ serviceName, requestType }) {
               className={`${INPUT} appearance-none cursor-pointer`}
               style={{ colorScheme: 'dark' }}
             >
-              <option value="">Select...</option>
+              <option value="" className="bg-[#08080f] text-slate-500">Select...</option>
               {field.options.map(opt => (
-                <option key={opt} value={opt} className="bg-slate-900 text-slate-100">{opt}</option>
+                <option key={opt} value={opt} className="bg-[#111118] text-slate-100">{opt}</option>
               ))}
             </select>
           ) : (
@@ -344,14 +343,14 @@ export function OnboardingForm({ serviceName, requestType }) {
         <button
           type="button"
           onClick={() => setStep(1)}
-          className="flex-1 rounded-xl border border-slate-700 hover:border-slate-600 bg-transparent py-3 text-xs font-semibold text-slate-400 hover:text-white transition-all"
+          className="flex-1 rounded-xl border border-slate-700 hover:border-slate-600 bg-transparent py-3.5 text-xs font-semibold text-slate-400 hover:text-white transition-all"
         >
           ← Back
         </button>
         <button
           type="submit"
           disabled={status === 'loading'}
-          className={`flex-1 rounded-xl py-3 text-xs font-bold text-white transition-all shadow-lg disabled:opacity-50 ${
+          className={`flex-1 rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg disabled:opacity-50 hover:-translate-y-0.5 ${
             isTrial
               ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
               : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'
@@ -359,12 +358,12 @@ export function OnboardingForm({ serviceName, requestType }) {
         >
           {status === 'loading'
             ? 'Submitting...'
-            : isTrial ? '🎁 Start My Free Trial →' : '📋 Book Service →'
+            : isTrial ? '🎁 Start Free Trial →' : '📋 Book Service →'
           }
         </button>
       </div>
 
-      <p className="text-center text-[10px] text-slate-500">
+      <p className="text-center text-[10px] text-slate-500 font-light">
         By submitting you agree to receive follow-up notes. We respect your privacy.
       </p>
     </form>

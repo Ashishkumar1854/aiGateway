@@ -5,7 +5,16 @@ const getLeads = async (query) => {
   const { page, limit, skip } = getPagination(query)
   const where = { deletedAt: null }
   if (query.status) where.status = query.status
-  if (query.source) where.source = query.source
+  
+  if (query.source) {
+    if (query.source !== 'all') {
+      where.source = query.source
+    }
+  } else {
+    // Exclude AI scraper leads by default in main crm lists
+    where.source = { not: 'lead_research_agent' }
+  }
+
   if (query.search) {
     where.OR = [
       { companyName: { contains: query.search, mode: 'insensitive' } },
@@ -75,7 +84,11 @@ const getPipeline = async () => {
   const pipeline = await Promise.all(
     statuses.map(async (status) => {
       const leads = await prisma.lead.findMany({
-        where: { status, deletedAt: null },
+        where: { 
+          status, 
+          deletedAt: null,
+          source: { not: 'lead_research_agent' }
+        },
         select: { id: true, companyName: true, contactName: true, score: true, industry: true, updatedAt: true },
         orderBy: { score: 'desc' }
       })

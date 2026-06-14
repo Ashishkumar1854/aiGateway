@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { api } from '@/lib/api'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { StageSelector } from '@/components/crm/StageSelector'
@@ -24,6 +24,7 @@ function parseNotes(notesStr) {
 
 export default function LeadDetailPage() {
   const { id } = useParams()
+  const pathname = usePathname()
   const [lead, setLead] = useState(null)
   const [loading, setLoading] = useState(true)
   const [stageLoading, setStageLoading] = useState(false)
@@ -174,8 +175,11 @@ export default function LeadDetailPage() {
   return (
     <div className="p-6 max-w-5xl">
       {/* Back */}
-      <a href="/crm" className="text-sm text-slate-400 hover:text-slate-600 flex items-center gap-1 mb-4">
-        ← Back to Pipeline
+      <a 
+        href={pathname.startsWith('/agents') ? '/agents/tasks' : '/crm'} 
+        className="text-sm text-slate-400 hover:text-slate-600 flex items-center gap-1 mb-4"
+      >
+        {pathname.startsWith('/agents') ? '← Back to Agent Tasks' : '← Back to Pipeline'}
       </a>
 
       {/* Warning Banners based on lead source */}
