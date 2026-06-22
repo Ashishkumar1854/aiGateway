@@ -104,8 +104,8 @@ export function OnboardingForm({ serviceName, requestType }) {
           <div className="text-5xl mb-4">
             {isTrial ? '🎉' : '✅'}
           </div>
-          <h3 className="text-lg font-bold text-white">Request Received!</h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-lg font-bold text-slate-900">Request Received!</h3>
+          <p className="text-xs text-slate-550 mt-1">
             {isTrial ? 'Your trial will be activated within 1 hour.' : 'We\'ll contact you to confirm payment and activate.'}
           </p>
         </div>
@@ -113,28 +113,28 @@ export function OnboardingForm({ serviceName, requestType }) {
         {/* Service badge */}
         <div className={`rounded-xl border p-4 flex items-center gap-3.5 ${
           isTrial
-            ? 'border-emerald-500/20 bg-emerald-500/5'
-            : 'border-indigo-500/20 bg-indigo-500/5'
+            ? 'border-emerald-200 bg-emerald-50'
+            : 'border-indigo-200 bg-indigo-50'
         }`}>
           <div className="text-2xl">{isTrial ? '🎁' : '📋'}</div>
           <div>
-            <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">
               {isTrial ? '3-Day Free Trial' : 'Book Request'}
             </p>
-            <p className="text-sm font-bold text-white mt-0.5">{serviceName}</p>
+            <p className="text-sm font-bold text-slate-900 mt-0.5">{serviceName}</p>
           </div>
           <span className={`ml-auto text-[9px] font-bold px-2.5 py-1 rounded-full ${
             isTrial
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-              : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+              ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+              : 'bg-indigo-100 text-indigo-700 border border-indigo-200'
           }`}>
             PENDING
           </span>
         </div>
 
         {/* What happens next */}
-        <div className="rounded-xl border border-[#1e1e2e] bg-[#111118]/50 p-5">
-          <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-3.5">What Happens Next</p>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-3.5">What Happens Next</p>
           <ol className="space-y-3">
             {(isTrial ? [
               'Our team reviews your service requirements',
@@ -148,8 +148,8 @@ export function OnboardingForm({ serviceName, requestType }) {
               `Service activated within 48 hours — credentials to ${details.email}`,
               'Full dashboard access to track all activity',
             ]).map((step, i) => (
-              <li key={i} className="flex items-start gap-3.5 text-xs text-slate-300 font-light">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-650/20 border border-indigo-500/30 text-indigo-400 text-[10px] font-bold flex items-center justify-center mt-0.5 select-none">
+              <li key={i} className="flex items-start gap-3.5 text-xs text-slate-650 font-normal">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-600 text-[10px] font-bold flex items-center justify-center mt-0.5 select-none">
                   {i + 1}
                 </span>
                 {step}
@@ -160,12 +160,12 @@ export function OnboardingForm({ serviceName, requestType }) {
 
         {/* Request ID */}
         <p className="text-center text-[10px] text-slate-500">
-          Request ID: <span className="font-mono text-slate-400">{submittedData.id}</span>
+          Request ID: <span className="font-mono text-slate-750 font-semibold">{submittedData.id}</span>
         </p>
 
         <button
           onClick={() => { setStatus('idle'); setStep(1); setDetails({ name:'', email:'', phone:'', company:'', industry:'', message:'' }); setReqs(initialReqs) }}
-          className="w-full text-xs text-indigo-400 hover:text-indigo-300 font-semibold hover:underline"
+          className="w-full text-xs text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
         >
           Submit another request
         </button>
@@ -174,8 +174,8 @@ export function OnboardingForm({ serviceName, requestType }) {
   }
 
   // ── STYLES ─────────────────────────────────────────────────────────────────
-  const INPUT = "w-full rounded-xl bg-[#08080f] border border-[#1e1e2e] px-4 py-3.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder-slate-650 focus:bg-[#08080f]/90"
-  const LABEL = "block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2"
+  const INPUT = "w-full rounded-xl bg-white border border-slate-200 px-4 py-3.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder-slate-400 focus:bg-white"
+  const LABEL = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2"
 
   // ── STEP INDICATOR ─────────────────────────────────────────────────────────
   const StepIndicator = () => hasRequirements ? (
@@ -190,16 +190,16 @@ export function OnboardingForm({ serviceName, requestType }) {
               <div className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center border transition-all ${
                 done ? 'bg-emerald-500 border-emerald-500 text-white' :
                 active ? 'bg-indigo-650 border-indigo-500 text-white' :
-                'bg-transparent border-[#1e1e2e] text-slate-500'
+                'bg-transparent border-slate-200 text-slate-400'
               }`}>
                 {done ? '✓' : stepNum}
               </div>
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-white' : done ? 'text-emerald-400' : 'text-slate-500'}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-slate-900' : done ? 'text-emerald-600' : 'text-slate-400'}`}>
                 {label}
               </span>
             </div>
             {i < STEP_LABELS.length - 1 && (
-              <div className={`flex-1 h-px mx-1.5 ${done ? 'bg-emerald-500/30' : 'bg-[#1e1e2e]'}`} />
+              <div className={`flex-1 h-px mx-1.5 ${done ? 'bg-emerald-250' : 'bg-slate-200'}`} />
             )}
           </div>
         )
@@ -214,7 +214,7 @@ export function OnboardingForm({ serviceName, requestType }) {
         <StepIndicator />
 
         {error && (
-          <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-xs text-red-400">
+          <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-650">
             {error}
           </div>
         )}
@@ -248,10 +248,10 @@ export function OnboardingForm({ serviceName, requestType }) {
         <div>
           <label className={LABEL}>Industry</label>
           <select name="industry" value={details.industry} onChange={handleDetailsChange}
-            className={`${INPUT} appearance-none cursor-pointer`} style={{ colorScheme: 'dark' }}>
-            <option value="" className="bg-[#08080f] text-slate-500">Select Industry</option>
+            className={`${INPUT} appearance-none cursor-pointer`}>
+            <option value="" className="text-slate-400">Select Industry</option>
             {industries.map(i => (
-              <option key={i} value={i} className="bg-[#111118] text-slate-100">{i}</option>
+              <option key={i} value={i} className="text-slate-800">{i}</option>
             ))}
           </select>
         </div>
@@ -266,8 +266,8 @@ export function OnboardingForm({ serviceName, requestType }) {
         <button type="submit"
           className={`w-full rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg hover:-translate-y-0.5 ${
             isTrial
-              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
-              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'
+              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
+              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
           }`}>
           {hasRequirements ? 'Next: Service Requirements →' : (
             isTrial ? 'Start My Free Trial →' : 'Book Service →'
@@ -287,10 +287,10 @@ export function OnboardingForm({ serviceName, requestType }) {
       <StepIndicator />
 
       <div className={`rounded-xl border p-3.5 mb-4 ${
-        isTrial ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-indigo-500/20 bg-indigo-500/5'
+        isTrial ? 'border-emerald-250 bg-emerald-50' : 'border-indigo-250 bg-indigo-50'
       }`}>
-        <p className="text-[11px] text-slate-400 leading-relaxed font-light">
-          Configure <strong className={`font-bold ${isTrial ? 'text-emerald-400' : 'text-indigo-400'}`}>
+        <p className="text-[11px] text-slate-600 leading-relaxed">
+          Configure <strong className={`font-bold ${isTrial ? 'text-emerald-700' : 'text-indigo-700'}`}>
             {serviceName}
           </strong> Setup Parameters:
         </p>
@@ -318,11 +318,10 @@ export function OnboardingForm({ serviceName, requestType }) {
               onChange={handleReqChange}
               required={field.required}
               className={`${INPUT} appearance-none cursor-pointer`}
-              style={{ colorScheme: 'dark' }}
             >
-              <option value="" className="bg-[#08080f] text-slate-500">Select...</option>
+              <option value="" className="text-slate-400">Select...</option>
               {field.options.map(opt => (
-                <option key={opt} value={opt} className="bg-[#111118] text-slate-100">{opt}</option>
+                <option key={opt} value={opt} className="text-slate-800">{opt}</option>
               ))}
             </select>
           ) : (
@@ -343,7 +342,7 @@ export function OnboardingForm({ serviceName, requestType }) {
         <button
           type="button"
           onClick={() => setStep(1)}
-          className="flex-1 rounded-xl border border-slate-700 hover:border-slate-600 bg-transparent py-3.5 text-xs font-semibold text-slate-400 hover:text-white transition-all"
+          className="flex-1 rounded-xl border border-slate-200 hover:border-slate-350 bg-white py-3.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-all"
         >
           ← Back
         </button>
@@ -352,8 +351,8 @@ export function OnboardingForm({ serviceName, requestType }) {
           disabled={status === 'loading'}
           className={`flex-1 rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg disabled:opacity-50 hover:-translate-y-0.5 ${
             isTrial
-              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20'
-              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'
+              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
+              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
           }`}
         >
           {status === 'loading'
