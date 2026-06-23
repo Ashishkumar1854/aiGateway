@@ -30,7 +30,7 @@ export default function PricingPage() {
         <div className="absolute top-1/2 right-0 w-[300px] h-[300px] bg-purple-50/30 rounded-full blur-[100px] pointer-events-none" />
         <div className="mx-auto max-w-3xl px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <span className="text-[11px] font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
               FAQ
             </span>
             <h2 className="text-2xl font-extrabold text-slate-900 mt-5 sm:text-4xl tracking-tight">Frequently Asked Questions</h2>

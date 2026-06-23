@@ -48,6 +48,12 @@ app.post('/api/v1/public/contact', async (req, res) => {
         score: 10,
       }
     })
+
+    const n8nService = require('./services/n8n.service')
+    if (n8nService && typeof n8nService.triggerLeadIntake === 'function') {
+      n8nService.triggerLeadIntake(lead).catch(console.warn)
+    }
+
     return res.status(201).json({ success: true, data: lead })
   } catch (err) {
     return res.status(500).json({ success: false, error: { message: 'Failed to submit' } })

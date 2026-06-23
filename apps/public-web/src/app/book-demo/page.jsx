@@ -51,7 +51,7 @@ export default function BookDemoPage() {
       <section className="relative overflow-hidden pt-24 pb-20 border-b border-slate-100 bg-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-indigo-100/60 rounded-full blur-[120px] pointer-events-none" />
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 relative z-10">
-          <span className="text-[11px] font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
             Book Demo
           </span>
           <h1 className="text-4xl font-extrabold text-slate-900 sm:text-5xl tracking-tight mt-5 leading-tight">
@@ -88,7 +88,7 @@ export default function BookDemoPage() {
               </div>
 
               <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 mt-6">
-                <p className="text-xs text-indigo-750 font-semibold">✨ Free · 30 minutes · No commitment required</p>
+                <p className="text-xs text-indigo-700 font-semibold">✨ Free · 30 minutes · No commitment required</p>
               </div>
             </div>
 
@@ -101,7 +101,7 @@ export default function BookDemoPage() {
                   <p className="text-sm text-slate-550 max-w-sm mx-auto leading-relaxed">
                     Our team will confirm your demo slot and send a calendar invite to your email within <strong className="text-slate-800">24 hours</strong>.
                   </p>
-                  <button onClick={() => setStatus('idle')} className="mt-6 px-5 py-2.5 rounded-xl text-xs font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition-all">
+                  <button onClick={() => setStatus('idle')} className="mt-6 px-5 py-2.5 rounded-xl text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition-all">
                     Book Another
                   </button>
                 </div>
@@ -110,7 +110,7 @@ export default function BookDemoPage() {
                   <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Schedule Your Demo</h3>
 
                   {status === 'error' && (
-                    <div className="rounded-xl px-4 py-3 text-xs bg-red-50 border border-red-200 text-red-650">
+                    <div className="rounded-xl px-4 py-3 text-xs bg-red-50 border border-red-200 text-red-600">
                       Failed to submit. Please try again or email hello@aigateway.com
                     </div>
                   )}

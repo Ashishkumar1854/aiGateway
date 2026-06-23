@@ -40,6 +40,7 @@ export function Footer() {
                 { label: 'WhatsApp Automation', href: '/services/whatsapp-automation' },
                 { label: 'LinkedIn Automation', href: '/services/linkedin-automation' },
                 { label: 'Reels Automation', href: '/services/reels-automation' },
+                { label: 'Job Seeker', href: '/services/job-seeker' },
               ].map((s) => (
                 <li key={s.label}>
                   <Link href={s.href} className="text-xs text-slate-500 hover:text-indigo-600 transition-colors duration-200">{s.label}</Link>

@@ -93,6 +93,28 @@ async function main() {
         features: ['Auto replies', 'Broadcasts', 'Flow builder'],
       },
     }),
+    prisma.service.upsert({
+      where: { id: 'service-linkedin' },
+      update: {},
+      create: {
+        id: 'service-linkedin',
+        name: 'LinkedIn Automation',
+        type: 'LINKEDIN_OUTREACH',
+        description: 'AI-driven LinkedIn connection and outreach automation',
+        features: ['Connection Requests', 'Followups', 'Prospect Discovery', 'Outreach Tracking'],
+      },
+    }),
+    prisma.service.upsert({
+      where: { id: 'service-job-seeker' },
+      update: {},
+      create: {
+        id: 'service-job-seeker',
+        name: 'Job Seeker',
+        type: 'JOB_SEEKER',
+        description: 'AI job search automation, recruiter email direct mailer, and ATS customization',
+        features: ['ATS Optimization', 'Auto Resume Attach', 'Recruiter Mail Finder', 'Auto Job Applying', 'Reply Dashboard'],
+      },
+    }),
   ])
   console.log('✅ Services seeded:', services.length)
 

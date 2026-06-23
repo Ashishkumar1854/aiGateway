@@ -60,7 +60,7 @@ export default function CaseStudiesPage() {
       <section className="relative overflow-hidden pt-24 pb-20 border-b border-slate-100 bg-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-indigo-100/60 rounded-full blur-[120px] pointer-events-none" />
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 relative z-10">
-          <span className="text-[11px] font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
             Case Studies
           </span>
           <h1 className="text-4xl font-extrabold text-slate-900 sm:text-6xl tracking-tight mt-5 leading-tight">Real Results</h1>
@@ -91,7 +91,7 @@ export default function CaseStudiesPage() {
                   <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight">{cs.title}</h2>
 
                   <div className="flex items-center gap-4 text-[10px] text-slate-400">
-                    <span className="font-semibold text-slate-650">{cs.company}</span>
+                    <span className="font-semibold text-slate-600">{cs.company}</span>
                     <span>·</span>
                     <span>{cs.industry}</span>
                   </div>

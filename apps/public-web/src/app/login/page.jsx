@@ -17,7 +17,7 @@ export default function LoginPage() {
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-2">
           <span className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-            <span className="text-indigo-650 font-black">⚡</span>
+            <span className="text-indigo-600 font-black">⚡</span>
             AiGateway
           </span>
         </Link>

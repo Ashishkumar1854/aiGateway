@@ -7,6 +7,15 @@ const crypto = require('crypto')
 // Maps human-readable service name → ServiceType enum
 // ──────────────────────────────────────────────
 const SERVICE_NAME_TO_TYPE = {
+  // Public-web signup page labels
+  'Lead Generation': 'LEAD_GENERATION',
+  'Email Automation': 'EMAIL_AUTOMATION',
+  'Reels Automation': 'REELS_AUTOMATION',
+  'WhatsApp Automation': 'WHATSAPP_AUTOMATION',
+  'LinkedIn Automation': 'LINKEDIN_OUTREACH',
+  'Job Seeker': 'JOB_SEEKER',
+
+  // Alternative/Older/Detailed page names
   'Lead Generation Bot': 'LEAD_GENERATION',
   'Email Agent Pitches': 'EMAIL_AUTOMATION',
   'Reels Automation Bot': 'REELS_AUTOMATION',
@@ -20,6 +29,7 @@ const SERVICE_TYPE_TO_NAME = {
   REELS_AUTOMATION: 'Reels Automation Bot',
   WHATSAPP_AUTOMATION: 'WhatsApp Flow Automation',
   LINKEDIN_OUTREACH: 'LinkedIn Outreach',
+  JOB_SEEKER: 'Job Seeker',
   CUSTOM: 'Custom Service',
 }
 

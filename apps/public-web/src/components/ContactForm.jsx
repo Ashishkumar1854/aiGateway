@@ -56,7 +56,7 @@ export function ContactForm({ preSelectedService = '' }) {
         <h3 className="mt-5 text-lg font-bold text-slate-900">Request received!</h3>
         {form.serviceInterest || preSelectedService ? (
           <p className="mt-3 text-xs text-slate-500 leading-relaxed font-light">
-            Your request to deploy <strong className="text-indigo-650">{preSelectedService || form.serviceInterest}</strong> has been logged.
+            Your request to deploy <strong className="text-indigo-600">{preSelectedService || form.serviceInterest}</strong> has been logged.
             We will get back to you within <strong className="text-slate-800">24 hours</strong> to schedule setup.
           </p>
         ) : (

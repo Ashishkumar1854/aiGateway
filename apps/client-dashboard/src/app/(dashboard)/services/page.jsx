@@ -51,7 +51,9 @@ export default function ClientServicesPage() {
                     {assignment.service?.type === 'LEAD_GENERATION' ? '🎯' :
                      assignment.service?.type === 'EMAIL_AUTOMATION' ? '📧' :
                      assignment.service?.type === 'REELS_AUTOMATION' ? '🎬' :
-                     assignment.service?.type === 'WHATSAPP_AUTOMATION' ? '💬' : '🤖'}
+                     assignment.service?.type === 'WHATSAPP_AUTOMATION' ? '💬' :
+                     assignment.service?.type === 'LINKEDIN_OUTREACH' ? '🔗' :
+                     assignment.service?.type === 'JOB_SEEKER' ? '💼' : '🤖'}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     assignment.isActive ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-slate-800 border border-slate-700 text-slate-400'

@@ -106,6 +106,52 @@ const servicePlans = {
       features: ['Unlimited reels', 'Custom AI video pipeline', 'Dedicated content agent', 'Priority support', 'Brand identity kit included'],
     },
   ],
+  'job-seeker': [
+    {
+      tier: 'Starter',
+      name: 'Smart Outreach',
+      inr: 2999, usd: 39,
+      popular: false,
+      topColor: 'border-t-gray-400',
+      features: [
+        'User inputs recruiter/HR emails',
+        'AI drafts ATS-optimized email',
+        'Automatically emails with resume attach',
+        'Track email opens & link clicks',
+        'Dashboard reply controls',
+        'Up to 100 applications/month',
+      ],
+    },
+    {
+      tier: 'Pro',
+      name: 'Auto Hunter',
+      inr: 5999, usd: 79,
+      popular: true,
+      topColor: 'border-t-indigo-500',
+      features: [
+        'Everything in Starter',
+        'Auto-scrapes LinkedIn, Indeed & Careers pages',
+        'Auto-discovers recruiter emails',
+        'Automated API job application submission',
+        'AI handles scheduling replies',
+        'Up to 500 applications/month',
+      ],
+    },
+    {
+      tier: 'Enterprise',
+      name: 'Enterprise Recruit',
+      inr: null, usd: null,
+      popular: false,
+      topColor: 'border-t-purple-500',
+      features: [
+        'Unlimited applications',
+        'Dedicated AI recruiter instance',
+        'Custom resumes & portfolios',
+        'ATS profile optimization audit',
+        'Priority 24/7 Slack support',
+      ],
+    },
+  ],
 }
 
 export function ServicePricingCards({ serviceSlug, serviceName }) {

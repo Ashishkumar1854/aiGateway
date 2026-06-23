@@ -72,6 +72,19 @@ const saasDetails = [
       'Saves manual editing resources entirely',
     ],
   },
+  {
+    icon: '💼',
+    name: 'Job Seeker',
+    slug: 'job-seeker',
+    desc: 'Deploy your personal AI job search assistant. Scrape listings, find recruiter emails, optimize your resume for ATS, auto-apply, and track dashboard replies.',
+    how: [
+      'AI drafts highly targeted outreach copy matching your resume with the job description',
+      'Automatically matches keywords to bypass Applicant Tracking Systems (ATS)',
+      'Finds direct HR/recruiter emails via LinkedIn and company careers directories',
+      'Submits applications automatically with proper resume attachments',
+      'Provides full dashboard response tracking, open receipts, and scheduling replies',
+    ],
+  },
 ]
 
 const personalBrandingServices = [

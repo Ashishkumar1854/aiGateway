@@ -17,7 +17,7 @@ export function HeroSection() {
           Automate Your Business{' '}
           <br className="hidden sm:block" />
           With{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             AI Employees
           </span>
         </h1>

@@ -9,6 +9,7 @@ const saasServices = [
   { icon: '💬', name: 'WhatsApp Automation', href: '/services/whatsapp-automation', desc: 'Broadcasts, flows & auto-replies' },
   { icon: '🔗', name: 'LinkedIn Automation', href: '/services/linkedin-automation', desc: 'Connect & follow up on LinkedIn' },
   { icon: '🎬', name: 'Reels Automation', href: '/services/reels-automation', desc: 'Scripts, scheduling & analytics' },
+  { icon: '💼', name: 'Job Seeker', href: '/services/job-seeker', desc: 'Automate job applications & track replies' },
 ]
 
 const brandingServices = [

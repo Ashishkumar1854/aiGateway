@@ -43,7 +43,7 @@ export default function AboutPage() {
       <section className="relative overflow-hidden pt-24 pb-20 border-b border-slate-100">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-indigo-100/60 rounded-full blur-[120px] pointer-events-none" />
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 relative z-10">
-          <span className="text-[11px] font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
             About Us
           </span>
           <h1 className="text-4xl font-extrabold text-slate-900 sm:text-6xl tracking-tight mt-5 leading-tight">About AiGateway</h1>
@@ -59,7 +59,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center p-5 rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{stat.value}</p>
+                <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{stat.value}</p>
                 <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">{stat.label}</p>
               </div>
             ))}
@@ -95,7 +95,7 @@ export default function AboutPage() {
               ].map((belief) => (
                 <div key={belief} className="flex items-start gap-3">
                   <span className="text-indigo-600 font-bold mt-0.5">✓</span>
-                  <p className="text-xs text-slate-650 leading-relaxed">{belief}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">{belief}</p>
                 </div>
               ))}
             </div>

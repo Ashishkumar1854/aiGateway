@@ -148,7 +148,7 @@ export function OnboardingForm({ serviceName, requestType }) {
               `Service activated within 48 hours — credentials to ${details.email}`,
               'Full dashboard access to track all activity',
             ]).map((step, i) => (
-              <li key={i} className="flex items-start gap-3.5 text-xs text-slate-650 font-normal">
+              <li key={i} className="flex items-start gap-3.5 text-xs text-slate-600 font-normal">
                 <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-600 text-[10px] font-bold flex items-center justify-center mt-0.5 select-none">
                   {i + 1}
                 </span>
@@ -189,7 +189,7 @@ export function OnboardingForm({ serviceName, requestType }) {
             <div className="flex items-center gap-2">
               <div className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center border transition-all ${
                 done ? 'bg-emerald-500 border-emerald-500 text-white' :
-                active ? 'bg-indigo-650 border-indigo-500 text-white' :
+                active ? 'bg-indigo-600 border-indigo-500 text-white' :
                 'bg-transparent border-slate-200 text-slate-400'
               }`}>
                 {done ? '✓' : stepNum}
@@ -214,7 +214,7 @@ export function OnboardingForm({ serviceName, requestType }) {
         <StepIndicator />
 
         {error && (
-          <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-650">
+          <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-600">
             {error}
           </div>
         )}

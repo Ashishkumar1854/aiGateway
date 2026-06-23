@@ -111,7 +111,9 @@ export default function ClientDashboardOverview() {
                     {assignment.service?.type === 'LEAD_GENERATION' ? '🎯' :
                      assignment.service?.type === 'EMAIL_AUTOMATION' ? '📧' :
                      assignment.service?.type === 'REELS_AUTOMATION' ? '🎬' :
-                     assignment.service?.type === 'WHATSAPP_AUTOMATION' ? '💬' : '🤖'}
+                     assignment.service?.type === 'WHATSAPP_AUTOMATION' ? '💬' :
+                     assignment.service?.type === 'LINKEDIN_OUTREACH' ? '🔗' :
+                     assignment.service?.type === 'JOB_SEEKER' ? '💼' : '🤖'}
                   </span>
                   <div>
                     <h4 className="font-bold text-white text-sm">{assignment.service?.name}</h4>

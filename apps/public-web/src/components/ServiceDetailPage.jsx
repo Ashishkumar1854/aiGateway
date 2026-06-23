@@ -68,7 +68,7 @@ export function ServiceDetailPage({ service }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {service.steps.map((step, i) => (
               <div key={step} className="rounded-2xl border border-slate-200 bg-white p-5 text-center hover:border-indigo-200 hover:shadow-lg transition-all">
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 block mb-3">
+                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 block mb-3" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <p className="text-xs text-slate-700 font-semibold leading-relaxed">{step}</p>

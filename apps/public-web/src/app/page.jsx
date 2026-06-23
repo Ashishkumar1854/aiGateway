@@ -2,7 +2,6 @@ import { HeroSection }        from '@/components/HeroSection'
 import { BuiltForSection }    from '@/components/BuiltForSection'
 import { HowItWorks }         from '@/components/HowItWorks'
 import { ServicesSection }    from '@/components/ServicesSection'
-import { PricingSection }     from '@/components/PricingSection'
 import { WhyAiGateway }       from '@/components/WhyAiGateway'
 import { ROICalculator }      from '@/components/ROICalculator'
 import { ComparisonTable }    from '@/components/ComparisonTable'
@@ -29,9 +28,6 @@ export default function HomePage() {
 
       {/* S5 — SaaS Services */}
       <ServicesSection />
-
-      {/* S10 — Pricing (per-service, INR/USD) */}
-      <PricingSection />
 
       {/* S7 — Why AiGateway */}
       <WhyAiGateway />

@@ -51,6 +51,16 @@ const services = [
     iconBg: 'bg-pink-50 text-pink-600 border-pink-100',
     price: { inr: '₹3,499', usd: '$42' },
   },
+  {
+    icon: '💼',
+    name: 'Job Seeker',
+    slug: 'job-seeker',
+    desc: 'Automate recruiter outreach, auto-customize your resume for ATS, and apply at scale.',
+    features: ['ATS Optimization', 'Auto Resume Attach', 'Recruiter Mail Finder', 'Auto Job Applying', 'Reply Dashboard'],
+    topBorder: 'border-t-[3px] border-t-teal-500',
+    iconBg: 'bg-teal-50 text-teal-600 border-teal-100',
+    price: { inr: '₹2,999', usd: '$39' },
+  },
 ]
 
 export function ServicesSection() {
@@ -98,18 +108,12 @@ export function ServicesSection() {
               </ul>
 
               {/* CTAs */}
-              <div className="flex flex-col gap-2">
-                <Link
-                  href={`/signup?service=${s.slug}`}
-                  className="rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-[11px] font-bold py-2.5 text-center transition-all shadow-md shadow-indigo-100 hover:-translate-y-0.5"
-                >
-                  Start Trial
-                </Link>
+              <div className="flex flex-col gap-2 mt-auto">
                 <Link
                   href={`/services/${s.slug}`}
-                  className="rounded-lg border border-slate-200 hover:border-slate-300 bg-white text-slate-600 hover:text-slate-900 text-[11px] font-medium py-2.5 text-center transition-all"
+                  className="rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-[11px] font-bold py-2.5 text-center transition-all shadow-md shadow-indigo-100 hover:-translate-y-0.5"
                 >
-                  Learn More →
+                  View Plans & Pricing →
                 </Link>
               </div>
             </div>

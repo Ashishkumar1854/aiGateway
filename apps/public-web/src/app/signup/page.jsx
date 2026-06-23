@@ -10,6 +10,7 @@ const services = [
   { id: 'whatsapp-automation', label: 'WhatsApp Automation',icon: '💬' },
   { id: 'linkedin-automation', label: 'LinkedIn Automation',icon: '🔗' },
   { id: 'reels-automation',    label: 'Reels Automation',   icon: '🎬' },
+  { id: 'job-seeker',          label: 'Job Seeker',         icon: '💼' },
 ]
 
 function SignupForm() {
@@ -67,7 +68,7 @@ function SignupForm() {
         <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
           Our team will review your requirements and activate your trial for <strong className="text-slate-800">{serviceLabel}</strong> within <strong className="text-slate-800">24 hours</strong>. Check your email for login credentials.
         </p>
-        <Link href="/" className="inline-block mt-8 px-6 py-2.5 rounded-xl text-xs font-bold text-indigo-650 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition-all">
+        <Link href="/" className="inline-block mt-8 px-6 py-2.5 rounded-xl text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition-all">
           Back to Home
         </Link>
       </div>
@@ -85,7 +86,7 @@ function SignupForm() {
         <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Your Details</h3>
 
         {status === 'error' && (
-          <div className="rounded-xl px-4 py-3 text-xs bg-red-50 border border-red-200 text-red-650">
+          <div className="rounded-xl px-4 py-3 text-xs bg-red-50 border border-red-200 text-red-600">
             Failed to submit. Please try again or email hello@aigateway.com
           </div>
         )}

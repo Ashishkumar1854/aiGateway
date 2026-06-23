@@ -37,7 +37,7 @@ export default function ContactPage({ searchParams }) {
                 <h1 className="text-4xl font-extrabold text-slate-900 sm:text-5xl leading-[1.1] tracking-tight">
                   {isTrial ? 'Start Your Free Trial' : 'Book This Service'}
                   <br />
-                  <span className={isTrial ? 'text-emerald-600' : 'text-indigo-650'}>
+                  <span className={isTrial ? 'text-emerald-600' : 'text-indigo-600'}>
                     {preSelectedService}
                   </span>
                 </h1>
