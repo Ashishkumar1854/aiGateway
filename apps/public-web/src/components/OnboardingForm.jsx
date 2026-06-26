@@ -28,6 +28,37 @@ const SERVICE_REQUIREMENTS = {
     { field: 'response_type', label: 'What Should the AI Handle?', type: 'textarea', placeholder: 'e.g. FAQ replies, Lead qualification, Appointment booking...', required: true },
     { field: 'business_hours', label: 'Business Hours (for escalation)', type: 'text', placeholder: 'e.g. Mon-Sat 9am-7pm IST', required: false },
   ],
+  'LinkedIn Automation': [
+    { field: 'linkedin_profile', label: 'Your LinkedIn Profile URL', type: 'url', placeholder: 'https://linkedin.com/in/yourname', required: true },
+    { field: 'target_title', label: 'Target Job Titles to Connect', type: 'text', placeholder: 'e.g. HR Manager, Founder, CTO', required: true },
+    { field: 'target_industry', label: 'Target Industry', type: 'text', placeholder: 'e.g. SaaS, Real Estate, Finance', required: true },
+    { field: 'connection_message', label: 'Connection Request Note', type: 'textarea', placeholder: 'Short note sent with connection request (max 300 chars)', required: false },
+  ],
+  'LinkedIn Outreach': [
+    { field: 'linkedin_profile', label: 'Your LinkedIn Profile URL', type: 'url', placeholder: 'https://linkedin.com/in/yourname', required: true },
+    { field: 'target_title', label: 'Target Job Titles to Connect', type: 'text', placeholder: 'e.g. HR Manager, Founder, CTO', required: true },
+    { field: 'target_industry', label: 'Target Industry', type: 'text', placeholder: 'e.g. SaaS, Real Estate, Finance', required: true },
+    { field: 'connection_message', label: 'Connection Request Note', type: 'textarea', placeholder: 'Short note sent with connection request (max 300 chars)', required: false },
+  ],
+  'Reels Automation Bot': [
+    { field: 'instagram_handle', label: 'Instagram Handle', type: 'text', placeholder: '@yourbrand', required: true },
+    { field: 'content_niche', label: 'Content Niche / Topic', type: 'text', placeholder: 'e.g. Fitness tips, Business motivation', required: true },
+    { field: 'posting_frequency', label: 'Posts Per Week', type: 'select', options: ['3', '5', '7', '10+'], required: true },
+    { field: 'brand_tone', label: 'Brand Tone', type: 'text', placeholder: 'e.g. Professional, Energetic, Humorous', required: false },
+  ],
+  'Reels Automation': [
+    { field: 'instagram_handle', label: 'Instagram Handle', type: 'text', placeholder: '@yourbrand', required: true },
+    { field: 'content_niche', label: 'Content Niche / Topic', type: 'text', placeholder: 'e.g. Fitness tips, Business motivation', required: true },
+    { field: 'posting_frequency', label: 'Posts Per Week', type: 'select', options: ['3', '5', '7', '10+'], required: true },
+    { field: 'brand_tone', label: 'Brand Tone', type: 'text', placeholder: 'e.g. Professional, Energetic, Humorous', required: false },
+  ],
+  'Job Seeker': [
+    { field: 'resume_link', label: 'Resume Link (Google Drive / Dropbox)', type: 'url', placeholder: 'https://drive.google.com/file/...', required: true },
+    { field: 'target_roles', label: 'Target Job Roles', type: 'text', placeholder: 'e.g. Frontend Engineer, Product Manager, UI/UX Designer', required: true },
+    { field: 'target_locations', label: 'Target Job Locations', type: 'text', placeholder: 'e.g. Bangalore, Remote, Mumbai', required: true },
+    { field: 'experience_level', label: 'Experience Level', type: 'select', options: ['Fresher (0-1yr)', 'Junior (1-3yr)', 'Mid (3-6yr)', 'Senior (6+ yr)'], required: true },
+    { field: 'linkedin_url', label: 'LinkedIn Profile URL', type: 'url', placeholder: 'https://linkedin.com/in/yourname', required: false },
+  ],
 }
 
 const industries = [
@@ -36,13 +67,27 @@ const industries = [
   'Technology', 'Retail', 'Finance', 'Other',
 ]
 
-const STEP_LABELS = ['Your Details', 'Service Setup']
+// Services where the user is an individual (not a company)
+const PERSONAL_SERVICES = new Set(['Job Seeker'])
+
+// Current status options for individual job seekers
+const CURRENT_STATUS_OPTIONS = [
+  'Student',
+  'Fresher (0-1 yr exp)',
+  'Working Professional',
+  'Career Switcher',
+  'Freelancer',
+  'Returning to Workforce',
+]
+
+const STEP_LABELS = ['Your Details', 'Job Setup']
 
 export function OnboardingForm({ serviceName, requestType }) {
   const router = useRouter()
   const isTrial = requestType === 'TRIAL'
   const requirements = SERVICE_REQUIREMENTS[serviceName] || []
   const hasRequirements = requirements.length > 0
+  const isPersonal = PERSONAL_SERVICES.has(serviceName) // Job Seeker = individual, not a company
 
   const [step, setStep] = useState(1) // 1 = details, 2 = requirements
   const [status, setStatus] = useState('idle') // idle | loading | success | error
@@ -80,8 +125,14 @@ export function OnboardingForm({ serviceName, requestType }) {
     setStatus('loading')
     setError('')
     try {
+      // For personal services (Job Seeker), company = their current status
+      const companyName = isPersonal
+        ? (details.company || 'Individual')
+        : (details.company || details.name)
+
       const res = await submitOnboardingRequest({
         ...details,
+        company: companyName,
         serviceName,
         requestType,
         requirements: hasRequirements ? reqs : null,
@@ -89,8 +140,9 @@ export function OnboardingForm({ serviceName, requestType }) {
       setSubmittedData(res.data)
       setStatus('success')
     } catch (err) {
+      console.error('[OnboardingForm] Submit error:', err)
       setStatus('error')
-      setError('Something went wrong. Please try again.')
+      setError(err?.message || 'Submission failed. Please check your details and try again.')
       setStep(1)
     }
   }
@@ -137,11 +189,17 @@ export function OnboardingForm({ serviceName, requestType }) {
           <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-3.5">What Happens Next</p>
           <ol className="space-y-3">
             {(isTrial ? [
-              'Our team reviews your service requirements',
-              'We configure your AI agent for your niche',
+              isPersonal
+                ? 'Our team reviews your resume and job preferences'
+                : 'Our team reviews your service requirements',
+              isPersonal
+                ? 'We set up your AI job search agent'
+                : 'We configure your AI agent for your niche',
               `You receive login credentials at ${details.email}`,
               'Your 3-day trial begins immediately on activation',
-              'After 3 days — upgrade for ₹9,999/mo to continue',
+              isPersonal
+                ? 'After 3 days — upgrade for ₹2,999/mo to continue'
+                : 'After 3 days — upgrade to continue',
             ] : [
               'Our team reviews your booking request',
               'We contact you to confirm payment',
@@ -228,7 +286,9 @@ export function OnboardingForm({ serviceName, requestType }) {
           <div>
             <label className={LABEL}>Email Address *</label>
             <input type="email" name="email" value={details.email} onChange={handleDetailsChange}
-              required placeholder="rahul@company.com" className={INPUT} />
+              required
+              placeholder={isPersonal ? 'rahul@gmail.com' : 'rahul@company.com'}
+              className={INPUT} />
           </div>
         </div>
 
@@ -239,27 +299,71 @@ export function OnboardingForm({ serviceName, requestType }) {
               placeholder="+91 98765 43210" className={INPUT} />
           </div>
           <div>
-            <label className={LABEL}>Company Name *</label>
-            <input type="text" name="company" value={details.company} onChange={handleDetailsChange}
-              required placeholder="Your Company" className={INPUT} />
+            {isPersonal ? (
+              // Job Seeker: current status instead of company name
+              <>
+                <label className={LABEL}>Current Status *</label>
+                <select
+                  name="company"
+                  value={details.company}
+                  onChange={handleDetailsChange}
+                  required
+                  className={`${INPUT} appearance-none cursor-pointer`}
+                >
+                  <option value="">Select your current status</option>
+                  {CURRENT_STATUS_OPTIONS.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              // Business services: company name
+              <>
+                <label className={LABEL}>Company Name *</label>
+                <input type="text" name="company" value={details.company} onChange={handleDetailsChange}
+                  required placeholder="Your Company" className={INPUT} />
+              </>
+            )}
           </div>
         </div>
 
-        <div>
-          <label className={LABEL}>Industry</label>
-          <select name="industry" value={details.industry} onChange={handleDetailsChange}
-            className={`${INPUT} appearance-none cursor-pointer`}>
-            <option value="" className="text-slate-400">Select Industry</option>
-            {industries.map(i => (
-              <option key={i} value={i} className="text-slate-800">{i}</option>
-            ))}
-          </select>
-        </div>
+        {isPersonal ? (
+          // Job Seeker: preferred work domain instead of industry
+          <div>
+            <label className={LABEL}>Preferred Work Domain</label>
+            <input
+              type="text"
+              name="industry"
+              value={details.industry}
+              onChange={handleDetailsChange}
+              placeholder="e.g. Software Engineering, Finance, Marketing, Design"
+              className={INPUT}
+            />
+          </div>
+        ) : (
+          // Business services: industry dropdown
+          <div>
+            <label className={LABEL}>Industry</label>
+            <select name="industry" value={details.industry} onChange={handleDetailsChange}
+              className={`${INPUT} appearance-none cursor-pointer`}>
+              <option value="" className="text-slate-400">Select Industry</option>
+              {industries.map(i => (
+                <option key={i} value={i} className="text-slate-800">{i}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div>
-          <label className={LABEL}>Additional Message</label>
+          <label className={LABEL}>
+            {isPersonal ? 'Anything you want to tell us?' : 'Additional Message'}
+          </label>
           <textarea name="message" value={details.message} onChange={handleDetailsChange}
-            rows={2} placeholder="Anything specific you'd like us to know..."
+            rows={2}
+            placeholder={isPersonal
+              ? "e.g. I'm targeting product roles at early-stage startups, open to remote..."
+              : "Anything specific you'd like us to know..."
+            }
             className={`${INPUT} resize-none`} />
         </div>
 
@@ -269,13 +373,14 @@ export function OnboardingForm({ serviceName, requestType }) {
               ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
               : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
           }`}>
-          {hasRequirements ? 'Next: Service Requirements →' : (
-            isTrial ? 'Start My Free Trial →' : 'Book Service →'
-          )}
+          {hasRequirements
+            ? (isPersonal ? 'Next: Job Preferences →' : 'Next: Service Requirements →')
+            : (isTrial ? 'Start My Free Trial →' : 'Book Service →')
+          }
         </button>
 
         <p className="text-center text-[10px] text-slate-500 font-light">
-          By submitting you agree to receive follow-up notes. We respect your privacy.
+          By submitting you agree to our terms. We respect your privacy.
         </p>
       </form>
     )

@@ -108,7 +108,7 @@ export default function ServicesPage() {
           </span>
           <h1 className="text-4xl font-extrabold text-slate-900 sm:text-6xl tracking-tight mt-5 leading-tight">All Services</h1>
           <p className="mt-4 text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
-            Five powerful SaaS automation services plus custom development solutions for your business.
+            Six powerful SaaS automation services plus custom development solutions for your business.
           </p>
         </div>
       </section>

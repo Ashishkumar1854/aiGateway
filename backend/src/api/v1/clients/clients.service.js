@@ -98,4 +98,169 @@ const assignService = async (clientId, serviceId, config) => {
   })
 }
 
-module.exports = { getAll, getById, create, update, remove, getServices, assignService }
+const getOnboardingHistory = async (clientId) => {
+  return prisma.onboardingRequest.findMany({
+    where: { clientId },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+    select: {
+      id: true,
+      serviceName: true,
+      serviceType: true,
+      requestType: true,
+      status: true,
+      createdAt: true,
+      activatedAt: true,
+      expiresAt: true,
+    }
+  })
+}
+
+const getLeads = async (clientId) => {
+  return prisma.lead.findMany({
+    where: { clientId, deletedAt: null },
+    orderBy: { createdAt: 'desc' }
+  })
+}
+
+const createLead = async (clientId, data) => {
+  return prisma.lead.create({
+    data: {
+      companyName: data.companyName || 'Unknown',
+      contactName: data.contactName,
+      email: data.email,
+      phone: data.phone,
+      website: data.website,
+      industry: data.industry,
+      location: data.location,
+      status: data.status || 'COLD',
+      source: data.source || 'client_portal',
+      notes: data.notes,
+      clientId,
+    }
+  })
+}
+
+const getOutreachLogs = async (clientId) => {
+  return prisma.outreachLog.findMany({
+    where: { lead: { clientId } },
+    include: { lead: { select: { companyName: true, contactName: true, email: true } } },
+    orderBy: { createdAt: 'desc' }
+  })
+}
+
+const createOutreachLog = async (clientId, data) => {
+  const lead = await prisma.lead.findFirst({
+    where: { id: data.leadId, clientId }
+  })
+  if (!lead) throw { statusCode: 404, message: 'Lead not found or access denied' }
+
+  return prisma.outreachLog.create({
+    data: {
+      leadId: data.leadId,
+      agentType: data.agentType || 'EMAIL_OUTREACH',
+      channel: data.channel || 'email',
+      subject: data.subject || null,
+      content: data.content,
+      status: data.status || 'sent',
+      sentAt: new Date(),
+    }
+  })
+}
+
+const applyJobSeeker = async (clientId, data) => {
+  const { recruiterName, recruiterEmail, companyName, jobRole, jobDescription } = data
+
+  const lead = await prisma.lead.create({
+    data: {
+      clientId,
+      companyName: companyName || 'Recruiter Direct',
+      contactName: recruiterName || 'Recruiter',
+      email: recruiterEmail,
+      status: 'COLD',
+      source: 'job_application',
+      notes: `Target Role: ${jobRole || 'N/A'}\n\nJob Description:\n${jobDescription || ''}`,
+    }
+  })
+
+  const clientInfo = await prisma.client.findFirst({
+    where: { id: clientId },
+    include: { user: true, serviceAssignments: { include: { service: true } } }
+  })
+
+  const candidateName = clientInfo?.user?.name || 'Candidate'
+  const candidateEmail = clientInfo?.user?.email || 'candidate@email.com'
+
+  const jobSeekerAssignment = clientInfo?.serviceAssignments?.find(
+    a => a.service?.type === 'JOB_SEEKER'
+  )
+  const resumeLink = jobSeekerAssignment?.config?.resume_link || 'https://drive.google.com/file/d/candidate-resume/view'
+
+  const subject = `Application for ${jobRole || 'Open Position'} - ${candidateName}`
+  const body = `Hi ${recruiterName || 'Hiring Team'},\n\nI hope this email finds you well.\n\nI am writing to express my strong interest in the ${jobRole || 'position'} at ${companyName || 'your company'}. My target search and skills align with your requirements.\n\nI have attached my details and customized my application. You can review my full profile and download my resume here: ${resumeLink}\n\nI would appreciate the opportunity to connect and discuss how I can contribute to your goals.\n\nBest regards,\n${candidateName}\n${candidateEmail}`
+
+  const outreach = await prisma.outreachLog.create({
+    data: {
+      leadId: lead.id,
+      agentType: 'EMAIL_OUTREACH',
+      channel: 'email',
+      subject,
+      content: body,
+      status: 'sent',
+      sentAt: new Date(),
+    }
+  })
+
+  return { lead, outreach }
+}
+
+const triggerLeadSearch = async (clientId, data) => {
+  const { keyword, location, limit = 10, sources = ['Google Maps'] } = data
+
+  const mockNames = [
+    { company: `${keyword} Hub`, contact: 'John Doe', email: 'info@hub.com', phone: '+1-555-0199' },
+    { company: `Apex ${keyword}s`, contact: 'Jane Smith', email: 'contact@apex.com', phone: '+1-555-0234' },
+    { company: `Elite ${keyword} Group`, contact: 'Robert Johnson', email: 'sales@elite.com', phone: '+1-555-0567' },
+    { company: `${keyword} Partners`, contact: 'Emily Davis', email: 'partner@partners.com', phone: '+1-555-0789' },
+    { company: `Modern ${keyword} Co`, contact: 'Michael Brown', email: 'hello@modern.com', phone: '+1-555-0912' },
+  ]
+
+  const count = Math.min(limit, mockNames.length)
+  const createdLeads = []
+
+  for (let i = 0; i < count; i++) {
+    const mock = mockNames[i]
+    const lead = await prisma.lead.create({
+      data: {
+        clientId,
+        companyName: mock.company,
+        contactName: mock.contact,
+        email: mock.email,
+        phone: mock.phone,
+        location: location || 'Anywhere',
+        status: 'COLD',
+        source: sources.join(', '),
+      }
+    })
+    createdLeads.push(lead)
+  }
+
+  return createdLeads
+}
+
+module.exports = {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  getServices,
+  assignService,
+  getOnboardingHistory,
+  getLeads,
+  createLead,
+  getOutreachLogs,
+  createOutreachLog,
+  applyJobSeeker,
+  triggerLeadSearch,
+}

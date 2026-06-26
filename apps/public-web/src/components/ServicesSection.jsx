@@ -73,7 +73,7 @@ export function ServicesSection() {
           </span>
           <h2 className="text-3xl font-extrabold text-slate-900 mt-5 sm:text-5xl tracking-tight">Automate with AI</h2>
           <p className="mt-4 text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">
-            Five powerful automation services. Start with one, add more as you grow.
+            Six powerful automation services. Start with one, add more as you grow.
           </p>
         </div>
 

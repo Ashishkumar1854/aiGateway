@@ -13,6 +13,7 @@ export default function ContactPage({ searchParams }) {
   const isTrial = requestType === 'trial'
   const isBook  = requestType === 'book'
   const isOnboarding = (isTrial || isBook) && preSelectedService
+  const isPersonalService = preSelectedService === 'Job Seeker'
 
   return (
     <section className="py-24 bg-white min-h-screen relative overflow-hidden">
@@ -44,7 +45,9 @@ export default function ContactPage({ searchParams }) {
 
                 <p className="text-sm text-slate-500 leading-relaxed font-light">
                   {isTrial
-                    ? `Fill in your details and service requirements. Your ${preSelectedService} trial will be activated within 1 hour — live for 3 full days.`
+                    ? isPersonalService
+                      ? `Fill in your details and job preferences. Your ${preSelectedService} AI assistant will be configured and activated within 1 hour — live for 3 full days.`
+                      : `Fill in your details and service requirements. Your ${preSelectedService} trial will be activated within 1 hour — live for 3 full days.`
                     : `Fill in your details. Our team will contact you to confirm payment and activate your ${preSelectedService} permanently.`
                   }
                 </p>
@@ -54,8 +57,11 @@ export default function ContactPage({ searchParams }) {
                   {(isTrial ? [
                     { icon: '⚡', title: 'Activated within 1 hour', desc: 'Admin reviews and activates your trial instantly.' },
                     { icon: '🔓', title: '3 days full access', desc: 'Complete service access — no credit card required.' },
-                    { icon: '📩', title: 'Login credentials by email', desc: 'Watch your inbox for your client dashboard login.' },
-                    { icon: '🔄', title: 'Easy upgrade', desc: 'After trial, continue for ₹9,999/mo or cancel anytime.' },
+                    { icon: '📩', title: 'Login credentials by email', desc: 'Watch your inbox for your dashboard login.' },
+                    { icon: '🔄', title: 'Easy upgrade', desc: isPersonalService
+                      ? 'After trial, continue for ₹2,999/mo or cancel anytime.'
+                      : 'After trial, continue or cancel anytime.'
+                    },
                   ] : [
                     { icon: '✅', title: 'Manual payment verification', desc: 'Our team confirms payment and activates your service.' },
                     { icon: '⚡', title: 'Live within 48 hours', desc: 'Service goes live once payment is confirmed.' },
