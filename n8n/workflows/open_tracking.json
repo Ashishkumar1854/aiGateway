@@ -34,6 +34,23 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "=http://backend:5000/api/v1/smart-apply/applications/{{ $json.applicationId }}/open",
+        "sendBody": false,
+        "options": {}
+      },
+      "id": "e0a0d0a4-4321-4b11-a889-999999999999",
+      "name": "Notify Backend of Open",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        460,
+        250
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "respondWith": "binary",
         "options": {}
       },
@@ -42,7 +59,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        460,
+        640,
         250
       ]
     }
@@ -60,6 +77,17 @@
       ]
     },
     "Generate Tracking Pixel": {
+      "main": [
+        [
+          {
+            "node": "Notify Backend of Open",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Backend of Open": {
       "main": [
         [
           {

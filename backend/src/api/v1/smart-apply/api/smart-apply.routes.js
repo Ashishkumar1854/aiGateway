@@ -28,6 +28,11 @@ router.post(
   controller.submitFeedback
 );
 
+router.post(
+  '/applications/:id/open',
+  controller.trackEmailOpen
+);
+
 // ─── PROTECTED ROUTES (Client Context Only) ───────────────────────────────────
 
 router.use(authenticate);
@@ -43,6 +48,7 @@ router.put('/resumes/:id/versions/:versionId/current', controller.setCurrentVers
 // Job Applications
 router.post('/applications', validateCreateApplication, controller.createApplicationDraft);
 router.get('/applications', controller.listApplications);
+router.get('/analytics', controller.getAnalytics);
 router.get('/applications/:id', controller.getApplicationById);
 router.put('/applications/:id', validateUpdateApplication, controller.updateApplication);
 

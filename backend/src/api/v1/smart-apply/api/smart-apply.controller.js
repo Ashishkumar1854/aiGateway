@@ -130,6 +130,15 @@ const submitFeedback = async (req, res, next) => {
   }
 };
 
+const trackEmailOpen = async (req, res, next) => {
+  try {
+    const data = await applicationService.trackApplicationOpen(req.params.id);
+    return sendSuccess(res, data, 'Email open recorded successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
 const addInterviewNote = async (req, res, next) => {
   try {
     const clientId = await getClientId(req.user.id);
@@ -151,6 +160,16 @@ const updateInterviewNote = async (req, res, next) => {
   }
 };
 
+const getAnalytics = async (req, res, next) => {
+  try {
+    const clientId = await getClientId(req.user.id);
+    const data = await applicationService.getClientAnalytics(clientId);
+    return sendSuccess(res, data, 'Analytics data retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createResume,
   listResumes,
@@ -162,6 +181,8 @@ module.exports = {
   getApplicationById,
   updateApplication,
   submitFeedback,
+  trackEmailOpen,
   addInterviewNote,
   updateInterviewNote,
+  getAnalytics,
 };

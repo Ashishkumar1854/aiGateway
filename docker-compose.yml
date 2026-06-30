@@ -99,6 +99,7 @@ services:
       AI_WORKERS_URL: http://ai-workers:8000
       AI_WORKERS_SECRET: dev-ai-secret
       PORT: 5000
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./backend:/app
       - /app/node_modules

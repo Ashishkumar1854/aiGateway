@@ -637,6 +637,7 @@ model ResumeVersion {
   technologies   String[]
   atsKeywords    String[]
   pdfLocation    String           // Local path or URL to stored Resume PDF
+  intelligenceProfile Json?
   isCurrent      Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -659,6 +660,8 @@ model JobApplication {
   hrEmail           String
   hrName            String?
   jobDescription    String?
+  jobIntelligence   Json?
+  matchResult       Json?
   additionalNotes   String?
   subject           String?                // AI Generated Subject
   emailContent      String?                // AI Generated Personalized Email Body

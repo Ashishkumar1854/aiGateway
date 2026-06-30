@@ -1,10 +1,6 @@
-/**
- * Resume Service Layer
- * Coordinates business logic and triggers actual n8n AI parsing for resume versions.
- */
-
 const resumeRepository = require('../repositories/resume.repository');
 const n8nService = require('../../../../services/n8n.service');
+const resumeIntelligenceService = require('./resume-intelligence.service');
 
 /**
  * Triggers n8n parsing webhook to extract structured info from PDF
@@ -38,11 +34,21 @@ const uploadAndCreateResume = async (clientId, resumeName, pdfLocation) => {
   // Parse PDF structured information using active n8n parser webhook
   const structuredData = await parseResumePDF(pdfLocation);
 
-  return resumeRepository.createResume(
+  const result = await resumeRepository.createResume(
     clientId,
     { name: resumeName },
     structuredData
   );
+
+  const initialVersion = result.versions?.[0];
+  if (initialVersion) {
+    // Trigger intelligence generation asynchronously in background
+    resumeIntelligenceService.generateAndSaveProfile(initialVersion.id).catch(err => {
+      console.error(`[Resume Service] Background intelligence enrichment failed for version ${initialVersion.id}:`, err.message);
+    });
+  }
+
+  return result;
 };
 
 /**
@@ -77,7 +83,14 @@ const addResumeVersion = async (resumeId, clientId, pdfLocation) => {
   const structuredData = await parseResumePDF(pdfLocation);
 
   // 3. Create the version
-  return resumeRepository.createResumeVersion(resumeId, structuredData);
+  const newVersion = await resumeRepository.createResumeVersion(resumeId, structuredData);
+
+  // Trigger intelligence generation asynchronously in background
+  resumeIntelligenceService.generateAndSaveProfile(newVersion.id).catch(err => {
+    console.error(`[Resume Service] Background intelligence enrichment failed for version ${newVersion.id}:`, err.message);
+  });
+
+  return newVersion;
 };
 
 /**

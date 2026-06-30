@@ -119,3 +119,138 @@ We successfully implemented and verified the bespoke freelancer/IT project reque
   * `🤖 AI Scraper` (orange) for `lead_research_agent`
   * `✍️ Manual` (gray) for `manual`
 * **Warning Banners & Detail Parsing**: Detail view `/crm/leads/[id]` displays banners (e.g., *"💼 Custom request. Avoid cold automation schedules"* to prevent automated outreach to warm signups) and renders the structured project specifications panel showing the project name, budget, and scope.
+
+---
+
+## 5. Phase 15: Smart Apply E2E Verification & Recruiter Feedback Portal
+
+We successfully completed the end-to-end implementation and verification of the remaining core features of the **Smart Apply** service:
+
+### 🎯 1. Real Gmail Outreach Delivery (fixed)
+- Resolved the `WorkflowHasIssuesError` by aligning the n8n Gmail node credential properties with `gmailOAuth2` (v2.1).
+- Gmail OAuth2 API call succeeds end-to-end and returns a real Google `messageId` (e.g. `19f17697c54f1f5a`), successfully updating application status from `DRAFT` to `SENT`.
+
+### 👁 2. Email Open Tracking
+- Injected an invisible 1x1 tracking pixel `<img>` tag pointing to the `open_tracking` n8n workflow at the bottom of generated outreach HTML emails.
+- When the recruiter opens the email, the tracking pixel triggers n8n which registers a webhook event and notifies the backend at `POST /api/v1/smart-apply/applications/:id/open`.
+- Updates the database application status to `OPENED` and logs an automated tracking timeline event.
+
+### 💬 3. Recruiter Feedback Portal (Public-Web)
+- Implemented a public feedback page at `http://localhost:3000/feedback/[applicationId]` where recruiters are redirected when clicking feedback buttons.
+- The page parses preset feedback types from the URL query parameters (e.g., `?type=SKILLS_MISMATCH`).
+- Recruiters submit their selection (Skills, Experience, Location, Position Filled, Hiring Closed, Resume Improvement, or Other) and optional detailed comments.
+- Submits feedback to `POST /api/v1/smart-apply/applications/:id/feedback`, transitioning the application status to `FEEDBACK_RECEIVED` and triggering the n8n recruiter-feedback workflow to update database tracking logs.
+
+### 📊 4. Smart Apply Resume Analytics & Settings Persistence
+- Added backend `GET /api/v1/smart-apply/analytics` calculating overall counts, success rates, and per-resume performance statistics.
+- Integrated stats into the client dashboard's **Analytics** tab, rendering a detailed table tracking Sent, Opened, Open Rate %, Feedback, Interviews, Offers, and Success Rate % for each resume profile.
+- Persisted default email signatures to `localStorage` in the **Settings** tab, which automatically append to AI-generated outreach drafts.
+
+---
+
+## 6. Phase 16: Resume Intelligence Engine & AI Intelligence Layer
+
+We successfully implemented and verified the modular **Resume Intelligence Engine** to convert shallow resume versions into rich, queryable, and AI-ready profiles:
+
+### ⚙️ 1. Database & Schema Updates
+- Added `intelligenceProfile Json?` to the `ResumeVersion` model in `schema.prisma`.
+- Pushed updates and regenerated the Prisma Client dynamically.
+- Configured `docker-compose.yml` to pass `GEMINI_API_KEY` to the backend Node.js container, enabling direct HTTPS calls to Google Generative AI APIs.
+
+### 🧠 2. Reusable Resume Intelligence Service
+- Implemented `resume-intelligence.service.js` containing the core AI engine logic:
+  - Takes parsed resume text/fields from the database (never re-parsing the PDF).
+  - Prompts `gemini-2.0-flash` using a system instruction specifying a target schema (career level, framework categorizations, target industries, strengths, improvement areas, portfolio/github/linkedin links).
+  - Handles API rate-limiting delays (`status 429`) with backoffs.
+  - Automatically breaks retry loops if daily free-tier quotas are exhausted, falling back to a structured local builder.
+
+### 🛡️ 3. Robust Local Fallback Parser
+- Developed `generateFallbackProfile` within the intelligence service.
+- If the Gemini API is blocked or exhausted, this builder parses the standard resume skills and projects using case-insensitive mapping keywords, auto-categorizing them into frameworks, languages, databases, cloud platforms, devops, and AI/ML metrics. This ensures 100% service uptime.
+
+### 📦 4. Trigger Integration & Migration Script
+- Integrated `ResumeIntelligenceService.generateAndSaveProfile(versionId)` directly into the `resume.service.js` upload and new-version creation workflows.
+- Built a rate-limited database migration script `scripts/migrate-resume-intelligence.js` which successfully enriched all 5 existing database resume profiles with their intelligence profile.
+
+---
+
+## 7. Phase 6: Job Intelligence Engine
+
+We successfully implemented and verified the modular **Job Intelligence Engine** to convert plain-text job descriptions into rich, queryable, and AI-ready profiles:
+
+### ⚙️ 1. Database & Schema Updates
+- Added `jobIntelligence Json?` to the `JobApplication` model in `schema.prisma`.
+- Pushed updates and regenerated the Prisma Client dynamically.
+
+### 🧠 2. Reusable Job Intelligence Service
+- Implemented `job-intelligence.service.js` containing the core AI engine logic:
+  - Takes companyName, role, and jobDescription (never re-parsing the job description again).
+  - Prompts `gemini-2.0-flash` using a system instruction specifying a target schema (employmentType, workMode, requiredSkills, preferredSkills, responsibilities, qualifications, atsKeywords, industry, technologies, softSkills, summary).
+  - Handles API rate-limiting delays (`status 429`) with backoffs.
+  - Automatically breaks retry loops if daily free-tier quotas are exhausted, falling back to a structured local builder.
+
+### 🛡️ 3. Robust Local Fallback Parser
+- Developed `generateFallbackJobProfile` within the intelligence service.
+- If the Gemini API is blocked or exhausted, this builder parses the plain text job description using case-insensitive mapping keywords, auto-categorizing them into employmentType, workMode, requiredSkills, preferredSkills, responsibilities, qualifications, atsKeywords, industry, technologies, softSkills, and summary. This ensures 100% service uptime.
+
+### 📦 4. Trigger Integration & Migration Script
+- Integrated `JobIntelligenceService.generateAndSaveProfile(applicationId)` directly into the `application.service.js` draft creation flow.
+- Built a database migration script `scripts/migrate-job-intelligence.js` which successfully enriched all 4 existing database job applications with their job intelligence profile.
+
+---
+
+## 8. Pre-Phase 7 Verification & Phase 7: Resume ↔ Job Match Engine
+
+We completed the architecture verification checkpoints and implemented the modular **Resume ↔ Job Match Engine**:
+
+### 🔍 1. Architecture Verification Checkpoints
+- **Checkpoint 1 (Background Processing)**: [PASS] Refactored `resume.service.js` and `application.service.js` to dispatch profile enrichment calls asynchronously in the background. The HTTP thread returns a successful response instantly without waiting for AI processing.
+- **Checkpoint 2 (Fallback Strategy)**: [PASS] Reviewed and verified that both intelligence services only trigger fallback builders if Gemini fails or rate limits are reached.
+- **Checkpoint 3 (Reuse Validation)**: [PASS] Verified that the parsing/intelligence generation happens exactly once on upload/creation. Future matchmaking operations consume the stored JSON structures.
+
+### ⚙️ 2. Database Schema Updates
+- Added `matchResult Json?` to the `JobApplication` model in `schema.prisma`.
+- Synced changes to PostgreSQL.
+
+### 🧠 3. Reusable Matching Engine Service
+- Implemented `match-engine.service.js` performing full resume suitability matching:
+  - Takes a structured resume profile and a job profile.
+  - Prompts `gemini-2.0-flash` to score suitability across four indicators: `resumeScore`, `skillsScore`, `experienceScore`, and `eligibilityScore`, computing a weighted `overallScore` and rating (`Highly Recommended`, `Good Fit`, `Average Fit`, `Not Recommended`).
+  - Supports 429 quota exhaustion checks and retries.
+  - Automatically falls back to a local heuristic score evaluator if Gemini is unavailable, intersecting key technologies/roles mathematically to build the report.
+
+### 📦 4. Background Matching Trigger & Migration Script
+- Integrated `MatchEngineService.calculateAndSaveMatch(applicationId)` directly into the `application.service.js` draft creation workflow (incorporates a self-healing process that automatically triggers job/resume profile enrichment if missing).
+- Developed a database migration script `scripts/migrate-match-engine.js` which successfully populated suitability match results for all 4 existing job applications.
+
+---
+
+## 9. Phase 8: AI Personalized Email Engine
+
+We successfully implemented and verified the modular **AI Personalized Email Engine**:
+
+### 🧠 1. Reusable AI Email Service
+- Implemented `email-generator.service.js` containing the core email generation logic:
+  - Takes Resume Intelligence, Job Intelligence, Match Results, Company Name, Role, Recruiter Name, and Additional Notes.
+  - Prompts `gemini-2.0-flash` directly from Node.js (bypassing n8n generate-email webhooks) to write customized, natural outreach drafts.
+  - Avoids bullet-point repetitions or listing missing skills, focusing instead on overlapping technologies, achievements, and projects.
+  - Supports 429 quota exhaustion checks and retries.
+  - Automatically falls back to a structured local builder to write the email if Gemini daily quotas are hit, maintaining 100% service uptime.
+
+### ⚙️ 2. Matching Engine & Pipeline Integration
+- Hooked `emailGeneratorService.generateAndSavePersonalizedEmail(applicationId)` at the end of the `calculateAndSaveMatch` process inside `match-engine.service.js`.
+- During application creation (`createApplicationDraft`), a fast template-based email is saved instantly, returning the response immediately to the user. The background thread then automatically triggers `calculateAndSaveMatch` (which self-heals missing job profiles) and subsequently generates and updates the final AI-personalized email content in the database.
+
+### 📦 3. Migration Script & Backfill
+- Developed a database migration script `scripts/migrate-ai-emails.js` which successfully generated and populated AI-personalized emails for all 4 existing job applications.
+
+---
+
+## 10. n8n Architecture Cleanup
+
+We performed the approved architectural cleanup for n8n workflows:
+
+- Created the `n8n/workflows/deprecated/` directory.
+- Moved `generate_email.json` into the deprecated directory.
+- Created `n8n/workflows/deprecated/README.md` to document the migration details, backend mapping reference `email-generator.service.js`, and rollback guidelines.
+

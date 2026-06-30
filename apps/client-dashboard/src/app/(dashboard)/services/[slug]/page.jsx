@@ -17,6 +17,7 @@ export default function ServiceSlugPage({ params }) {
   const [resumes, setResumes] = useState([])
   const [applications, setApplications] = useState([])
   const [selectedApplication, setSelectedApplication] = useState(null)
+  const [analyticsData, setAnalyticsData] = useState(null)
 
   // Form states - Upload Resume
   const [newResumeName, setNewResumeName] = useState('')
@@ -82,8 +83,17 @@ export default function ServiceSlugPage({ params }) {
         }
       })
       .catch(console.error)
-      .finally(() => setLoading(false))
   }, [slug])
+
+  // Load settings signature from localStorage if available
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('smart_apply_signature')
+      if (saved) {
+        setSettingsSignature(saved)
+      }
+    }
+  }, [])
 
   // 2. Fetch Smart Apply data (Resumes & Applications)
   const fetchSmartApplyData = () => {
@@ -109,6 +119,15 @@ export default function ServiceSlugPage({ params }) {
       .then(res => {
         if (res.success && res.data) {
           setApplications(res.data)
+        }
+      })
+      .catch(console.error)
+
+    // Get analytics
+    api.get('/api/v1/smart-apply/analytics')
+      .then(res => {
+        if (res.success && res.data) {
+          setAnalyticsData(res.data)
         }
       })
       .catch(console.error)
@@ -1126,18 +1145,18 @@ export default function ServiceSlugPage({ params }) {
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
-              { label: 'Applications Sent', value: totalApplications, icon: '🚀', color: 'from-blue-500 to-indigo-600' },
-              { label: 'Emails Opened', value: totalOpened, icon: '👁', color: 'from-amber-500 to-orange-600' },
-              { label: 'Feedback Received', value: totalFeedback, icon: '💬', color: 'from-pink-500 to-rose-600' },
-              { label: 'Interviews Scheduled', value: totalInterviews, icon: '🗓', color: 'from-purple-500 to-violet-600' },
-              { label: 'Offers Received', value: totalOffers, icon: '🏆', color: 'from-emerald-500 to-teal-650' }
+              { label: 'Applications Sent', value: analyticsData?.overall?.totalApplications ?? totalApplications, icon: '🚀', color: 'from-blue-500 to-indigo-600' },
+              { label: 'Emails Opened', value: analyticsData?.overall?.totalOpened ?? totalOpened, icon: '👁', color: 'from-amber-500 to-orange-600' },
+              { label: 'Feedback Received', value: analyticsData?.overall?.totalFeedback ?? totalFeedback, icon: '💬', color: 'from-pink-500 to-rose-600' },
+              { label: 'Interviews Scheduled', value: analyticsData?.overall?.totalInterviews ?? totalInterviews, icon: '🗓', color: 'from-purple-500 to-violet-600' },
+              { label: 'Offers Received', value: analyticsData?.overall?.totalOffers ?? totalOffers, icon: '🏆', color: 'from-emerald-500 to-teal-650' }
             ].map((card, idx) => (
               <div key={idx} className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xl">{card.icon}</span>
-                  {card.label.includes('Opened') && totalApplications > 0 && (
+                  {card.label.includes('Opened') && (analyticsData?.overall?.totalApplications ?? totalApplications) > 0 && (
                     <span className="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                      {openRate}% Rate
+                      {analyticsData?.overall?.openRate ?? openRate}% Rate
                     </span>
                   )}
                 </div>
@@ -1147,6 +1166,55 @@ export default function ServiceSlugPage({ params }) {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Resume Analytics Section */}
+          <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+            <div className="p-5 border-b border-slate-200 bg-slate-50/20">
+              <h3 className="text-sm font-black text-slate-900">Resume Performance Analytics</h3>
+              <p className="text-[10.5px] text-slate-450 mt-1">Track the conversion and response rates of each of your uploaded resume profiles.</p>
+            </div>
+            
+            {!analyticsData?.resumes || analyticsData.resumes.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-xs italic">
+                No resume statistics available yet. Start applying to collect stats.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-wider font-black">
+                      <th className="p-4">Resume Profile Name</th>
+                      <th className="p-4">Applications Sent</th>
+                      <th className="p-4">Opened</th>
+                      <th className="p-4">Open Rate</th>
+                      <th className="p-4">Feedback Received</th>
+                      <th className="p-4">Interviews</th>
+                      <th className="p-4">Offers</th>
+                      <th className="p-4">Success Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-150">
+                    {analyticsData.resumes.map(stats => (
+                      <tr key={stats.resumeId} className="hover:bg-slate-50/30 transition-all duration-150">
+                        <td className="p-4 font-bold text-slate-900">{stats.resumeName}</td>
+                        <td className="p-4 text-slate-650">{stats.totalApplications}</td>
+                        <td className="p-4 text-slate-650">{stats.totalOpened}</td>
+                        <td className="p-4 font-bold text-amber-700">
+                          {stats.openRate}%
+                        </td>
+                        <td className="p-4 text-slate-650">{stats.totalFeedback}</td>
+                        <td className="p-4 text-slate-650">{stats.totalInterviews}</td>
+                        <td className="p-4 text-slate-650">{stats.totalOffers}</td>
+                        <td className="p-4 font-bold text-emerald-700">
+                          {stats.successRate}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
@@ -1204,6 +1272,9 @@ export default function ServiceSlugPage({ params }) {
             <div className="border-t border-slate-100 pt-4 text-right">
               <button
                 onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('smart_apply_signature', settingsSignature)
+                  }
                   setSettingsSaveSuccess(true)
                   setTimeout(() => setSettingsSaveSuccess(false), 3000)
                 }}

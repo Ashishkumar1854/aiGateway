@@ -14,24 +14,81 @@
       "name": "webhook-trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 250]
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Resolve PDF URL from input ===\nconst body = $json.body || $json;\nlet pdfLocation = body.pdfLocation || '';\nlet hasAttachment = false;\nconst fileName = body.fileName || 'Resume.pdf';\n\nif (pdfLocation) {\n  if (pdfLocation.includes('drive.google.com')) {\n    let fileId = '';\n    const fileDMatch = pdfLocation.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);\n    if (fileDMatch && fileDMatch[1]) {\n      fileId = fileDMatch[1];\n    } else {\n      const idParamMatch = pdfLocation.match(/[?&]id=([a-zA-Z0-9_-]+)/);\n      if (idParamMatch && idParamMatch[1]) {\n        fileId = idParamMatch[1];\n      }\n    }\n    if (fileId) {\n      pdfLocation = `https://drive.google.com/uc?export=download&id=${fileId}`;\n    }\n  }\n  hasAttachment = true;\n}\n\nreturn {\n  hasAttachment,\n  pdfLocation,\n  fileName,\n  hrEmail: body.hrEmail,\n  subject: body.subject,\n  emailBody: body.body\n};"
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-888888888888",
+      "name": "Resolve URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasAttachment }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-ifcheck11111",
+      "name": "Has Attachment?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.pdfLocation }}",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-aaaaaaaaaaaa",
+      "name": "Download PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [620, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Rename the binary attachment and pass through email data\nconst resolveData = $('Resolve URL').item.json;\nconst fileName = resolveData.fileName || 'Resume.pdf';\n\nconst item = {\n  json: {\n    hrEmail: resolveData.hrEmail,\n    subject: resolveData.subject,\n    emailBody: resolveData.emailBody\n  }\n};\n\n// Rename binary key to 'attachment'\nif ($binary && $binary.data) {\n  item.binary = {\n    attachment: {\n      ...$binary.data,\n      fileName: fileName,\n      mimeType: 'application/pdf'\n    }\n  };\n}\n\nreturn item;"
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-bbbbbbbbbbbb",
+      "name": "Prepare Attachment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [820, 160]
     },
     {
       "parameters": {
         "authentication": "oAuth2",
         "resource": "message",
         "operation": "send",
-        "sendTo": "={{ $json.body.hrEmail }}",
-        "subject": "={{ $json.body.subject }}",
-        "emailType": "text",
-        "message": "={{ $json.body.body }}",
-        "options": {}
+        "sendTo": "={{ $json.hrEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.emailBody }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "attachment"
+              }
+            ]
+          }
+        }
       },
       "id": "e0a0d0a3-4321-4b11-a889-222222222222",
-      "name": "Send Email Node",
+      "name": "Send With Attachment",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [280, 250],
+      "position": [1040, 160],
       "credentials": {
         "gmailOAuth2": {
           "id": "OjeHG0aqekQOf1k1",
@@ -42,23 +99,47 @@
     },
     {
       "parameters": {
-        "jsCode": "const emailResult = $json;\nconst messageId = emailResult.id || emailResult.messageId;\n\nif (!messageId) {\n  throw new Error('Gmail did not return a messageId - email was not sent');\n}\n\nreturn {\n  success: true,\n  messageId,\n  deliveryMetadata: {\n    provider: 'GMAIL',\n    sentAt: new Date().toISOString(),\n    status: 'sent'\n  }\n};"
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.hrEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.emailBody }}",
+        "options": {}
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-noattach0000",
+      "name": "Send Without Attachment",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [620, 440],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OjeHG0aqekQOf1k1",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailResult = $json;\nconst messageId = emailResult.id || emailResult.messageId || emailResult.threadId;\n\nif (!messageId) {\n  throw new Error('Gmail did not return a messageId - email may not have been sent');\n}\n\nreturn {\n  success: true,\n  messageId,\n  deliveryMetadata: {\n    provider: 'GMAIL',\n    sentAt: new Date().toISOString(),\n    status: 'sent'\n  }\n};"
       },
       "id": "e0a0d0a3-4321-4b11-a889-333333333333",
       "name": "Build Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 250]
+      "position": [1260, 300]
     },
     {
       "parameters": {
-        "jsCode": "// Capture exact Gmail error for debugging\nconst errorData = $json;\nconst errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);\n\nreturn {\n  success: false,\n  error: errorMsg,\n  rawError: errorData\n};"
+        "jsCode": "const errorData = $json;\nconst errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);\n\nreturn {\n  success: false,\n  error: errorMsg,\n  rawError: errorData\n};"
       },
       "id": "e0a0d0a3-4321-4b11-a889-666666666666",
       "name": "Capture Gmail Error",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 400]
+      "position": [1260, 480]
     },
     {
       "parameters": {
@@ -70,7 +151,7 @@
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [640, 250]
+      "position": [1460, 300]
     },
     {
       "parameters": {
@@ -84,7 +165,7 @@
       "name": "Respond Error",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [640, 400]
+      "position": [1460, 480]
     }
   ],
   "connections": {
@@ -92,14 +173,83 @@
       "main": [
         [
           {
-            "node": "Send Email Node",
+            "node": "Resolve URL",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Email Node": {
+    "Resolve URL": {
+      "main": [
+        [
+          {
+            "node": "Has Attachment?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Attachment?": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Without Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Prepare Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Attachment": {
+      "main": [
+        [
+          {
+            "node": "Send With Attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send With Attachment": {
+      "main": [
+        [
+          {
+            "node": "Build Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Capture Gmail Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Without Attachment": {
       "main": [
         [
           {
