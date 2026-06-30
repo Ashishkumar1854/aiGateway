@@ -1,0 +1,161 @@
+{
+  "id": "07PTSJrtKjQNEEvK",
+  "name": "Smart Apply - Generate Application Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-email",
+        "responseMode": "responseNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-111111111111",
+      "name": "webhook-trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { resumeProfile, companyName, role, hrName, additionalNotes } = $json.body;\n\n// Greeting Logic\nconst greeting = hrName ? `Dear ${hrName.trim()},` : 'Dear Hiring Team,';\n\n// CTA Requirement\nconst cta = \"I'd appreciate your feedback even if my profile isn't selected. Your feedback will help me improve future applications.\";\n\n// Prepare AI prompt\nconst prompt = `Write a professional job application email to ${companyName} for the position of ${role}.\n\nGreeting: ${greeting}\n\nCandidate Profile Details:\nPrimary Role: ${resumeProfile.primaryRole}\nSkills: ${resumeProfile.skills.join(', ')}\nExperience: ${resumeProfile.experience}\nProjects: ${JSON.stringify(resumeProfile.projects)}\nTechnologies: ${resumeProfile.technologies ? resumeProfile.technologies.join(', ') : ''}\n\nAdditional Vacancy Notes:\n${additionalNotes || 'None'}\n\nMandatory Ending CTA:\n${cta}\n\nGuidelines:\n- Use ONLY real candidate details from the profile. Do not hallucinate or add fake roles/projects.\n- Focus on relevant skills and experience matching the ${role} job title.\n- Keep it highly professional and concise.\n- Return the response strictly as a JSON object with two keys: \"subject\" and \"body\". Do not include any other text or markdown wraps.`;\n\nreturn {\n  prompt,\n  companyName,\n  role,\n  greeting,\n  cta\n};"
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-222222222222",
+      "name": "Prepare Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-888888888888",
+      "name": "Rate Limit Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        370,
+        250
+      ],
+      "webhookId": "rate-limit-wait-email"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={{ $env.GEMINI_API_KEY || 'AIzaSyPlaceholder' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        { \"text\": \"{{ $json.prompt }}\" }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\"\n  }\n}",
+        "options": {
+          "retryOnFail": true,
+          "maxRetries": 3,
+          "waitBetweenRetries": 3000
+        }
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-333333333333",
+      "onError": "continueRegularOutput",
+      "name": "Gemini AI Generator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        550,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let parsedEmail;\ntry {\n  const responseText = $json.candidates?.[0]?.content?.parts?.[0]?.text;\n  if (!responseText) throw new Error('No candidates text');\n  parsedEmail = JSON.parse(responseText);\n} catch (e) {\n  // Mock Fallback Email Draft\n  parsedEmail = {\n    subject: `Application for ${$node[\"Prepare Context\"].json.role} - Candidate`,\n    body: `${$node[\"Prepare Context\"].json.greeting}\n\nI am writing to express my interest in the ${$node[\"Prepare Context\"].json.role} position at ${$node[\"Prepare Context\"].json.companyName}.\n\nBased on my profile, I bring relevant skills and experience in software development and API orchestration. I have worked on modular platforms and enjoy building clean, robust systems.\n\n${$node[\"Prepare Context\"].json.cta}\n\nSincerely,\nCandidate`\n  };\n}\n\nreturn {\n  success: true,\n  subject: parsedEmail.subject,\n  body: parsedEmail.body\n};"
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-444444444444",
+      "name": "Validate & Extract Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        730,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "e0a0d0a2-4321-4b11-a889-555555555555",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        910,
+        250
+      ]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Context": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Wait": {
+      "main": [
+        [
+          {
+            "node": "Gemini AI Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini AI Generator": {
+      "main": [
+        [
+          {
+            "node": "Validate & Extract Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Extract Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

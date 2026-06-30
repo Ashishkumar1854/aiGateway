@@ -1,0 +1,76 @@
+{
+  "id": "I0ciInZE3MpRiphJ",
+  "name": "Smart Apply - Open Tracking",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "open-tracking/:applicationId",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": "{\n  \"Content-Type\": \"image/gif\",\n  \"Cache-Control\": \"no-store, no-cache, must-revalidate, max-age=0\"\n}"
+        }
+      },
+      "id": "e0a0d0a4-4321-4b11-a889-111111111111",
+      "name": "webhook-trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const applicationId = $json.params.applicationId;\n\n// Base64 transparent 1x1 GIF pixel\nconst pixelBase64 = \"R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\";\n\n// Return standard tracking event payload with binary image\nreturn {\n  applicationId,\n  openedAt: new Date().toISOString(),\n  binary: {\n    data: {\n      data: pixelBase64,\n      mimeType: \"image/gif\",\n      fileName: \"pixel.gif\"\n    }\n  }\n};"
+      },
+      "id": "e0a0d0a4-4321-4b11-a889-222222222222",
+      "name": "Generate Tracking Pixel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {}
+      },
+      "id": "e0a0d0a4-4321-4b11-a889-333333333333",
+      "name": "Respond with Pixel",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        250
+      ]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Tracking Pixel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Tracking Pixel": {
+      "main": [
+        [
+          {
+            "node": "Respond with Pixel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

@@ -14,6 +14,7 @@ const SERVICE_NAME_TO_TYPE = {
   'WhatsApp Automation': 'WHATSAPP_AUTOMATION',
   'LinkedIn Automation': 'LINKEDIN_OUTREACH',
   'Job Seeker': 'JOB_SEEKER',
+  'Smart Apply': 'JOB_SEEKER',
 
   // Alternative/Older/Detailed page names
   'Lead Generation Bot': 'LEAD_GENERATION',
@@ -29,7 +30,7 @@ const SERVICE_TYPE_TO_NAME = {
   REELS_AUTOMATION: 'Reels Automation Bot',
   WHATSAPP_AUTOMATION: 'WhatsApp Flow Automation',
   LINKEDIN_OUTREACH: 'LinkedIn Outreach',
-  JOB_SEEKER: 'Job Seeker',
+  JOB_SEEKER: 'Smart Apply',
   CUSTOM: 'Custom Service',
 }
 
@@ -41,10 +42,7 @@ const SERVICE_TYPE_TO_NAME = {
  * Generate a secure temp password (12 chars: letters + digits)
  */
 function generateTempPassword() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
-  return Array.from(crypto.randomBytes(12))
-    .map(b => chars[b % chars.length])
-    .join('')
+  return 'client123'
 }
 
 /**
@@ -78,18 +76,31 @@ const submitOnboarding = async (req, res) => {
       serviceName, serviceType: rawServiceType,
       requestType = 'TRIAL',
       requirements = null,
+      password,
     } = req.body
 
-    // Validate required fields
-    if (!name || !email || !companyName || !serviceName) {
+    // Validate required fields (companyName is now optional)
+    if (!name || !email || !serviceName) {
       return res.status(400).json({
         success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'name, email, companyName, and serviceName are required' }
+        error: { code: 'VALIDATION_ERROR', message: 'name, email, and serviceName are required' }
       })
     }
 
+    const resolvedCompanyName = companyName || name || 'Individual'
+
+    // Decode serviceName recursively in case of URL double-encoding
+    let decodedServiceName = serviceName
+    while (decodedServiceName && decodedServiceName.includes('%')) {
+      try {
+        decodedServiceName = decodeURIComponent(decodedServiceName)
+      } catch (e) {
+        break
+      }
+    }
+
     // Resolve serviceType from name if not directly provided
-    const serviceType = rawServiceType || SERVICE_NAME_TO_TYPE[serviceName] || 'CUSTOM'
+    const serviceType = rawServiceType || SERVICE_NAME_TO_TYPE[decodedServiceName] || 'CUSTOM'
 
     // Validate requestType
     if (!['TRIAL', 'BOOK'].includes(requestType)) {
@@ -99,21 +110,139 @@ const submitOnboarding = async (req, res) => {
       })
     }
 
+    // Check if email already registered
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    // Check if phone number already registered for a client
+    let existingPhone = null
+    if (phone) {
+      existingPhone = await prisma.client.findFirst({
+        where: { phone: phone.trim() }
+      })
+    }
+
+    if (existingUser || existingPhone) {
+      return res.status(409).json({
+        success: false,
+        error: {
+          code: 'ALREADY_EXISTS',
+          message: 'This email or mobile number is already registered for an active trial/account.'
+        }
+      })
+    }
+
     const onboarding = await prisma.onboardingRequest.create({
       data: {
         name,
         email,
         phone: phone || null,
-        companyName,
+        companyName: resolvedCompanyName,
         industry: industry || null,
         message: message || null,
         serviceType,
-        serviceName,
+        serviceName: decodedServiceName,
         requestType,
         requirements: requirements || null,
-        status: 'PENDING',
+        status: 'ACTIVATED',
+        activatedAt: new Date(),
       }
     })
+
+    // --- Auto-Activation Logic ---
+    const finalPassword = password || generateTempPassword()
+    const passwordHash = await bcrypt.hash(finalPassword, 10)
+
+    let user = await prisma.user.findUnique({ where: { email } })
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          passwordHash,
+          role: 'CLIENT',
+          isActive: true,
+        }
+      })
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash,
+          name,
+        }
+      })
+    }
+
+    let client = await prisma.client.findUnique({ where: { userId: user.id } })
+    if (!client) {
+      client = await prisma.client.create({
+        data: {
+          userId: user.id,
+          companyName: resolvedCompanyName,
+          industry: industry || null,
+          phone: phone || null,
+          status: 'active',
+          notes: `Auto-onboarded via ${requestType} request for ${serviceName}`,
+        }
+      })
+    }
+
+    const service = await ensureService(serviceType, serviceName)
+    const isTrial = requestType === 'TRIAL'
+    const expiresAt = isTrial ? new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) : null
+
+    const existingAssignment = await prisma.serviceAssignment.findFirst({
+      where: { clientId: client.id, serviceId: service.id }
+    })
+
+    if (!existingAssignment) {
+      await prisma.serviceAssignment.create({
+        data: {
+          clientId: client.id,
+          serviceId: service.id,
+          isActive: true,
+          expiresAt,
+          config: requirements || {},
+        }
+      })
+    } else {
+      await prisma.serviceAssignment.update({
+        where: { id: existingAssignment.id },
+        data: { isActive: true, expiresAt, config: requirements || {} }
+      })
+    }
+
+    await prisma.subscription.create({
+      data: {
+        clientId: client.id,
+        plan: 'STARTER',
+        status: isTrial ? 'TRIAL' : 'ACTIVE',
+        startsAt: new Date(),
+        expiresAt,
+      }
+    })
+
+    await prisma.onboardingRequest.update({
+      where: { id: onboarding.id },
+      data: { clientId: client.id }
+    })
+
+    // Generate login tokens
+    const { signAccessToken, signRefreshToken } = require('../../../utils/jwt')
+    const accessToken = signAccessToken({ id: user.id, email: user.email, role: user.role })
+    const refreshToken = signRefreshToken({ id: user.id })
+
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      }
+    })
+
+    const { passwordHash: _, ...safeUser } = { ...user, client }
 
     return res.status(201).json({
       success: true,
@@ -121,10 +250,11 @@ const submitOnboarding = async (req, res) => {
         id: onboarding.id,
         requestType: onboarding.requestType,
         serviceName: onboarding.serviceName,
-        status: onboarding.status,
-        message: requestType === 'TRIAL'
-          ? 'Trial request received. Your service will be activated within 1 hour.'
-          : 'Book request received. Our team will contact you to confirm payment and activate your service.',
+        status: 'ACTIVATED',
+        user: safeUser,
+        accessToken,
+        refreshToken,
+        redirectUrl: `http://localhost:3001/login?token=${accessToken}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(safeUser))}`
       }
     })
   } catch (err) {

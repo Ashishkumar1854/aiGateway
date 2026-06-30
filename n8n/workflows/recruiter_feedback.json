@@ -1,0 +1,76 @@
+{
+  "id": "UwUzExT3a6rSjc6H",
+  "name": "Smart Apply - Recruiter Feedback",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recruiter-feedback",
+        "responseMode": "responseNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "e0a0d0a5-4321-4b11-a889-111111111111",
+      "name": "webhook-trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { applicationId, feedbackType, feedbackText } = $json.body;\n\nif (!applicationId || !feedbackType) {\n  throw new Error(\"Missing mandatory parameters: applicationId and feedbackType are required.\");\n}\n\nreturn {\n  success: true,\n  applicationId,\n  feedbackType,\n  feedbackText: feedbackText || \"No additional details provided.\",\n  processedAt: new Date().toISOString()\n};"
+      },
+      "id": "e0a0d0a5-4321-4b11-a889-222222222222",
+      "name": "Validate & Format Feedback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "e0a0d0a5-4321-4b11-a889-333333333333",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        250
+      ]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate & Format Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Format Feedback": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

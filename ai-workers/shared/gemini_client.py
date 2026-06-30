@@ -17,7 +17,7 @@ else:
 
 def get_model():
     """Get Gemini Flash model — fastest and cheapest."""
-    return genai.GenerativeModel("gemini-1.5-flash")
+    return genai.GenerativeModel("gemini-2.0-flash")
 
 
 async def generate_text(prompt: str, mock_response: str = None) -> str:

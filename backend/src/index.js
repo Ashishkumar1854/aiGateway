@@ -112,6 +112,7 @@ app.use('/api/v1/workflows',     require('./api/v1/workflows/workflows.routes'))
 app.use('/api/v1/webhooks',      require('./api/v1/webhooks/webhooks.routes'))
 app.use('/api/v1/bot',           require('./api/v1/bot/bot.routes'))
 app.use('/api/v1/onboarding',    require('./api/v1/onboarding/onboarding.routes'))
+app.use('/api/v1/smart-apply',   require('./api/v1/smart-apply/api/smart-apply.routes'))
 // Internal routes
 const { authenticate } = require('./middleware/auth.middleware')
 

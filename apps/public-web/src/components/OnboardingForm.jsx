@@ -59,6 +59,13 @@ const SERVICE_REQUIREMENTS = {
     { field: 'experience_level', label: 'Experience Level', type: 'select', options: ['Fresher (0-1yr)', 'Junior (1-3yr)', 'Mid (3-6yr)', 'Senior (6+ yr)'], required: true },
     { field: 'linkedin_url', label: 'LinkedIn Profile URL', type: 'url', placeholder: 'https://linkedin.com/in/yourname', required: false },
   ],
+  'Smart Apply': [
+    { field: 'resume_link', label: 'Resume Link (Google Drive / Dropbox)', type: 'url', placeholder: 'https://drive.google.com/file/...', required: true },
+    { field: 'target_roles', label: 'Target Job Roles', type: 'text', placeholder: 'e.g. Frontend Engineer, Product Manager, UI/UX Designer', required: true },
+    { field: 'target_locations', label: 'Target Job Locations', type: 'text', placeholder: 'e.g. Bangalore, Remote, Mumbai', required: true },
+    { field: 'experience_level', label: 'Experience Level', type: 'select', options: ['Fresher (0-1yr)', 'Junior (1-3yr)', 'Mid (3-6yr)', 'Senior (6+ yr)'], required: true },
+    { field: 'linkedin_url', label: 'LinkedIn Profile URL', type: 'url', placeholder: 'https://linkedin.com/in/yourname', required: false },
+  ],
 }
 
 const industries = [
@@ -68,7 +75,7 @@ const industries = [
 ]
 
 // Services where the user is an individual (not a company)
-const PERSONAL_SERVICES = new Set(['Job Seeker'])
+const PERSONAL_SERVICES = new Set(['Job Seeker', 'Smart Apply'])
 
 // Current status options for individual job seekers
 const CURRENT_STATUS_OPTIONS = [
@@ -85,17 +92,17 @@ const STEP_LABELS = ['Your Details', 'Job Setup']
 export function OnboardingForm({ serviceName, requestType }) {
   const router = useRouter()
   const isTrial = requestType === 'TRIAL'
-  const requirements = SERVICE_REQUIREMENTS[serviceName] || []
-  const hasRequirements = requirements.length > 0
+  const requirements = []
+  const hasRequirements = false
   const isPersonal = PERSONAL_SERVICES.has(serviceName) // Job Seeker = individual, not a company
 
-  const [step, setStep] = useState(1) // 1 = details, 2 = requirements
+  const [step, setStep] = useState(1)
   const [status, setStatus] = useState('idle') // idle | loading | success | error
   const [error, setError] = useState('')
   const [submittedData, setSubmittedData] = useState(null)
 
   const [details, setDetails] = useState({
-    name: '', email: '', phone: '', company: '', industry: '', message: '',
+    name: '', email: '', phone: '', company: '', industry: '', message: '', password: '',
   })
 
   // Build requirements state dynamically from service config
@@ -139,6 +146,8 @@ export function OnboardingForm({ serviceName, requestType }) {
       })
       setSubmittedData(res.data)
       setStatus('success')
+      window.location.href = `http://localhost:3001/login?email=${encodeURIComponent(details.email)}`
+      return
     } catch (err) {
       console.error('[OnboardingForm] Submit error:', err)
       setStatus('error')
@@ -222,7 +231,7 @@ export function OnboardingForm({ serviceName, requestType }) {
         </p>
 
         <button
-          onClick={() => { setStatus('idle'); setStep(1); setDetails({ name:'', email:'', phone:'', company:'', industry:'', message:'' }); setReqs(initialReqs) }}
+          onClick={() => { setStatus('idle'); setStep(1); setDetails({ name:'', email:'', phone:'', company:'', industry:'', message:'', password:'' }); setReqs(initialReqs) }}
           className="w-full text-xs text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
         >
           Submit another request
@@ -266,209 +275,129 @@ export function OnboardingForm({ serviceName, requestType }) {
   ) : null
 
   // ── STEP 1: DETAILS ───────────────────────────────────────────────────────
-  if (step === 1) {
-    return (
-      <form onSubmit={goNext} className="space-y-4 animate-in fade-in duration-200">
-        <StepIndicator />
-
-        {error && (
-          <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-600">
-            {error}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
-          <div>
-            <label className={LABEL}>Full Name *</label>
-            <input type="text" name="name" value={details.name} onChange={handleDetailsChange}
-              required placeholder="Rahul Sharma" className={INPUT} />
-          </div>
-          <div>
-            <label className={LABEL}>Email Address *</label>
-            <input type="email" name="email" value={details.email} onChange={handleDetailsChange}
-              required
-              placeholder={isPersonal ? 'rahul@gmail.com' : 'rahul@company.com'}
-              className={INPUT} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
-          <div>
-            <label className={LABEL}>Phone Number</label>
-            <input type="tel" name="phone" value={details.phone} onChange={handleDetailsChange}
-              placeholder="+91 98765 43210" className={INPUT} />
-          </div>
-          <div>
-            {isPersonal ? (
-              // Job Seeker: current status instead of company name
-              <>
-                <label className={LABEL}>Current Status *</label>
-                <select
-                  name="company"
-                  value={details.company}
-                  onChange={handleDetailsChange}
-                  required
-                  className={`${INPUT} appearance-none cursor-pointer`}
-                >
-                  <option value="">Select your current status</option>
-                  {CURRENT_STATUS_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </>
-            ) : (
-              // Business services: company name
-              <>
-                <label className={LABEL}>Company Name *</label>
-                <input type="text" name="company" value={details.company} onChange={handleDetailsChange}
-                  required placeholder="Your Company" className={INPUT} />
-              </>
-            )}
-          </div>
-        </div>
-
-        {isPersonal ? (
-          // Job Seeker: preferred work domain instead of industry
-          <div>
-            <label className={LABEL}>Preferred Work Domain</label>
-            <input
-              type="text"
-              name="industry"
-              value={details.industry}
-              onChange={handleDetailsChange}
-              placeholder="e.g. Software Engineering, Finance, Marketing, Design"
-              className={INPUT}
-            />
-          </div>
-        ) : (
-          // Business services: industry dropdown
-          <div>
-            <label className={LABEL}>Industry</label>
-            <select name="industry" value={details.industry} onChange={handleDetailsChange}
-              className={`${INPUT} appearance-none cursor-pointer`}>
-              <option value="" className="text-slate-400">Select Industry</option>
-              {industries.map(i => (
-                <option key={i} value={i} className="text-slate-800">{i}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div>
-          <label className={LABEL}>
-            {isPersonal ? 'Anything you want to tell us?' : 'Additional Message'}
-          </label>
-          <textarea name="message" value={details.message} onChange={handleDetailsChange}
-            rows={2}
-            placeholder={isPersonal
-              ? "e.g. I'm targeting product roles at early-stage startups, open to remote..."
-              : "Anything specific you'd like us to know..."
-            }
-            className={`${INPUT} resize-none`} />
-        </div>
-
-        <button type="submit"
-          className={`w-full rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg hover:-translate-y-0.5 ${
-            isTrial
-              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
-              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
-          }`}>
-          {hasRequirements
-            ? (isPersonal ? 'Next: Job Preferences →' : 'Next: Service Requirements →')
-            : (isTrial ? 'Start My Free Trial →' : 'Book Service →')
-          }
-        </button>
-
-        <p className="text-center text-[10px] text-slate-500 font-light">
-          By submitting you agree to our terms. We respect your privacy.
-        </p>
-      </form>
-    )
-  }
-
-  // ── STEP 2: SERVICE REQUIREMENTS ─────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in duration-200">
+    <form onSubmit={goNext} className="space-y-4 animate-in fade-in duration-200">
       <StepIndicator />
 
-      <div className={`rounded-xl border p-3.5 mb-4 ${
-        isTrial ? 'border-emerald-250 bg-emerald-50' : 'border-indigo-250 bg-indigo-50'
-      }`}>
-        <p className="text-[11px] text-slate-600 leading-relaxed">
-          Configure <strong className={`font-bold ${isTrial ? 'text-emerald-700' : 'text-indigo-700'}`}>
-            {serviceName}
-          </strong> Setup Parameters:
-        </p>
+      {error && (
+        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-600">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
+        <div>
+          <label className={LABEL}>Full Name *</label>
+          <input type="text" name="name" value={details.name} onChange={handleDetailsChange}
+            required placeholder="Rahul Sharma" className={INPUT} />
+        </div>
+        <div>
+          <label className={LABEL}>Email Address *</label>
+          <input type="email" name="email" value={details.email} onChange={handleDetailsChange}
+            required
+            placeholder={isPersonal ? 'rahul@gmail.com' : 'rahul@company.com'}
+            className={INPUT} />
+        </div>
       </div>
 
-      {requirements.map(field => (
-        <div key={field.field}>
-          <label className={LABEL}>
-            {field.label} {field.required && '*'}
-          </label>
-          {field.type === 'textarea' ? (
-            <textarea
-              name={field.field}
-              value={reqs[field.field]}
-              onChange={handleReqChange}
-              required={field.required}
-              placeholder={field.placeholder}
-              rows={3}
-              className={`${INPUT} resize-none`}
-            />
-          ) : field.type === 'select' ? (
-            <select
-              name={field.field}
-              value={reqs[field.field]}
-              onChange={handleReqChange}
-              required={field.required}
-              className={`${INPUT} appearance-none cursor-pointer`}
-            >
-              <option value="" className="text-slate-400">Select...</option>
-              {field.options.map(opt => (
-                <option key={opt} value={opt} className="text-slate-800">{opt}</option>
-              ))}
-            </select>
+      <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
+        <div>
+          <label className={LABEL}>Phone Number</label>
+          <input type="tel" name="phone" value={details.phone} onChange={handleDetailsChange}
+            placeholder="+91 98765 43210" className={INPUT} />
+        </div>
+        <div>
+          <label className={LABEL}>Password *</label>
+          <input type="password" name="password" value={details.password} onChange={handleDetailsChange}
+            required
+            minLength={6}
+            placeholder="••••••••" className={INPUT} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
+        <div>
+          {isPersonal ? (
+            // Job Seeker: current status instead of company name
+            <>
+              <label className={LABEL}>Current Status *</label>
+              <select
+                name="company"
+                value={details.company}
+                onChange={handleDetailsChange}
+                required
+                className={`${INPUT} appearance-none cursor-pointer`}
+              >
+                <option value="">Select your current status</option>
+                {CURRENT_STATUS_OPTIONS.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </>
           ) : (
-            <input
-              type={field.type}
-              name={field.field}
-              value={reqs[field.field]}
-              onChange={handleReqChange}
-              required={field.required}
-              placeholder={field.placeholder}
-              className={INPUT}
-            />
+            // Business services: company name
+            <>
+              <label className={LABEL}>Company Name</label>
+              <input type="text" name="company" value={details.company} onChange={handleDetailsChange}
+                placeholder="Your Company (Optional)" className={INPUT} />
+            </>
           )}
         </div>
-      ))}
-
-      <div className="flex gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => setStep(1)}
-          className="flex-1 rounded-xl border border-slate-200 hover:border-slate-350 bg-white py-3.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-all"
-        >
-          ← Back
-        </button>
-        <button
-          type="submit"
-          disabled={status === 'loading'}
-          className={`flex-1 rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg disabled:opacity-50 hover:-translate-y-0.5 ${
-            isTrial
-              ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
-              : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
-          }`}
-        >
-          {status === 'loading'
-            ? 'Submitting...'
-            : isTrial ? '🎁 Start Free Trial →' : '📋 Book Service →'
-          }
-        </button>
+        <div>
+          {isPersonal ? (
+            // Job Seeker: preferred work domain instead of industry
+            <>
+              <label className={LABEL}>Preferred Work Domain</label>
+              <input
+                type="text"
+                name="industry"
+                value={details.industry}
+                onChange={handleDetailsChange}
+                placeholder="e.g. Software Engineering, Design"
+                className={INPUT}
+              />
+            </>
+          ) : (
+            // Business services: profession instead of industry dropdown
+            <>
+              <label className={LABEL}>Profession</label>
+              <input
+                type="text"
+                name="industry"
+                value={details.industry}
+                onChange={handleDetailsChange}
+                placeholder="e.g. Freelancer, Consultant, Developer"
+                className={INPUT}
+              />
+            </>
+          )}
+        </div>
       </div>
 
+      <div>
+        <label className={LABEL}>
+          {isPersonal ? 'Anything you want to tell us?' : 'Additional Message'}
+        </label>
+        <textarea name="message" value={details.message} onChange={handleDetailsChange}
+          rows={2}
+          placeholder={isPersonal
+            ? "e.g. I'm targeting product roles at early-stage startups, open to remote..."
+            : "Anything specific you'd like us to know..."
+          }
+          className={`${INPUT} resize-none`} />
+      </div>
+
+      <button type="submit"
+        className={`w-full rounded-xl py-3.5 text-xs font-bold text-white transition-all shadow-lg hover:-translate-y-0.5 ${
+          isTrial
+            ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-100'
+            : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-100'
+        }`}>
+        {isTrial ? 'Start My Free Trial →' : 'Book Service →'}
+      </button>
+
       <p className="text-center text-[10px] text-slate-500 font-light">
-        By submitting you agree to receive follow-up notes. We respect your privacy.
+        By submitting you agree to our terms. We respect your privacy.
       </p>
     </form>
   )

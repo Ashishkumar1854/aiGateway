@@ -53,7 +53,7 @@ const services = [
   },
   {
     icon: '💼',
-    name: 'Job Seeker',
+    name: 'Smart Apply',
     slug: 'job-seeker',
     desc: 'Automate recruiter outreach, auto-customize your resume for ATS, and apply at scale.',
     features: ['ATS Optimization', 'Auto Resume Attach', 'Recruiter Mail Finder', 'Auto Job Applying', 'Reply Dashboard'],

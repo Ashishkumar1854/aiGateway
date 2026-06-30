@@ -213,19 +213,23 @@ services:
       N8N_HOST: n8n
       N8N_PORT: 5678
       N8N_PROTOCOL: http
-      WEBHOOK_URL: http://n8n:5678
+      WEBHOOK_URL: http://localhost:5678/
       N8N_USER_MANAGEMENT_DISABLED: "true"
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: postgres
       DB_POSTGRESDB_PORT: 5432
-      DB_POSTGRESDB_DATABASE: aigw
-      DB_POSTGRESDB_USER: postgres
-      DB_POSTGRESDB_PASSWORD: password
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-aigw}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-postgres}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-password}
       DB_POSTGRESDB_SCHEMA: n8n
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      N8N_ENFORCE_SETTINGS_FILE_FOR_CAN_ACCESS_SETTING_OR_ENV: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n/workflows:/workflows
-    # NO ports exposed — internal only
+    ports:
+      - "5678:5678"
     depends_on:
       postgres:
         condition: service_healthy

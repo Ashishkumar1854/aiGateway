@@ -345,7 +345,7 @@ export default function ClientServicesPage() {
         <div>
           <h4 className="text-sm font-bold text-slate-900">Need customization or want to add more services?</h4>
           <p className="text-[11px] text-slate-550 mt-1 leading-relaxed">
-            Our AI Agents support custom workflows tailored to your company. Use the "Request Change" button on any service card to request modifications, or{' '}
+            Our AI Agents support custom workflows tailored to your company. Use the &quot;Request Change&quot; button on any service card to request modifications, or{' '}
             <Link
               href="http://localhost:3000/contact"
               target="_blank"

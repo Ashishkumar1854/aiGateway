@@ -1,0 +1,145 @@
+{
+  "id": "LLPQmXL6UVr0x8hv",
+  "name": "Smart Apply - Send Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-email",
+        "responseMode": "responseNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-111111111111",
+      "name": "webhook-trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 250]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.body.hrEmail }}",
+        "subject": "={{ $json.body.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body.body }}",
+        "options": {}
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-222222222222",
+      "name": "Send Email Node",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [280, 250],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OjeHG0aqekQOf1k1",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailResult = $json;\nconst messageId = emailResult.id || emailResult.messageId;\n\nif (!messageId) {\n  throw new Error('Gmail did not return a messageId - email was not sent');\n}\n\nreturn {\n  success: true,\n  messageId,\n  deliveryMetadata: {\n    provider: 'GMAIL',\n    sentAt: new Date().toISOString(),\n    status: 'sent'\n  }\n};"
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-333333333333",
+      "name": "Build Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Capture exact Gmail error for debugging\nconst errorData = $json;\nconst errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);\n\nreturn {\n  success: false,\n  error: errorMsg,\n  rawError: errorData\n};"
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-666666666666",
+      "name": "Capture Gmail Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-444444444444",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [640, 250]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 502
+        }
+      },
+      "id": "e0a0d0a3-4321-4b11-a889-777777777777",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [640, 400]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Email Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email Node": {
+      "main": [
+        [
+          {
+            "node": "Build Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Capture Gmail Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture Gmail Error": {
+      "main": [
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

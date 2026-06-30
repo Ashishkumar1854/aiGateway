@@ -68,6 +68,7 @@ enum ServiceType {
   WHATSAPP_AUTOMATION
   LINKEDIN_OUTREACH
   JOB_SEEKER
+  SMART_APPLY
   CUSTOM
 }
 
@@ -164,6 +165,8 @@ model Client {
   workflows         Workflow[]
   payments          Payment[]
   onboardingRequests OnboardingRequest[]
+  resumes           Resume[]
+  jobApplications   JobApplication[]
 
   @@index([userId])
   @@index([status])
@@ -584,4 +587,130 @@ model OnboardingRequest {
   @@index([requestType])
   @@index([createdAt])
   @@map("onboarding_requests")
+}
+
+// ─────────────────────────────────────────
+// SMART APPLY (Manual Apply Foundation)
+// ─────────────────────────────────────────
+
+enum JobApplicationStatus {
+  DRAFT
+  SENT
+  DELIVERED
+  OPENED
+  FEEDBACK_RECEIVED
+  REJECTED
+  INTERVIEW_ROUND_1
+  INTERVIEW_ROUND_2
+  FINAL_INTERVIEW
+  OFFER_RECEIVED
+}
+
+model Resume {
+  id        String          @id @default(uuid())
+  clientId  String
+  name      String          // e.g. "Frontend Resume", "Backend Resume"
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  // Relations
+  client   Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  versions ResumeVersion[]
+
+  @@index([clientId])
+  @@index([isActive])
+  @@map("resumes")
+}
+
+model ResumeVersion {
+  id             String           @id @default(uuid())
+  resumeId       String
+  version        Int              @default(1) // e.g. 1, 2, 3...
+  primaryRole    String?          // e.g. "Frontend Developer"
+  secondaryRoles String[]         // e.g. ["Full Stack Developer"]
+  skills         String[]         // e.g. ["React", "Next.js", "TypeScript"]
+  projects       Json?            // Structured list of projects with details
+  experience     String?          // e.g. "2 Years"
+  education      Json?            // Structured education history
+  certifications String[]
+  technologies   String[]
+  atsKeywords    String[]
+  pdfLocation    String           // Local path or URL to stored Resume PDF
+  isCurrent      Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  // Relations
+  resume       Resume           @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  applications JobApplication[]
+
+  @@index([resumeId])
+  @@index([isCurrent])
+  @@map("resume_versions")
+}
+
+model JobApplication {
+  id                String                 @id @default(uuid())
+  clientId          String
+  resumeVersionId   String
+  companyName       String
+  role              String                 // Role applying for (e.g. "Frontend Developer")
+  hrEmail           String
+  hrName            String?
+  jobDescription    String?
+  additionalNotes   String?
+  subject           String?                // AI Generated Subject
+  emailContent      String?                // AI Generated Personalized Email Body
+  status            JobApplicationStatus   @default(DRAFT)
+  feedbackType      String?                // e.g. "SKILLS_MISMATCH", "EXPERIENCE_MISMATCH", etc.
+  feedbackText      String?                // Optional recruiter feedback comment
+  feedbackReceivedAt DateTime?
+  offerDate         DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  // Relations
+  client        Client                 @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  resumeVersion ResumeVersion          @relation(fields: [resumeVersionId], references: [id])
+  tracking      JobApplicationTracking[]
+  interviewNotes InterviewNote[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([resumeVersionId])
+  @@map("job_applications")
+}
+
+model JobApplicationTracking {
+  id            String               @id @default(uuid())
+  applicationId String
+  status        JobApplicationStatus
+  notes         String?              // Any extra context or remarks
+  createdAt     DateTime             @default(now())
+
+  // Relations
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([status])
+  @@map("job_application_tracking")
+}
+
+model InterviewNote {
+  id             String         @id @default(uuid())
+  applicationId  String
+  roundName      String         // e.g. "Round 1", "Technical Round"
+  scheduledAt    DateTime?
+  questionsAsked String?
+  result         String?        // e.g. "Passed", "Rejected", "Pending"
+  notes          String?        // Student notes about the interview
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("interview_notes")
 }

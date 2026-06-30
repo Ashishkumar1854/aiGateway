@@ -13,7 +13,7 @@ export default function ContactPage({ searchParams }) {
   const isTrial = requestType === 'trial'
   const isBook  = requestType === 'book'
   const isOnboarding = (isTrial || isBook) && preSelectedService
-  const isPersonalService = preSelectedService === 'Job Seeker'
+  const isPersonalService = preSelectedService === 'Job Seeker' || preSelectedService === 'Smart Apply'
 
   return (
     <section className="py-24 bg-white min-h-screen relative overflow-hidden">

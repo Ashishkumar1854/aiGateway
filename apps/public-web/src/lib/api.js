@@ -60,8 +60,12 @@ export async function submitOnboardingRequest(data) {
       serviceType: data.serviceType || null,
       requestType: data.requestType, // 'TRIAL' or 'BOOK'
       requirements: data.requirements || null,
+      password: data.password || null,
     }),
   })
-  if (!res.ok) throw new Error('Failed to submit onboarding request')
-  return res.json()
+  const json = await res.json().catch(() => null)
+  if (!res.ok) {
+    throw new Error(json?.error?.message || 'Failed to submit onboarding request')
+  }
+  return json
 }

@@ -371,7 +371,7 @@ export default function ClientBillingPage() {
             In production, Stripe will automatically convert your subscription.
             <br />
             <strong className="text-emerald-800">
-              Please go to the Admin Dashboard → Client Onboarding → click "Convert Trial to Paid" to finalize.
+              Please go to the Admin Dashboard → Client Onboarding → click &quot;Convert Trial to Paid&quot; to finalize.
             </strong>
           </p>
         </div>

@@ -1,7 +1,7 @@
 import { ServiceDetailPage } from '@/components/ServiceDetailPage'
 
 export const metadata = {
-  title: 'Job Seeker — AiGateway',
+  title: 'Smart Apply — AiGateway',
   description: 'AI-powered job search and automation. Scrape job listings, find recruiter email contacts, optimize your resume for ATS, and auto-apply.',
 }
 
@@ -9,8 +9,8 @@ const service = {
   icon: '💼',
   slug: 'job-seeker',
   badge: 'SaaS Service',
-  name: 'Job Seeker',
-  title: 'AI Job Seeker Automation',
+  name: 'Smart Apply',
+  title: 'AI Smart Apply Automation',
   description: 'Deploy your personal AI job search assistant. Scrape listings, find recruiter emails, optimize your resume for ATS, auto-apply, and track dashboard replies.',
   price: '$39/mo',
   priceINR: '₹2,999/mo',

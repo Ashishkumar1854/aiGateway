@@ -13,6 +13,7 @@ const SERVICE_ICONS = {
   WHATSAPP_AUTOMATION: '💬',
   LINKEDIN_OUTREACH: '🔗',
   JOB_SEEKER: '💼',
+  SMART_APPLY: '💼',
   CUSTOM: '🤖',
 }
 
@@ -65,7 +66,7 @@ export default function DashboardLayout({ children }) {
     )
   }
 
-  const isJobSeeker = services.some(s => s.service?.type === 'JOB_SEEKER')
+  const isJobSeeker = services.some(s => s.service?.type === 'JOB_SEEKER' || s.service?.type === 'SMART_APPLY')
 
   const getSlugForType = (type) => {
     switch (type) {
@@ -74,7 +75,8 @@ export default function DashboardLayout({ children }) {
       case 'REELS_AUTOMATION': return 'reels-automation'
       case 'WHATSAPP_AUTOMATION': return 'whatsapp-automation'
       case 'LINKEDIN_OUTREACH': return 'linkedin-automation'
-      case 'JOB_SEEKER': return 'job-seeker'
+      case 'JOB_SEEKER': return 'smart-apply'
+      case 'SMART_APPLY': return 'smart-apply'
       default: return 'custom'
     }
   }

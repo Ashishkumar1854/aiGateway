@@ -2,6 +2,9 @@ const bcrypt = require('bcryptjs')
 const prisma = require('../../../lib/prisma')
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../../../utils/jwt')
 
+// In-memory reset password tokens store
+const resetTokens = new Map()
+
 const signup = async ({ name, email, password, role = 'CLIENT' }) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) throw { statusCode: 409, code: 'EMAIL_EXISTS', message: 'Email already registered' }
@@ -87,4 +90,50 @@ const getMe = async (userId) => {
   return user
 }
 
-module.exports = { signup, login, refresh, logout, getMe }
+const forgotPassword = async ({ email }) => {
+  const user = await prisma.user.findUnique({ where: { email, deletedAt: null } })
+  if (!user) {
+    throw { statusCode: 404, code: 'NOT_FOUND', message: 'User with this email not found' }
+  }
+
+  const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+  const expiresAt = Date.now() + 15 * 60 * 1000 // 15 mins
+  resetTokens.set(token, { email, expiresAt })
+
+  console.log('----------------------------------------------------')
+  console.log('📧 PASSWORD RESET REQUEST SIMULATION')
+  console.log(`To: ${email}`)
+  console.log(`Token: ${token}`)
+  console.log(`Reset link: http://localhost:3001/reset-password?token=${token}`)
+  console.log('----------------------------------------------------')
+
+  return { token }
+}
+
+const resetPassword = async ({ token, password }) => {
+  const record = resetTokens.get(token)
+  if (!record || record.expiresAt < Date.now()) {
+    throw { statusCode: 400, code: 'INVALID_TOKEN', message: 'Reset token is invalid or has expired' }
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10)
+  await prisma.user.update({
+    where: { email: record.email },
+    data: { passwordHash }
+  })
+
+  // Consume the token
+  resetTokens.delete(token)
+
+  return { success: true }
+}
+
+module.exports = {
+  signup,
+  login,
+  refresh,
+  logout,
+  getMe,
+  forgotPassword,
+  resetPassword
+}

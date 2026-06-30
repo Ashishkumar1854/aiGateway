@@ -6,7 +6,7 @@ const services = [
   { icon: '💬', name: 'WhatsApp Automation',slug: 'whatsapp-automation', inr: 3999,  usd: 49,  topBorder: 'border-t-[3px] border-t-green-500'  },
   { icon: '🔗', name: 'LinkedIn Automation',slug: 'linkedin-automation', inr: 4499,  usd: 55,  topBorder: 'border-t-[3px] border-t-blue-500'   },
   { icon: '🎬', name: 'Reels Automation',   slug: 'reels-automation',   inr: 3499,  usd: 42,  topBorder: 'border-t-[3px] border-t-pink-500'   },
-  { icon: '💼', name: 'Job Seeker',         slug: 'job-seeker',         inr: 2999,  usd: 39,  topBorder: 'border-t-[3px] border-t-teal-500'   },
+  { icon: '💼', name: 'Smart Apply',         slug: 'job-seeker',         inr: 2999,  usd: 39,  topBorder: 'border-t-[3px] border-t-teal-500'   },
 ]
 
 export function PricingSection() {

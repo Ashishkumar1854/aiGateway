@@ -74,7 +74,7 @@ const saasDetails = [
   },
   {
     icon: '💼',
-    name: 'Job Seeker',
+    name: 'Smart Apply',
     slug: 'job-seeker',
     desc: 'Deploy your personal AI job search assistant. Scrape listings, find recruiter emails, optimize your resume for ATS, auto-apply, and track dashboard replies.',
     how: [

@@ -106,10 +106,12 @@ async function main() {
     }),
     prisma.service.upsert({
       where: { id: 'service-job-seeker' },
-      update: {},
+      update: {
+        name: 'Smart Apply',
+      },
       create: {
         id: 'service-job-seeker',
-        name: 'Job Seeker',
+        name: 'Smart Apply',
         type: 'JOB_SEEKER',
         description: 'AI job search automation, recruiter email direct mailer, and ATS customization',
         features: ['ATS Optimization', 'Auto Resume Attach', 'Recruiter Mail Finder', 'Auto Job Applying', 'Reply Dashboard'],

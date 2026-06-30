@@ -10,7 +10,7 @@ const services = [
   { id: 'whatsapp-automation', label: 'WhatsApp Automation',icon: '💬' },
   { id: 'linkedin-automation', label: 'LinkedIn Automation',icon: '🔗' },
   { id: 'reels-automation',    label: 'Reels Automation',   icon: '🎬' },
-  { id: 'job-seeker',          label: 'Job Seeker',         icon: '💼' },
+  { id: 'job-seeker',          label: 'Smart Apply',         icon: '💼' },
 ]
 
 function SignupForm() {
