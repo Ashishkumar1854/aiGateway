@@ -56,20 +56,38 @@ Be analytical and objective. Do NOT wrap in markdown code blocks (\`\`\`json). R
 
   while (attempt < retries) {
     attempt++;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
+    let response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json'
           }
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json'
-        }
-      })
-    });
+        })
+      });
+    } catch (fetchErr) {
+      if (attempt < retries) {
+        console.warn(`[Match Engine] Transient network error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error(`TIMEOUT: ${fetchErr.message}`);
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('INVALID_API_KEY');
+    }
+
+    if (response.status === 400) {
+      throw new Error('INVALID_PROMPT');
+    }
 
     if (response.status === 429) {
       let waitMs = 15000;
@@ -77,7 +95,6 @@ Be analytical and objective. Do NOT wrap in markdown code blocks (\`\`\`json). R
       try {
         const errJson = await response.clone().json();
         
-        // Fast break on daily quota exhaustion
         isDailyLimit = errJson.error?.details?.some(detail => 
           detail.violations?.some(v => v.quotaId?.includes('PerDay'))
         );
@@ -86,8 +103,8 @@ Be analytical and objective. Do NOT wrap in markdown code blocks (\`\`\`json). R
       }
 
       if (isDailyLimit) {
-        console.warn('[Match Engine] Daily Gemini API quota limit reached. Proceeding to fallback.');
-        throw new Error('Daily Gemini API quota limit reached');
+        console.warn('[Match Engine] Daily Gemini API quota limit reached.');
+        throw new Error('QUOTA_EXHAUSTED');
       }
 
       if (attempt < retries) {
@@ -95,6 +112,7 @@ Be analytical and objective. Do NOT wrap in markdown code blocks (\`\`\`json). R
         await new Promise(resolve => setTimeout(resolve, waitMs));
         continue;
       }
+      throw new Error('QUOTA_EXHAUSTED');
     }
 
     if (!response.ok) {
@@ -111,8 +129,12 @@ Be analytical and objective. Do NOT wrap in markdown code blocks (\`\`\`json). R
     try {
       return JSON.parse(rawText.trim());
     } catch (err) {
-      console.error('Failed to parse Gemini JSON response:', rawText);
-      throw new Error(`Invalid JSON format returned from Gemini: ${err.message}`);
+      if (attempt < retries) {
+        console.warn(`[Match Engine] JSON parse error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error('JSON_PARSE_ERROR');
     }
   }
 };
@@ -263,8 +285,13 @@ const calculateAndSaveMatch = async (applicationId) => {
   try {
     matchResult = await calculateMatch(intelligenceProfile, jobIntelligence);
   } catch (err) {
-    console.warn(`[Match Engine] AI matching failed, running local builder: ${err.message}`);
-    matchResult = generateFallbackMatch(intelligenceProfile, jobIntelligence);
+    if (err.message === 'QUOTA_EXHAUSTED') {
+      console.warn(`[Match Engine] Quota limit reached, running local fallback builder`);
+      matchResult = generateFallbackMatch(intelligenceProfile, jobIntelligence);
+    } else {
+      console.error(`[Match Engine] AI matching failed critically with fatal error: ${err.message}`);
+      throw err;
+    }
   }
 
   // Save matching metrics

@@ -77,6 +77,17 @@ const setCurrentVersion = async (req, res, next) => {
   }
 };
 
+const retryVersionParsing = async (req, res, next) => {
+  try {
+    const clientId = await getClientId(req.user.id);
+    const { id, versionId } = req.params;
+    const data = await resumeService.retryResumeVersionParsing(id, clientId, versionId);
+    return sendSuccess(res, data, 'Parsing retry task triggered successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ─── JOB APPLICATIONS ────────────────────────────────────────────────────────
 
 const createApplicationDraft = async (req, res, next) => {
@@ -176,6 +187,7 @@ module.exports = {
   getResumeById,
   addResumeVersion,
   setCurrentVersion,
+  retryVersionParsing,
   createApplicationDraft,
   listApplications,
   getApplicationById,

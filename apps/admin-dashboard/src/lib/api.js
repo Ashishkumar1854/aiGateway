@@ -23,7 +23,21 @@ async function apiFetch(endpoint, options = {}) {
     headers,
   })
 
-  const data = await res.json()
+  let data
+  try {
+    data = await res.json()
+  } catch (err) {
+    // response might not be json
+  }
+
+  if (res.status === 401) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('aigw_token')
+      localStorage.removeItem('aigw_refresh')
+      localStorage.removeItem('aigw_user')
+      window.location.href = '/login'
+    }
+  }
 
   if (!res.ok) {
     throw new Error(data?.error?.message || 'API Error')

@@ -30,6 +30,7 @@ export default function ServiceSlugPage({ params }) {
   const [replacePdf, setReplacePdf] = useState('')
   const [replaceLoading, setReplaceLoading] = useState(false)
   const [replaceError, setReplaceError] = useState('')
+  const [retryLoading, setRetryLoading] = useState(null)
 
   // Form states - Manual Apply
   const [applyResumeVersionId, setApplyResumeVersionId] = useState('')
@@ -83,6 +84,9 @@ export default function ServiceSlugPage({ params }) {
         }
       })
       .catch(console.error)
+      .finally(() => {
+        setLoading(false)
+      })
   }, [slug])
 
   // Load settings signature from localStorage if available
@@ -217,13 +221,31 @@ export default function ServiceSlugPage({ params }) {
       .catch(console.error)
   }
 
+  const handleRetryParse = (resumeId, versionId) => {
+    setRetryLoading(versionId)
+    api.post(`/api/v1/smart-apply/resumes/${resumeId}/versions/${versionId}/retry`)
+      .then(res => {
+        if (res.success) {
+          fetchSmartApplyData()
+        }
+      })
+      .catch(console.error)
+      .finally(() => setRetryLoading(null))
+  }
+
   // ─── APPLICATION DRAFT & SEND ACTIONS ──────────────────────────────────────
 
   const handleGenerateEmail = (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     if (!applyResumeVersionId || !applyRole || !applyCompany || !applyHrEmail) {
       setGenerateError('Please fill out all mandatory fields.')
       return
+    }
+
+    const selectedResume = resumes.flatMap(r => r.versions || []).find(v => v.id === applyResumeVersionId);
+    if (selectedResume && selectedResume.parseStatus !== 'COMPLETED') {
+      setGenerateError('AI Parsing for the selected resume version is not complete. Please wait or choose a parsed profile.');
+      return;
     }
 
     setGenerateLoading(true)
@@ -243,17 +265,59 @@ export default function ServiceSlugPage({ params }) {
     })
       .then(res => {
         if (res.success && res.data) {
-          setGeneratedDraftId(res.data.id)
+          const appId = res.data.id;
+          setGeneratedDraftId(appId)
           setDraftSubject(res.data.subject || '')
-          // Append signature if configured
-          const baseContent = res.data.emailContent || '';
-          setDraftBody(settingsSignature ? `${baseContent}\n\n${settingsSignature}` : baseContent)
+          setDraftBody(settingsSignature ? `${res.data.emailContent || ''}\n\n${settingsSignature}` : (res.data.emailContent || ''))
+          
+          // Poll the database until matching and email generation are complete
+          let attempts = 0;
+          const maxAttempts = 15; // 30 seconds max
+          
+          const intervalId = setInterval(() => {
+            attempts++;
+            api.get(`/api/v1/smart-apply/applications/${appId}`)
+              .then(getRes => {
+                if (getRes.success && getRes.data) {
+                  const app = getRes.data;
+                  // If matching is completed and the email body is no longer the initial generic template
+                  if (app.matchResult && app.emailContent && !app.emailContent.includes('Please find my application details attached.')) {
+                    clearInterval(intervalId);
+                    setDraftSubject(app.subject || '');
+                    setDraftBody(settingsSignature ? `${app.emailContent}\n\n${settingsSignature}` : app.emailContent);
+                    setGenerateLoading(false);
+                  }
+                }
+              })
+              .catch(err => {
+                console.error('Polling error:', err);
+              });
+
+            if (attempts >= maxAttempts) {
+              clearInterval(intervalId);
+              // Fallback to whatever is in the DB if it timed out
+              api.get(`/api/v1/smart-apply/applications/${appId}`)
+                .then(getRes => {
+                  if (getRes.success && getRes.data) {
+                    const app = getRes.data;
+                    setDraftSubject(app.subject || '');
+                    setDraftBody(settingsSignature ? `${app.emailContent}\n\n${settingsSignature}` : app.emailContent);
+                  }
+                })
+                .finally(() => {
+                  setGenerateLoading(false);
+                });
+            }
+          }, 2000);
         } else {
           setGenerateError(res.error?.message || 'Failed to generate email draft.')
+          setGenerateLoading(false)
         }
       })
-      .catch(err => setGenerateError(err.message || 'An error occurred during AI email generation.'))
-      .finally(() => setGenerateLoading(false))
+      .catch(err => {
+        setGenerateError(err.message || 'An error occurred during AI email generation.')
+        setGenerateLoading(false)
+      })
   }
 
   const handleSendEmail = () => {
@@ -409,24 +473,42 @@ export default function ServiceSlugPage({ params }) {
           </div>
         </div>
 
-        {/* Tab Controls */}
-        <div className="flex flex-wrap gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50 self-start md:self-auto">
-          {['dashboard', 'resumes', 'apply', 'applications', 'analytics', 'settings'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab)
-                setSelectedApplication(null)
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 capitalize ${
-                activeTab === tab
-                  ? 'bg-white text-indigo-700 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-950'
-              }`}
-            >
-              {tab === 'resumes' ? 'Resume Library' : tab === 'apply' ? 'Manual Apply' : tab}
-            </button>
-          ))}
+        {/* Tab Controls & Highlighted Action */}
+        <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
+          {/* Main Tabs */}
+          <div className="flex flex-wrap gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50">
+            {['dashboard', 'resumes', 'applications', 'analytics', 'settings'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => {
+                  setActiveTab(tab)
+                  setSelectedApplication(null)
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 capitalize ${
+                  activeTab === tab
+                    ? 'bg-white text-indigo-700 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-950'
+                }`}
+              >
+                {tab === 'resumes' ? 'Resume Library' : tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Highlighted Manual Apply Button */}
+          <button
+            onClick={() => {
+              setActiveTab('apply')
+              setSelectedApplication(null)
+            }}
+            className={`px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-1.5 border border-indigo-600/10 ${
+              activeTab === 'apply'
+                ? 'bg-indigo-700 text-white shadow-indigo-200'
+                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:from-indigo-700 hover:to-indigo-600 shadow-indigo-100'
+            }`}
+          >
+            🚀 Manual Apply
+          </button>
         </div>
       </div>
 
@@ -549,32 +631,69 @@ export default function ServiceSlugPage({ params }) {
 
                       {/* Display structured fields parsed by AI */}
                       {currentVersionObj && (
-                        <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 text-[11px] space-y-3">
-                          <div>
-                            <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">Target Niche/Skills:</span>
-                            <div className="flex flex-wrap gap-1 mt-1.5">
-                              {currentVersionObj.skills?.map((s, idx) => (
-                                <span key={idx} className="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] px-2.5 py-0.5 rounded-md font-medium">
-                                  {s}
+                        <div className="space-y-3">
+                          {currentVersionObj.parseStatus === 'FAILED' && (
+                            <div className="bg-red-50 border border-red-155 text-red-800 rounded-2xl p-4 text-[11px] space-y-2">
+                              <div className="flex items-center justify-between gap-4">
+                                <span className="font-bold text-red-700 leading-snug">
+                                  ⚠️ AI couldn't process this resume. Please try again in a few minutes. If the issue continues, upload the resume again.
                                 </span>
-                              ))}
+                                <button
+                                  onClick={() => handleRetryParse(resume.id, currentVersionObj.id)}
+                                  disabled={retryLoading === currentVersionObj.id}
+                                  className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-extrabold px-3 py-1.5 rounded-lg text-[9px] shadow-sm transition-all duration-200 shrink-0"
+                                >
+                                  {retryLoading === currentVersionObj.id ? 'Retrying...' : '🔄 Retry AI Parse'}
+                                </button>
+                              </div>
+                              {currentVersionObj.parseError && (
+                                <details className="mt-2 text-[10px] text-red-600">
+                                  <summary className="cursor-pointer font-bold select-none hover:underline">Show Developer Logs</summary>
+                                  <div className="bg-red-100/30 p-2 rounded-xl mt-1 font-mono break-all leading-normal">
+                                    Error: {currentVersionObj.parseError}
+                                  </div>
+                                </details>
+                              )}
                             </div>
-                          </div>
+                          )}
 
-                          <div>
-                            <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">Key Technologies:</span>
-                            <span className="text-slate-650 mt-1 block">{currentVersionObj.technologies?.join(', ') || 'No tech details.'}</span>
-                          </div>
+                          {(currentVersionObj.parseStatus === 'PENDING' || currentVersionObj.parseStatus === 'PROCESSING' || currentVersionObj.parseStatus === 'RETRYING') && (
+                            <div className="bg-amber-50 border border-amber-100 text-amber-800 rounded-2xl p-4 text-[11px] flex items-center justify-between">
+                              <span className="font-medium flex items-center gap-2 animate-pulse">
+                                ⏳ {currentVersionObj.parseStatus === 'RETRYING' ? 'AI Resume Parsing retry initiated...' : 'AI Resume Parsing in progress...'} Please refresh in a few seconds.
+                              </span>
+                            </div>
+                          )}
 
-                          <div>
-                            <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">ATS keywords:</span>
-                            <span className="text-slate-650 mt-1 block">{currentVersionObj.atsKeywords?.join(', ') || 'No keywords.'}</span>
-                          </div>
+                          {currentVersionObj.parseStatus === 'COMPLETED' && (
+                            <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 text-[11px] space-y-3">
+                              <div>
+                                <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">Target Niche/Skills:</span>
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {currentVersionObj.skills?.map((s, idx) => (
+                                    <span key={idx} className="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] px-2.5 py-0.5 rounded-md font-medium">
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
 
-                          <div className="text-[10px] text-slate-400 border-t border-slate-100 pt-2.5 flex justify-between">
-                            <span>File: <span className="font-mono text-slate-650">{currentVersionObj.pdfLocation}</span></span>
-                            <span>Experience: <span className="font-bold text-slate-700">{currentVersionObj.experience}</span></span>
-                          </div>
+                              <div>
+                                <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">Key Technologies:</span>
+                                <span className="text-slate-650 mt-1 block">{currentVersionObj.technologies?.join(', ') || 'No tech details.'}</span>
+                              </div>
+
+                              <div>
+                                <span className="font-bold text-slate-800 uppercase text-[9px] tracking-wider block">ATS keywords:</span>
+                                <span className="text-slate-650 mt-1 block">{currentVersionObj.atsKeywords?.join(', ') || 'No keywords.'}</span>
+                              </div>
+
+                              <div className="text-[10px] text-slate-400 border-t border-slate-100 pt-2.5 flex justify-between">
+                                <span>File: <span className="font-mono text-slate-650">{currentVersionObj.pdfLocation}</span></span>
+                                <span>Experience: <span className="font-bold text-slate-700">{currentVersionObj.experience}</span></span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -707,8 +826,18 @@ export default function ServiceSlugPage({ params }) {
                   {resumes.map(r => {
                     const currentVer = r.versions?.find(v => v.isCurrent) || r.versions?.[0]
                     return (
-                      <option key={r.id} value={currentVer?.id}>
-                        {r.name} (v{currentVer?.version || 1} - {currentVer?.primaryRole || 'Unparsed'})
+                      <option 
+                        key={r.id} 
+                        value={currentVer?.id}
+                        disabled={currentVer?.parseStatus !== 'COMPLETED'}
+                      >
+                        {r.name} (v{currentVer?.version || 1} - {
+                          currentVer?.parseStatus === 'FAILED'
+                            ? '⚠️ AI Parsing Failed (Retry in Library)'
+                            : currentVer?.parseStatus === 'PENDING' || currentVer?.parseStatus === 'PROCESSING' || currentVer?.parseStatus === 'RETRYING'
+                              ? '⏳ AI Parsing in progress...'
+                              : currentVer?.primaryRole || 'Unparsed'
+                        })
                       </option>
                     )
                   })}
@@ -858,7 +987,7 @@ export default function ServiceSlugPage({ params }) {
                     disabled={sendLoading}
                     className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-250"
                   >
-                    {sendLoading ? 'Dispatched via SMTP...' : '🚀 Approve & Send Email'}
+                    {sendLoading ? 'Email Sent...' : '🚀 Approve & Send Email'}
                   </button>
                 </div>
               </div>

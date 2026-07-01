@@ -1,0 +1,834 @@
+aigw_backend  | ✅ AiGateway Backend running on port 5000
+aigw_backend  |    Health: http://localhost:5000/health
+aigw_backend  |    API:    http://localhost:5000/api/v1
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ✅ AiGateway Backend running on port 5000
+aigw_backend  |    Health: http://localhost:5000/health
+aigw_backend  |    API:    http://localhost:5000/api/v1
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ❌ Error: Client profile not found for this user.
+aigw_backend  | ❌ Error: Invalid email or password
+aigw_backend  | ----------------------------------------------------
+aigw_backend  | 📧 PASSWORD RESET REQUEST SIMULATION
+aigw_backend  | To: kashish84396@gmail.com
+aigw_backend  | Token: j684fp3c7dztt6bzrjvu
+aigw_backend  | Reset link: http://localhost:3001/reset-password?token=j684fp3c7dztt6bzrjvu
+aigw_backend  | ----------------------------------------------------
+aigw_backend  | [Resume Intelligence] Enriching resume version 753d487b-102c-4042-ba93-7b09d38fed3d (v1)...
+aigw_backend  | [Resume Intelligence] Daily Gemini API quota limit reached. Proceeding to fallback.
+aigw_backend  | [Resume Intelligence] AI enrichment failed, running local builder: Daily Gemini API quota limit reached
+aigw_backend  | [Resume Intelligence] Generating dynamic fallback intelligence profile locally...
+aigw_backend  | prisma:error 
+aigw_backend  | Invalid `prisma.resumeVersion.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/services/resume-intelligence.service.js:183:53
+aigw_backend  | 
+aigw_backend  |   180 }
+aigw_backend  |   181 
+aigw_backend  |   182 // Update the database
+aigw_backend  | → 183 const updatedVersion = await prisma.resumeVersion.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "753d487b-102c-4042-ba93-7b09d38fed3d"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           intelligenceProfile: {
+aigw_backend  |           ~~~~~~~~~~~~~~~~~~~
+aigw_backend  |             primaryRole: "Full-Stack Web Developer",
+aigw_backend  |             secondaryRoles: [
+aigw_backend  |               "MERN Stack Developer",
+aigw_backend  |               "Frontend Developer"
+aigw_backend  |             ],
+aigw_backend  |             careerLevel: "Entry-level",
+aigw_backend  |             yearsOfExperience: "2 Years",
+aigw_backend  |             resumeSummary: "A qualified professional specializing in Full-Stack Web Developer with expertise in JavaScript (ES6+), Python, Java, SQL, React.js. Experienced in building robust solutions and working with collaborative engineering workflows.",
+aigw_backend  |             skills: [
+aigw_backend  |               "JavaScript (ES6+)",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "React.js",
+aigw_backend  |               "Redux",
+aigw_backend  |               "Next.js",
+aigw_backend  |               "Axios",
+aigw_backend  |               "HTML5",
+aigw_backend  |               "CSS3",
+aigw_backend  | [Resume Service] Background intelligence enrichment failed for version 753d487b-102c-4042-ba93-7b09d38fed3d: 
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  | Invalid `prisma.resumeVersion.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/services/resume-intelligence.service.js:183:53
+aigw_backend  | 
+aigw_backend  |   180 }
+aigw_backend  |   181 
+aigw_backend  |   182 // Update the database
+aigw_backend  | → 183 const updatedVersion = await prisma.resumeVersion.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "753d487b-102c-4042-ba93-7b09d38fed3d"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           intelligenceProfile: {
+aigw_backend  |           ~~~~~~~~~~~~~~~~~~~
+aigw_backend  |             primaryRole: "Full-Stack Web Developer",
+aigw_backend  |             secondaryRoles: [
+aigw_backend  |               "MERN Stack Developer",
+aigw_backend  |               "Frontend Developer"
+aigw_backend  |             ],
+aigw_backend  |             careerLevel: "Entry-level",
+aigw_backend  |             yearsOfExperience: "2 Years",
+aigw_backend  |             resumeSummary: "A qualified professional specializing in Full-Stack Web Developer with expertise in JavaScript (ES6+), Python, Java, SQL, React.js. Experienced in building robust solutions and working with collaborative engineering workflows.",
+aigw_backend  |             skills: [
+aigw_backend  |               "JavaScript (ES6+)",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "React.js",
+aigw_backend  |               "Redux",
+aigw_backend  |               "Next.js",
+aigw_backend  |               "Axios",
+aigw_backend  |               "HTML5",
+aigw_backend  |               "CSS3",
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  |               "Bootstrap",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "REST API",
+aigw_backend  |               "Authentication (JWT)",
+aigw_backend  |               "WebSockets",
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             technologies: [
+aigw_backend  |               "Docker",
+aigw_backend  |               "n8n",
+aigw_backend  |               "TensorFlow",
+aigw_backend  |               "PyTorch",
+aigw_backend  |               "Scikit-learn",
+aigw_backend  |               "Pandas",
+aigw_backend  |               "NumPy",
+aigw_backend  |               "OpenCV",
+aigw_backend  |               "Git",
+aigw_backend  |               "GitHub",
+aigw_backend  |               "Postman",
+aigw_backend  |               "VS Code",
+aigw_backend  |               "Vercel",
+aigw_backend  |               "Netlify"
+aigw_backend  |             ],
+aigw_backend  |             frameworks: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Next.js",
+aigw_backend  |               "Bootstrap",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "REST API",
+aigw_backend  |               "Authentication (JWT)",
+aigw_backend  |               "WebSockets",
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             technologies: [
+aigw_backend  |               "Docker",
+aigw_backend  |               "n8n",
+aigw_backend  |               "TensorFlow",
+aigw_backend  |               "PyTorch",
+aigw_backend  |               "Scikit-learn",
+aigw_backend  |               "Pandas",
+aigw_backend  |               "NumPy",
+aigw_backend  |               "OpenCV",
+aigw_backend  |               "Git",
+aigw_backend  |               "GitHub",
+aigw_backend  |               "Postman",
+aigw_backend  |               "VS Code",
+aigw_backend  |               "Vercel",
+aigw_backend  |               "Netlify"
+aigw_backend  |             ],
+aigw_backend  |             frameworks: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Next.js",
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  |               "Bootstrap",
+aigw_backend  |               "Express.js"
+aigw_backend  |             ],
+aigw_backend  |             languages: [
+aigw_backend  |               "JavaScript (ES6+)",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "HTML5",
+aigw_backend  |               "CSS3",
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             databases: [
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             cloudPlatforms: [
+aigw_backend  |               "Vercel",
+aigw_backend  |               "Netlify"
+aigw_backend  |             ],
+aigw_backend  |             devOpsTools: [
+aigw_backend  |               "Docker",
+aigw_backend  |               "Git",
+aigw_backend  |               "GitHub"
+aigw_backend  |             ],
+aigw_backend  |             aiMlSkills: [
+aigw_backend  |               "TensorFlow",
+aigw_backend  |               "PyTorch",
+aigw_backend  |               "Scikit-learn",
+aigw_backend  |               "Pandas",
+aigw_backend  |               "NumPy",
+aigw_backend  |               "OpenCV"
+aigw_backend  |             ],
+aigw_backend  |             projects: [
+aigw_backend  |               {
+aigw_backend  |                 name: "Stock Price Prediction using News Sentiment Analysis",
+aigw_backend  |                 techStack: [
+aigw_backend  |                   "MERN Stack",
+aigw_backend  |                   "Flask",
+aigw_backend  |                   "Python",
+aigw_backend  |                   "NLP"
+aigw_backend  |                 ],
+aigw_backend  |                 description: "Real-time news analytics system evaluating financial articles using NLP to extract market sentiment."
+aigw_backend  |               },
+aigw_backend  |               {
+aigw_backend  |                 name: "Secure and Automated Digital Voting",
+aigw_backend  |                 techStack: [
+aigw_backend  |                   "MERN Stack",
+aigw_backend  |                   "Flask",
+aigw_backend  |                   "Computer Vision"
+aigw_backend  |                 ],
+aigw_backend  |                 description: "Secure digital voting platform with face-based authentication and encrypted record keeping."
+aigw_backend  |               }
+aigw_backend  |             ],
+aigw_backend  |             achievements: [
+aigw_backend  |               "Developed and deployed multiple applications utilizing Docker, n8n, TensorFlow.",
+aigw_backend  |               "Optimized codebase for search engines and recruiters through detailed keyword profiling."
+aigw_backend  |             ],
+aigw_backend  |             certifications: [
+aigw_backend  |               "Full Stack Web Development",
+aigw_backend  |               "Data Science and AI/ML",
+aigw_backend  |               "DSA Bootcamp"
+aigw_backend  |             ],
+aigw_backend  |             education: [
+aigw_backend  |               {
+aigw_backend  |                 degree: "B.Tech",
+aigw_backend  |                 endYear: 2026,
+aigw_backend  |                 institution: "Rungta College of Engineering and Technology",
+aigw_backend  |                 fieldOfStudy: "Information Technology"
+aigw_backend  |               }
+aigw_backend  |             ],
+aigw_backend  |             atsKeywords: [
+aigw_backend  |               "System Design",
+aigw_backend  |               "API Design",
+aigw_backend  |               "Data Structures",
+aigw_backend  |               "Algorithms",
+aigw_backend  |               "OOP",
+aigw_backend  |               "DBMS",
+aigw_backend  |               "SDLC",
+aigw_backend  |               "Agile",
+aigw_backend  |               "CI/CD",
+aigw_backend  |               "Problem Solving"
+aigw_backend  |             ],
+aigw_backend  |             strengths: [
+aigw_backend  |               "Technical proficiency and rapid adaptation to new tools/stacks.",
+aigw_backend  |               "Detail-oriented project architecture and documentation.",
+aigw_backend  |               "Collaborative project orchestration."
+aigw_backend  |             ],
+aigw_backend  |             improvementAreas: [
+aigw_backend  |               "Expand certifications on industry-leading cloud platforms.",
+aigw_backend  |               "Publish additional technical documentation or blogs about project learnings."
+aigw_backend  |             ],
+aigw_backend  |             industries: [
+aigw_backend  |               "Information Technology",
+aigw_backend  |               "Software Engineering",
+aigw_backend  |               "Internet & SaaS"
+aigw_backend  |             ],
+aigw_backend  |             portfolioLinks: [],
+aigw_backend  |             github: null,
+aigw_backend  |             linkedin: null
+aigw_backend  |           },
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   version?: Int | IntFieldUpdateOperationsInput,
+aigw_backend  |       ?   primaryRole?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   secondaryRoles?: ResumeVersionUpdatesecondaryRolesInput | String[],
+aigw_backend  |       ?   skills?: ResumeVersionUpdateskillsInput | String[],
+aigw_backend  |       ?   projects?: NullableJsonNullValueInput | Json,
+aigw_backend  |       ?   experience?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   education?: NullableJsonNullValueInput | Json,
+aigw_backend  |       ?   certifications?: ResumeVersionUpdatecertificationsInput | String[],
+aigw_backend  |       ?   technologies?: ResumeVersionUpdatetechnologiesInput | String[],
+aigw_backend  |       ?   atsKeywords?: ResumeVersionUpdateatsKeywordsInput | String[],
+aigw_backend  |       ?   pdfLocation?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   isCurrent?: Boolean | BoolFieldUpdateOperationsInput,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   resume?: ResumeUpdateOneRequiredWithoutVersionsNestedInput,
+aigw_backend  |       ?   applications?: JobApplicationUpdateManyWithoutResumeVersionNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `intelligenceProfile`. Available options are marked with ?.
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  |               "Bootstrap",
+aigw_backend  |               "Express.js"
+aigw_backend  |             ],
+aigw_backend  |             languages: [
+aigw_backend  |               "JavaScript (ES6+)",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "HTML5",
+aigw_backend  |               "CSS3",
+aigw_backend  |               "Tailwind CSS",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             databases: [
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "MySQL",
+aigw_backend  |               "PostgreSQL"
+aigw_backend  |             ],
+aigw_backend  |             cloudPlatforms: [
+aigw_backend  |               "Vercel",
+aigw_backend  |               "Netlify"
+aigw_backend  |             ],
+aigw_backend  |             devOpsTools: [
+aigw_backend  |               "Docker",
+aigw_backend  |               "Git",
+aigw_backend  |               "GitHub"
+aigw_backend  |             ],
+aigw_backend  |             aiMlSkills: [
+aigw_backend  |               "TensorFlow",
+aigw_backend  |               "PyTorch",
+aigw_backend  |               "Scikit-learn",
+aigw_backend  |               "Pandas",
+aigw_backend  |               "NumPy",
+aigw_backend  |               "OpenCV"
+aigw_backend  |             ],
+aigw_backend  |             projects: [
+aigw_backend  |               {
+aigw_backend  |                 name: "Stock Price Prediction using News Sentiment Analysis",
+aigw_backend  |                 techStack: [
+aigw_backend  |                   "MERN Stack",
+aigw_backend  |                   "Flask",
+aigw_backend  |                   "Python",
+aigw_backend  |                   "NLP"
+aigw_backend  |                 ],
+aigw_backend  |                 description: "Real-time news analytics system evaluating financial articles using NLP to extract market sentiment."
+aigw_backend  |               },
+aigw_backend  |               {
+aigw_backend  |                 name: "Secure and Automated Digital Voting",
+aigw_backend  |                 techStack: [
+aigw_backend  |                   "MERN Stack",
+aigw_backend  |                   "Flask",
+aigw_backend  |                   "Computer Vision"
+aigw_backend  |                 ],
+aigw_backend  |                 description: "Secure digital voting platform with face-based authentication and encrypted record keeping."
+aigw_backend  |               }
+aigw_backend  |             ],
+aigw_backend  |             achievements: [
+aigw_backend  |               "Developed and deployed multiple applications utilizing Docker, n8n, TensorFlow.",
+aigw_backend  |               "Optimized codebase for search engines and recruiters through detailed keyword profiling."
+aigw_backend  |             ],
+aigw_backend  |             certifications: [
+aigw_backend  |               "Full Stack Web Development",
+aigw_backend  |               "Data Science and AI/ML",
+aigw_backend  |               "DSA Bootcamp"
+aigw_backend  |             ],
+aigw_backend  |             education: [
+aigw_backend  |               {
+aigw_backend  |                 degree: "B.Tech",
+aigw_backend  |                 endYear: 2026,
+aigw_backend  |                 institution: "Rungta College of Engineering and Technology",
+aigw_backend  |                 fieldOfStudy: "Information Technology"
+aigw_backend  |               }
+aigw_backend  |             ],
+aigw_backend  |             atsKeywords: [
+aigw_backend  |               "System Design",
+aigw_backend  |               "API Design",
+aigw_backend  |               "Data Structures",
+aigw_backend  |               "Algorithms",
+aigw_backend  |               "OOP",
+aigw_backend  |               "DBMS",
+aigw_backend  |               "SDLC",
+aigw_backend  |               "Agile",
+aigw_backend  |               "CI/CD",
+aigw_backend  |               "Problem Solving"
+aigw_backend  |             ],
+aigw_backend  |             strengths: [
+aigw_backend  |               "Technical proficiency and rapid adaptation to new tools/stacks.",
+aigw_backend  |               "Detail-oriented project architecture and documentation.",
+aigw_backend  |               "Collaborative project orchestration."
+aigw_backend  |             ],
+aigw_backend  |             improvementAreas: [
+aigw_backend  |               "Expand certifications on industry-leading cloud platforms.",
+aigw_backend  |               "Publish additional technical documentation or blogs about project learnings."
+aigw_backend  |             ],
+aigw_backend  |             industries: [
+aigw_backend  |               "Information Technology",
+aigw_backend  |               "Software Engineering",
+aigw_backend  |               "Internet & SaaS"
+aigw_backend  |             ],
+aigw_backend  |             portfolioLinks: [],
+aigw_backend  |             github: null,
+aigw_backend  |             linkedin: null
+aigw_backend  |           },
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   version?: Int | IntFieldUpdateOperationsInput,
+aigw_backend  |       ?   primaryRole?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   secondaryRoles?: ResumeVersionUpdatesecondaryRolesInput | String[],
+aigw_backend  |       ?   skills?: ResumeVersionUpdateskillsInput | String[],
+aigw_backend  |       ?   projects?: NullableJsonNullValueInput | Json,
+aigw_backend  |       ?   experience?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   education?: NullableJsonNullValueInput | Json,
+aigw_backend  |       ?   certifications?: ResumeVersionUpdatecertificationsInput | String[],
+aigw_backend  |       ?   technologies?: ResumeVersionUpdatetechnologiesInput | String[],
+aigw_backend  |       ?   atsKeywords?: ResumeVersionUpdateatsKeywordsInput | String[],
+aigw_backend  |       ?   pdfLocation?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   isCurrent?: Boolean | BoolFieldUpdateOperationsInput,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   resume?: ResumeUpdateOneRequiredWithoutVersionsNestedInput,
+aigw_backend  |       ?   applications?: JobApplicationUpdateManyWithoutResumeVersionNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `intelligenceProfile`. Available options are marked with ?.
+aigw_backend  | [Match Engine] Job Intelligence missing on application b4cee4f6-f6fc-4eff-8608-47d25f5ab682. Enriching now...
+aigw_backend  | [Job Intelligence] Structuring job description for application b4cee4f6-f6fc-4eff-8608-47d25f5ab682 (Company: "josh technology", Role: "software engineer")...
+aigw_backend  | [Job Intelligence] Daily Gemini API quota limit reached. Proceeding to fallback.
+aigw_backend  | [Job Intelligence] AI structuring failed, running local builder: Daily Gemini API quota limit reached
+aigw_backend  | [Job Intelligence] Generating dynamic fallback job profile locally...
+aigw_backend  | prisma:error 
+aigw_backend  | Invalid `prisma.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/services/job-intelligence.service.js:246:58
+aigw_backend  | 
+aigw_backend  |   243 }
+aigw_backend  |   244 
+aigw_backend  |   245 // Update the database
+aigw_backend  | → 246 const updatedApplication = await prisma.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           jobIntelligence: {
+aigw_backend  |           ~~~~~~~~~~~~~~~
+aigw_backend  |             company: "josh technology",
+aigw_backend  |             role: "software engineer",
+aigw_backend  |             department: "Engineering",
+aigw_backend  |             employmentType: "Full-time",
+aigw_backend  | [Application Service] Background matching failed for application b4cee4f6-f6fc-4eff-8608-47d25f5ab682: 
+aigw_backend  | Invalid `prisma.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/services/job-intelligence.service.js:246:58
+aigw_backend  | 
+aigw_backend  |   243 }
+aigw_backend  |             workMode: "On-site",
+aigw_backend  |             location: "United States",
+aigw_backend  |             seniority: "Mid",
+aigw_backend  |             experienceRequired: "Not Specified",
+aigw_backend  |             requiredSkills: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "Vue.js"
+aigw_backend  |             ],
+aigw_backend  |             preferredSkills: [
+aigw_backend  |               "Angular",
+aigw_backend  |               "JavaScript",
+aigw_backend  |               "Python"
+aigw_backend  |             ],
+aigw_backend  |             responsibilities: [
+aigw_backend  |               "Collaborate with team members at josh technology to build scalable solutions.",
+aigw_backend  |               "Design, implement, and maintain system features aligned with the software engineer requirements."
+aigw_backend  |             ],
+aigw_backend  |             qualifications: [
+aigw_backend  |               "Degree in Computer Science, Software Engineering, or equivalent professional experience."
+aigw_backend  |             ],
+aigw_backend  |             atsKeywords: [
+aigw_backend  |               "software engineer",
+aigw_backend  |               "josh technology",
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js"
+aigw_backend  |             ],
+aigw_backend  |             industry: "Information Technology",
+aigw_backend  |             technologies: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "Vue.js",
+aigw_backend  |               "Angular",
+aigw_backend  |               "JavaScript",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "PostgreSQL",
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "Docker",
+aigw_backend  |               "AWS",
+aigw_backend  |               "GCP",
+aigw_backend  |               "Git",
+aigw_backend  |               "C++",
+aigw_backend  |               "Django"
+aigw_backend  |             ],
+aigw_backend  |             softSkills: [
+aigw_backend  |               "Communication",
+aigw_backend  |               "Teamwork",
+aigw_backend  |               "Problem Solving"
+aigw_backend  |             ],
+aigw_backend  |             summary: "This is a Full-time software engineer role at josh technology. The candidate will work in a On-site environment supporting the main technology stack and development pipeline."
+aigw_backend  |           },
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   subject?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   emailContent?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   status?: JobApplicationStatus | EnumJobApplicationStatusFieldUpdateOperationsInput,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `jobIntelligence`. Available options are marked with ?.
+aigw_backend  |   244 
+aigw_backend  |   245 // Update the database
+aigw_backend  | → 246 const updatedApplication = await prisma.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           jobIntelligence: {
+aigw_backend  |           ~~~~~~~~~~~~~~~
+aigw_backend  |             company: "josh technology",
+aigw_backend  |             role: "software engineer",
+aigw_backend  |             department: "Engineering",
+aigw_backend  |             employmentType: "Full-time",
+aigw_backend  |             workMode: "On-site",
+aigw_backend  |             location: "United States",
+aigw_backend  |             seniority: "Mid",
+aigw_backend  |             experienceRequired: "Not Specified",
+aigw_backend  |             requiredSkills: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "Vue.js"
+aigw_backend  |             ],
+aigw_backend  |             preferredSkills: [
+aigw_backend  |               "Angular",
+aigw_backend  |               "JavaScript",
+aigw_backend  |               "Python"
+aigw_backend  |             ],
+aigw_backend  |             responsibilities: [
+aigw_backend  |               "Collaborate with team members at josh technology to build scalable solutions.",
+aigw_backend  |               "Design, implement, and maintain system features aligned with the software engineer requirements."
+aigw_backend  |             ],
+aigw_backend  |             qualifications: [
+aigw_backend  |               "Degree in Computer Science, Software Engineering, or equivalent professional experience."
+aigw_backend  |             ],
+aigw_backend  |             atsKeywords: [
+aigw_backend  |               "software engineer",
+aigw_backend  |               "josh technology",
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js"
+aigw_backend  |             ],
+aigw_backend  |             industry: "Information Technology",
+aigw_backend  |             technologies: [
+aigw_backend  |               "React.js",
+aigw_backend  |               "Node.js",
+aigw_backend  |               "Express.js",
+aigw_backend  |               "Vue.js",
+aigw_backend  |               "Angular",
+aigw_backend  |               "JavaScript",
+aigw_backend  |               "Python",
+aigw_backend  |               "Java",
+aigw_backend  |               "SQL",
+aigw_backend  |               "PostgreSQL",
+aigw_backend  |               "MongoDB",
+aigw_backend  |               "Docker",
+aigw_backend  |               "AWS",
+aigw_backend  |               "GCP",
+aigw_backend  |               "Git",
+aigw_backend  |               "C++",
+aigw_backend  |               "Django"
+aigw_backend  |             ],
+aigw_backend  |             softSkills: [
+aigw_backend  |               "Communication",
+aigw_backend  |               "Teamwork",
+aigw_backend  |               "Problem Solving"
+aigw_backend  |             ],
+aigw_backend  |             summary: "This is a Full-time software engineer role at josh technology. The candidate will work in a On-site environment supporting the main technology stack and development pipeline."
+aigw_backend  |           },
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   subject?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   emailContent?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   status?: JobApplicationStatus | EnumJobApplicationStatusFieldUpdateOperationsInput,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `jobIntelligence`. Available options are marked with ?.
+aigw_backend  | prisma:error 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:28:07.178Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.
+aigw_backend  | ❌ Error: 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:28:07.178Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.
+aigw_backend  | prisma:error 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:29:19.006Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.
+aigw_backend  | ❌ Error: 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:29:19.006Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.
+aigw_backend  | prisma:error 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:29:26.064Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.
+aigw_backend  | ❌ Error: 
+aigw_backend  | Invalid `tx.jobApplication.update()` invocation in
+aigw_backend  | /app/src/api/v1/smart-apply/repositories/application.repository.js:129:56
+aigw_backend  | 
+aigw_backend  |   126 }
+aigw_backend  |   127 
+aigw_backend  |   128 // 2. Perform the update
+aigw_backend  | → 129 const updatedApplication = await tx.jobApplication.update({
+aigw_backend  |         where: {
+aigw_backend  |           id: "b4cee4f6-f6fc-4eff-8608-47d25f5ab682"
+aigw_backend  |         },
+aigw_backend  |         data: {
+aigw_backend  |           subject: "Application for software engineer - josh technology",
+aigw_backend  |           emailContent: "Dear raj,\n\nI am writing to express my interest in the software engineer position at josh technology. Please find my application details attached.\n\nBest regards,\n[Candidate Name]\n\nBest regards,\n[Your Name]",
+aigw_backend  |           status: "SENT",
+aigw_backend  |           appliedAt: new Date("2026-07-01T06:29:26.064Z"),
+aigw_backend  |           ~~~~~~~~~
+aigw_backend  |       ?   id?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   companyName?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   role?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrEmail?: String | StringFieldUpdateOperationsInput,
+aigw_backend  |       ?   hrName?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   jobDescription?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   additionalNotes?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackType?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackText?: String | NullableStringFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   feedbackReceivedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   offerDate?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+aigw_backend  |       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+aigw_backend  |       ?   client?: ClientUpdateOneRequiredWithoutJobApplicationsNestedInput,
+aigw_backend  |       ?   resumeVersion?: ResumeVersionUpdateOneRequiredWithoutApplicationsNestedInput,
+aigw_backend  |       ?   tracking?: JobApplicationTrackingUpdateManyWithoutApplicationNestedInput,
+aigw_backend  |       ?   interviewNotes?: InterviewNoteUpdateManyWithoutApplicationNestedInput
+aigw_backend  |         }
+aigw_backend  |       })
+aigw_backend  | 
+aigw_backend  | Unknown argument `appliedAt`. Available options are marked with ?.

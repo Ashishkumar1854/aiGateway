@@ -44,6 +44,7 @@ router.get('/resumes', controller.listResumes);
 router.get('/resumes/:id', controller.getResumeById);
 router.post('/resumes/:id/versions', validateAddResumeVersion, controller.addResumeVersion);
 router.put('/resumes/:id/versions/:versionId/current', controller.setCurrentVersion);
+router.post('/resumes/:id/versions/:versionId/retry', controller.retryVersionParsing);
 
 // Job Applications
 router.post('/applications', validateCreateApplication, controller.createApplicationDraft);

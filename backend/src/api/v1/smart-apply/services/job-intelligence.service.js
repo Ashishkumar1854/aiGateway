@@ -38,14 +38,15 @@ Return a JSON object matching this exact schema:
   "preferredSkills": ["string (nice-to-have skills/qualities)"],
   "responsibilities": ["string (key duties and requirements of the role)"],
   "qualifications": ["string (educational or experience credentials)"],
-  "atsKeywords": ["string (optimized recruiter tracking keywords)"],
-  "industry": "string or null (e.g. FinTech, SaaS, Healthcare)",
-  "technologies": ["string (technologies, programming languages, databases, or frameworks mentioned, e.g. React, Node.js)"],
-  "softSkills": ["string (interpersonal qualities, e.g. Communication, Leadership)"],
-  "summary": "string (a professional 2-sentence summary summarizing the role and main responsibilities)"
-}
-
-Do NOT hallucinate information that is not supported by the job details. Return null or empty arrays if details are missing. Return ONLY the JSON object. Do not wrap in markdown code blocks (\`\`\`json).`;
+    "atsKeywords": ["string (optimized recruiter tracking keywords)"],
+    "industry": "string or null (e.g. FinTech, SaaS, Healthcare)",
+    "companySummary": "string (a short 1-2 sentence overview of what the company does, its main product/service, and industry based on the JD or general knowledge of the brand)",
+    "technologies": ["string (technologies, programming languages, databases, or frameworks mentioned, e.g. React, Node.js)"],
+    "softSkills": ["string (interpersonal qualities, e.g. Communication, Leadership)"],
+    "summary": "string (a professional 2-sentence summary summarizing the role and main responsibilities)"
+  }
+  
+  Do NOT hallucinate information that is not supported by the job details. Return null or empty arrays if details are missing. Return ONLY the JSON object. Do not wrap in markdown code blocks (\`\`\`json).`;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
@@ -54,20 +55,38 @@ Do NOT hallucinate information that is not supported by the job details. Return 
 
   while (attempt < retries) {
     attempt++;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
+    let response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json'
           }
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json'
-        }
-      })
-    });
+        })
+      });
+    } catch (fetchErr) {
+      if (attempt < retries) {
+        console.warn(`[Job Intelligence] Transient network error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error(`TIMEOUT: ${fetchErr.message}`);
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('INVALID_API_KEY');
+    }
+
+    if (response.status === 400) {
+      throw new Error('INVALID_PROMPT');
+    }
 
     if (response.status === 429) {
       let waitMs = 15000;
@@ -75,7 +94,6 @@ Do NOT hallucinate information that is not supported by the job details. Return 
       try {
         const errJson = await response.clone().json();
         
-        // Fast break on daily quota exhaustion
         isDailyLimit = errJson.error?.details?.some(detail => 
           detail.violations?.some(v => v.quotaId?.includes('PerDay'))
         );
@@ -84,8 +102,8 @@ Do NOT hallucinate information that is not supported by the job details. Return 
       }
 
       if (isDailyLimit) {
-        console.warn('[Job Intelligence] Daily Gemini API quota limit reached. Proceeding to fallback.');
-        throw new Error('Daily Gemini API quota limit reached');
+        console.warn('[Job Intelligence] Daily Gemini API quota limit reached.');
+        throw new Error('QUOTA_EXHAUSTED');
       }
 
       if (attempt < retries) {
@@ -93,6 +111,7 @@ Do NOT hallucinate information that is not supported by the job details. Return 
         await new Promise(resolve => setTimeout(resolve, waitMs));
         continue;
       }
+      throw new Error('QUOTA_EXHAUSTED');
     }
 
     if (!response.ok) {
@@ -109,8 +128,12 @@ Do NOT hallucinate information that is not supported by the job details. Return 
     try {
       return JSON.parse(rawText.trim());
     } catch (err) {
-      console.error('Failed to parse Gemini JSON response:', rawText);
-      throw new Error(`Invalid JSON format returned from Gemini: ${err.message}`);
+      if (attempt < retries) {
+        console.warn(`[Job Intelligence] JSON parse error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error('JSON_PARSE_ERROR');
     }
   }
 };
@@ -206,6 +229,7 @@ const generateFallbackJobProfile = (companyName, role, jobDescription) => {
     ],
     atsKeywords: [role, companyName, ...technologies.slice(0, 3)],
     industry: 'Information Technology',
+    companySummary: `${companyName} is an innovative organization operating in the technology and service industry, focused on delivering high-quality solutions to its users.`,
     technologies,
     softSkills: ['Communication', 'Teamwork', 'Problem Solving'],
     summary: `This is a ${employmentType} ${role} role at ${companyName}. The candidate will work in a ${workMode} environment supporting the main technology stack and development pipeline.`
@@ -234,12 +258,17 @@ const generateAndSaveProfile = async (applicationId) => {
       application.jobDescription || ''
     );
   } catch (err) {
-    console.warn(`[Job Intelligence] AI structuring failed, running local builder: ${err.message}`);
-    jobIntelligence = generateFallbackJobProfile(
-      application.companyName,
-      application.role,
-      application.jobDescription || ''
-    );
+    if (err.message === 'QUOTA_EXHAUSTED') {
+      console.warn(`[Job Intelligence] Quota limit reached, running local fallback builder`);
+      jobIntelligence = generateFallbackJobProfile(
+        application.companyName,
+        application.role,
+        application.jobDescription || ''
+      );
+    } else {
+      console.error(`[Job Intelligence] AI job profiling failed critically with fatal error: ${err.message}`);
+      throw err;
+    }
   }
 
   // Update the database

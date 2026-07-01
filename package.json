@@ -6,6 +6,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "start": "./aigw.sh start",
+    "stop": "./aigw.sh stop",
+    "restart": "./aigw.sh restart",
+    "status": "./aigw.sh status",
+    "logs": "./aigw.sh logs",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{js,jsx,json,md,css}\"",
     "clean": "turbo run clean && rm -rf node_modules",

@@ -1,0 +1,561 @@
+[
+  {
+    "version": 1,
+    "startData": "1",
+    "resultData": "2",
+    "executionData": "3"
+  },
+  {},
+  {
+    "runData": "4",
+    "lastNodeExecuted": "5"
+  },
+  {
+    "contextData": "6",
+    "nodeExecutionStack": "7",
+    "metadata": "8",
+    "waitingExecution": "9",
+    "waitingExecutionSource": "10",
+    "runtimeData": "11"
+  },
+  {
+    "webhook-trigger": "12",
+    "Resolve PDF URL": "13",
+    "Download PDF": "14",
+    "Rate Limit Wait": "15",
+    "Gemini AI Parse": "16",
+    "Validate & Map Response": "17",
+    "Respond to Webhook": "18"
+  },
+  "Respond to Webhook",
+  {},
+  [],
+  {},
+  {},
+  {},
+  {
+    "version": 1,
+    "establishedAt": 1782886621137,
+    "source": "19",
+    "redaction": "20",
+    "triggerNode": "21"
+  },
+  [
+    "22"
+  ],
+  [
+    "23"
+  ],
+  [
+    "24"
+  ],
+  [
+    "25"
+  ],
+  [
+    "26"
+  ],
+  [
+    "27"
+  ],
+  [
+    "28"
+  ],
+  "webhook",
+  {
+    "version": 1,
+    "policy": "29"
+  },
+  {
+    "name": "30",
+    "type": "31"
+  },
+  {
+    "startTime": 1782886621140,
+    "executionIndex": 0,
+    "source": "32",
+    "hints": "33",
+    "executionTime": 1,
+    "executionStatus": "34",
+    "data": "35"
+  },
+  {
+    "startTime": 1782886621141,
+    "executionIndex": 1,
+    "source": "36",
+    "hints": "37",
+    "executionTime": 130,
+    "executionStatus": "34",
+    "data": "38"
+  },
+  {
+    "startTime": 1782886621272,
+    "executionIndex": 2,
+    "source": "39",
+    "hints": "40",
+    "executionTime": 2934,
+    "executionStatus": "34",
+    "data": "41"
+  },
+  {
+    "startTime": 1782886624207,
+    "executionIndex": 3,
+    "source": "42",
+    "hints": "43",
+    "executionTime": 2009,
+    "executionStatus": "34",
+    "data": "44"
+  },
+  {
+    "startTime": 1782886626217,
+    "executionIndex": 4,
+    "source": "45",
+    "hints": "46",
+    "executionTime": 420,
+    "executionStatus": "34",
+    "data": "47"
+  },
+  {
+    "startTime": 1782886626638,
+    "executionIndex": 5,
+    "source": "48",
+    "hints": "49",
+    "executionTime": 21,
+    "executionStatus": "34",
+    "data": "50"
+  },
+  {
+    "startTime": 1782886626659,
+    "executionIndex": 6,
+    "source": "51",
+    "hints": "52",
+    "executionTime": 5,
+    "executionStatus": "34",
+    "data": "53"
+  },
+  "none",
+  "webhook-trigger",
+  "n8n-nodes-base.webhook",
+  [],
+  [],
+  "success",
+  {
+    "main": "54"
+  },
+  [
+    "55"
+  ],
+  [],
+  {
+    "main": "56"
+  },
+  [
+    "57"
+  ],
+  [],
+  {
+    "main": "58"
+  },
+  [
+    "59"
+  ],
+  [],
+  {
+    "main": "60"
+  },
+  [
+    "61"
+  ],
+  [],
+  {
+    "main": "62"
+  },
+  [
+    "63"
+  ],
+  [],
+  {
+    "main": "64"
+  },
+  [
+    "65"
+  ],
+  [],
+  {
+    "main": "66"
+  },
+  [
+    "67"
+  ],
+  {
+    "previousNode": "30",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "68"
+  ],
+  {
+    "previousNode": "69",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "70"
+  ],
+  {
+    "previousNode": "71",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "72"
+  ],
+  {
+    "previousNode": "73",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "74"
+  ],
+  {
+    "previousNode": "75",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "76"
+  ],
+  {
+    "previousNode": "77",
+    "previousNodeOutput": 0,
+    "previousNodeRun": 0
+  },
+  [
+    "78"
+  ],
+  [
+    "79"
+  ],
+  [
+    "80"
+  ],
+  "Resolve PDF URL",
+  [
+    "81"
+  ],
+  "Download PDF",
+  [
+    "82"
+  ],
+  "Rate Limit Wait",
+  [
+    "83"
+  ],
+  "Gemini AI Parse",
+  [
+    "84"
+  ],
+  "Validate & Map Response",
+  [
+    "85"
+  ],
+  {
+    "json": "86",
+    "pairedItem": "87"
+  },
+  {
+    "json": "88",
+    "pairedItem": "89"
+  },
+  {
+    "json": "88",
+    "binary": "90",
+    "pairedItem": "91"
+  },
+  {
+    "json": "88",
+    "binary": "90",
+    "pairedItem": "92"
+  },
+  {
+    "json": "93",
+    "pairedItem": "94"
+  },
+  {
+    "json": "95",
+    "pairedItem": "96"
+  },
+  {
+    "json": "95",
+    "pairedItem": "97"
+  },
+  {
+    "headers": "98",
+    "params": "99",
+    "query": "100",
+    "body": "101",
+    "webhookUrl": "102",
+    "executionMode": "103"
+  },
+  {
+    "item": 0
+  },
+  {
+    "pdfLocation": "104"
+  },
+  {
+    "item": 0
+  },
+  {
+    "data": "105"
+  },
+  {
+    "item": 0
+  },
+  {
+    "item": 0
+  },
+  {
+    "error": "106"
+  },
+  {
+    "item": 0
+  },
+  {
+    "success": true,
+    "resumeProfile": "107"
+  },
+  {
+    "item": 0
+  },
+  {
+    "item": 0
+  },
+  {
+    "host": "108",
+    "connection": "109",
+    "content-type": "110",
+    "x-n8n-secret": "111",
+    "accept": "112",
+    "accept-language": "113",
+    "sec-fetch-mode": "114",
+    "user-agent": "115",
+    "accept-encoding": "116",
+    "content-length": "117"
+  },
+  {},
+  {},
+  {
+    "pdfLocation": "118"
+  },
+  "http://localhost:5678/webhook/3Jxy2Gvm0Ry6FEWy/webhook-trigger/resume-upload",
+  "production",
+  "https://drive.google.com/uc?export=download&id=1XJCT0mKbXY8wCYjjyhIBPmb0oC_6rQCK",
+  {
+    "mimeType": "119",
+    "fileExtension": "120",
+    "data": "121",
+    "directory": "122",
+    "fileName": "123",
+    "id": "124",
+    "fileSize": "125",
+    "bytes": 71603
+  },
+  {
+    "message": "126",
+    "name": "127",
+    "stack": "128",
+    "code": "129",
+    "status": 429
+  },
+  {
+    "primaryRole": "130",
+    "secondaryRoles": "131",
+    "skills": "132",
+    "projects": "133",
+    "experience": "134",
+    "education": "135",
+    "certifications": "136",
+    "technologies": "137",
+    "atsKeywords": "138"
+  },
+  "n8n:5678",
+  "keep-alive",
+  "application/json",
+  "dev-n8n-secret",
+  "*/*",
+  "*",
+  "cors",
+  "node",
+  "gzip, deflate",
+  "101",
+  "https://drive.google.com/file/d/1XJCT0mKbXY8wCYjjyhIBPmb0oC_6rQCK/view?usp=drivesdk",
+  "application/octet-stream",
+  "pdf",
+  "filesystem-v2",
+  "https://drive.usercontent.google.com/download?id=1XJCT0mKbXY8wCYjjyhIBPmb0oC_6rQCK&export=download",
+  "Ashish_Kumar_Software_Engineer.pdf",
+  "filesystem-v2:workflows/3Jxy2Gvm0Ry6FEWy/executions/49/binary_data/b325d400-45f7-4369-8a32-f0d6c80f1e4f",
+  "71.6 kB",
+  "Try spacing your requests out using the batching settings under 'Options'",
+  "AxiosError",
+  "AxiosError: Request failed with status code 429\n    at settle (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.13.5/node_modules/axios/lib/core/settle.js:19:12)\n    at RedirectableRequest.handleResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.13.5/node_modules/axios/lib/adapters/http.js:746:9)\n    at RedirectableRequest.emit (node:events:520:35)\n    at RedirectableRequest._processResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/follow-redirects@1.15.11/node_modules/follow-redirects/index.js:409:10)\n    at ClientRequest.RedirectableRequest._onNativeResponse (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/follow-redirects@1.15.11/node_modules/follow-redirects/index.js:102:12)\n    at Object.onceWrapper (node:events:623:26)\n    at ClientRequest.emit (node:events:508:28)\n    at HTTPParser.parserOnIncomingClient [as onIncoming] (node:_http_client:780:27)\n    at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)\n    at TLSSocket.socketOnData (node:_http_client:615:22)\n    at Axios.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/axios@1.13.5/node_modules/axios/lib/core/Axios.js:46:41)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at invokeAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_9f358c3eeaef0d2736f54ac9757ada43/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:95:10)\n    at proxyRequestToAxios (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_9f358c3eeaef0d2736f54ac9757ada43/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:439:20)\n    at Object.request (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_9f358c3eeaef0d2736f54ac9757ada43/node_modules/n8n-core/src/execution-engine/node-execution-context/utils/request-helper-functions.ts:1557:4)",
+  "ERR_BAD_REQUEST",
+  "Full-Stack Web Developer",
+  [
+    "139",
+    "140"
+  ],
+  [
+    "141",
+    "142",
+    "143",
+    "144",
+    "145",
+    "146",
+    "147",
+    "148",
+    "149",
+    "150",
+    "151",
+    "152",
+    "153",
+    "154",
+    "155",
+    "156",
+    "157",
+    "158",
+    "159",
+    "160"
+  ],
+  [
+    "161",
+    "162"
+  ],
+  "2 Years",
+  [
+    "163"
+  ],
+  [
+    "164",
+    "165",
+    "166"
+  ],
+  [
+    "167",
+    "168",
+    "169",
+    "170",
+    "171",
+    "172",
+    "173",
+    "174",
+    "175",
+    "176",
+    "177",
+    "178",
+    "179",
+    "180"
+  ],
+  [
+    "181",
+    "182",
+    "183",
+    "184",
+    "185",
+    "186",
+    "187",
+    "188",
+    "189",
+    "190"
+  ],
+  "MERN Stack Developer",
+  "Frontend Developer",
+  "JavaScript (ES6+)",
+  "Python",
+  "Java",
+  "SQL",
+  "React.js",
+  "Redux",
+  "Next.js",
+  "Axios",
+  "HTML5",
+  "CSS3",
+  "Tailwind CSS",
+  "Bootstrap",
+  "Node.js",
+  "Express.js",
+  "REST API",
+  "Authentication (JWT)",
+  "WebSockets",
+  "MongoDB",
+  "MySQL",
+  "PostgreSQL",
+  {
+    "name": "191",
+    "description": "192",
+    "techStack": "193"
+  },
+  {
+    "name": "194",
+    "description": "195",
+    "techStack": "196"
+  },
+  {
+    "institution": "197",
+    "degree": "198",
+    "fieldOfStudy": "199",
+    "endYear": 2026
+  },
+  "Full Stack Web Development",
+  "Data Science and AI/ML",
+  "DSA Bootcamp",
+  "Docker",
+  "n8n",
+  "TensorFlow",
+  "PyTorch",
+  "Scikit-learn",
+  "Pandas",
+  "NumPy",
+  "OpenCV",
+  "Git",
+  "GitHub",
+  "Postman",
+  "VS Code",
+  "Vercel",
+  "Netlify",
+  "System Design",
+  "API Design",
+  "Data Structures",
+  "Algorithms",
+  "OOP",
+  "DBMS",
+  "SDLC",
+  "Agile",
+  "CI/CD",
+  "Problem Solving",
+  "Stock Price Prediction using News Sentiment Analysis",
+  "Real-time news analytics system evaluating financial articles using NLP to extract market sentiment.",
+  [
+    "200",
+    "201",
+    "142",
+    "202"
+  ],
+  "Secure and Automated Digital Voting",
+  "Secure digital voting platform with face-based authentication and encrypted record keeping.",
+  [
+    "200",
+    "201",
+    "203"
+  ],
+  "Rungta College of Engineering and Technology",
+  "B.Tech",
+  "Information Technology",
+  "MERN Stack",
+  "Flask",
+  "NLP",
+  "Computer Vision"
+]

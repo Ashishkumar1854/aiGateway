@@ -638,6 +638,8 @@ model ResumeVersion {
   atsKeywords    String[]
   pdfLocation    String           // Local path or URL to stored Resume PDF
   intelligenceProfile Json?
+  parseStatus    String           @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  parseError     String?          // Detailed error logs if parsing fails
   isCurrent      Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -670,6 +672,7 @@ model JobApplication {
   feedbackText      String?                // Optional recruiter feedback comment
   feedbackReceivedAt DateTime?
   offerDate         DateTime?
+  appliedAt         DateTime?
   createdAt         DateTime               @default(now())
   updatedAt         DateTime               @updatedAt
 

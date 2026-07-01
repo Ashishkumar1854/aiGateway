@@ -35,6 +35,8 @@ const createResume = async (clientId, resumeData, versionData) => {
         technologies: versionData.technologies || [],
         atsKeywords: versionData.atsKeywords || [],
         isCurrent: true,
+        parseStatus: versionData.parseStatus || 'PENDING',
+        parseError: versionData.parseError || null,
       },
     });
 
@@ -113,6 +115,8 @@ const createResumeVersion = async (resumeId, versionData) => {
         technologies: versionData.technologies || [],
         atsKeywords: versionData.atsKeywords || [],
         isCurrent: true,
+        parseStatus: versionData.parseStatus || 'PENDING',
+        parseError: versionData.parseError || null,
       },
     });
 
@@ -166,6 +170,28 @@ const findResumeVersionById = async (id, clientId) => {
   return version;
 };
 
+/**
+ * Updates the parsing result and status of a ResumeVersion
+ */
+const updateResumeVersionParseResult = async (id, data) => {
+  return prisma.resumeVersion.update({
+    where: { id },
+    data: {
+      primaryRole: data.primaryRole || null,
+      secondaryRoles: data.secondaryRoles || [],
+      skills: data.skills || [],
+      projects: data.projects || null,
+      experience: data.experience || null,
+      education: data.education || null,
+      certifications: data.certifications || [],
+      technologies: data.technologies || [],
+      atsKeywords: data.atsKeywords || [],
+      parseStatus: data.parseStatus,
+      parseError: data.parseError || null,
+    },
+  });
+};
+
 module.exports = {
   createResume,
   findResumesByClient,
@@ -173,4 +199,5 @@ module.exports = {
   createResumeVersion,
   setCurrentVersion,
   findResumeVersionById,
+  updateResumeVersionParseResult,
 };

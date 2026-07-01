@@ -70,20 +70,38 @@ Do NOT hallucinate information that is not supported by the input profile detail
 
   while (attempt < retries) {
     attempt++;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
+    let response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json'
           }
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json'
-        }
-      })
-    });
+        })
+      });
+    } catch (fetchErr) {
+      if (attempt < retries) {
+        console.warn(`[Resume Intelligence] Transient network error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error(`TIMEOUT: ${fetchErr.message}`);
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('INVALID_API_KEY');
+    }
+
+    if (response.status === 400) {
+      throw new Error('INVALID_PROMPT');
+    }
 
     if (response.status === 429) {
       let waitMs = 15000; // default 15s wait
@@ -91,7 +109,6 @@ Do NOT hallucinate information that is not supported by the input profile detail
       try {
         const errJson = await response.clone().json();
         
-        // Fast break on daily quota exhaustion to avoid unnecessary wait loops
         isDailyLimit = errJson.error?.details?.some(detail => 
           detail.violations?.some(v => v.quotaId?.includes('PerDay'))
         );
@@ -110,8 +127,8 @@ Do NOT hallucinate information that is not supported by the input profile detail
       }
 
       if (isDailyLimit) {
-        console.warn('[Resume Intelligence] Daily Gemini API quota limit reached. Proceeding to fallback.');
-        throw new Error('Daily Gemini API quota limit reached');
+        console.warn('[Resume Intelligence] Daily Gemini API quota limit reached.');
+        throw new Error('QUOTA_EXHAUSTED');
       }
 
       if (attempt < retries) {
@@ -119,6 +136,7 @@ Do NOT hallucinate information that is not supported by the input profile detail
         await new Promise(resolve => setTimeout(resolve, waitMs));
         continue;
       }
+      throw new Error('QUOTA_EXHAUSTED');
     }
 
     if (!response.ok) {
@@ -135,8 +153,12 @@ Do NOT hallucinate information that is not supported by the input profile detail
     try {
       return JSON.parse(rawText.trim());
     } catch (err) {
-      console.error('Failed to parse Gemini JSON response:', rawText);
-      throw new Error(`Invalid JSON format returned from Gemini: ${err.message}`);
+      if (attempt < retries) {
+        console.warn(`[Resume Intelligence] JSON parse error. Attempt ${attempt}/${retries}. Retrying in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
+      }
+      throw new Error('JSON_PARSE_ERROR');
     }
   }
 };
@@ -175,8 +197,13 @@ const generateAndSaveProfile = async (resumeVersionId) => {
   try {
     intelligenceProfile = await generateIntelligenceProfile(inputProfile);
   } catch (err) {
-    console.warn(`[Resume Intelligence] AI enrichment failed, running local builder: ${err.message}`);
-    intelligenceProfile = generateFallbackProfile(inputProfile);
+    if (err.message === 'QUOTA_EXHAUSTED') {
+      console.warn(`[Resume Intelligence] Quota limit reached, running local fallback builder`);
+      intelligenceProfile = generateFallbackProfile(inputProfile);
+    } else {
+      console.error(`[Resume Intelligence] AI enrichment failed critically with fatal error: ${err.message}`);
+      throw err; // Fail immediately, do not run fallback!
+    }
   }
 
   // Update the database

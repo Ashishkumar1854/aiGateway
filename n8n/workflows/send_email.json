@@ -75,6 +75,7 @@
         "emailType": "html",
         "message": "={{ $json.emailBody }}",
         "options": {
+          "appendAttribution": false,
           "attachmentsUi": {
             "attachmentsBinary": [
               {
@@ -106,7 +107,9 @@
         "subject": "={{ $json.subject }}",
         "emailType": "html",
         "message": "={{ $json.emailBody }}",
-        "options": {}
+        "options": {
+          "appendAttribution": false
+        }
       },
       "id": "e0a0d0a3-4321-4b11-a889-noattach0000",
       "name": "Send Without Attachment",
